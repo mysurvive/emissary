@@ -1,0 +1,83 @@
+<div class="faction-item {{repLevel.value}}" id="{{id}}" data-action="openRollout">
+    <div class="faction-box">
+        <span class="item-name">{{name}}</span>
+        <span
+            class="reputation-level"
+            data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
+        >
+            {{repLevel.label}}
+        </span>
+    </div>
+    <div class="rollout">
+        <span class="control-buttons">
+            <button
+                class="reputation-control"
+                id="major-disservice"
+                faction-uuid="{{id}}"
+                data-value="-5"
+                data-action="updateReputation"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.disservices.major'}}"
+            >
+                <i class="fa-regular fa-face-nose-steam"></i>
+            </button>
+            <button
+                class="reputation-control"
+                id="moderate-disservice"
+                faction-uuid="{{id}}"
+                data-value="-2"
+                data-action="updateReputation"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.disservices.moderate'}}"
+            >
+                <i class="fa-regular fa-face-angry"></i>
+            </button>
+            <button
+                class="reputation-control"
+                id="minor-disservice"
+                faction-uuid="{{id}}"
+                data-value="-1"
+                data-action="updateReputation"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.disservices.minor'}}"
+            >
+                <i class="fa-regular fa-face-sad-sweat"></i>
+            </button>
+            <button
+                class="reputation-control"
+                id="minor-favor"
+                faction-uuid="{{id}}"
+                data-value="1"
+                data-action="updateReputation"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.favors.minor'}}"
+            >
+                <i class="fa-regular fa-face-smile"></i>
+            </button>
+            <button
+                class="reputation-control"
+                id="moderate-favor"
+                faction-uuid="{{id}}"
+                data-value="2"
+                data-action="updateReputation"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.favors.moderate'}}"
+            >
+                <i class="fa-regular fa-face-grin"></i>
+            </button>
+            <button
+                class="reputation-control"
+                id="major-favor"
+                faction-uuid="{{id}}"
+                data-value="5"
+                data-action="updateReputation"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.favors.major'}}"
+            >
+                <i class="fa-regular fa-face-smile-hearts"></i>
+            </button>
+        </span>
+        <button
+            class="remove-faction"
+            data-action="deleteFaction"
+            faction-uuid="{{id}}"
+            data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.remove'}}"
+        >
+            <i class="fa-regular fa-trash"></i>
+        </button>
+    </div>
+</div>

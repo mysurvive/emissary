@@ -1,0 +1,16 @@
+.add-faction {
+    section {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        label {
+            flex-basis: 1;
+            margin: 10px;
+        }
+
+        input {
+            flex-basis: 3;
+        }
+    }
+}

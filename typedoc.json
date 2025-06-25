@@ -1,0 +1,10 @@
+{
+    "name": "Emissary",
+    "inputFiles": ["./src/module"],
+    "out": "docs",
+    "mode": "file",
+    "readme": "none",
+    "ignoreCompilerErrors": true,
+    "categorizeByGroup": true,
+    "includeVersion": true
+}
