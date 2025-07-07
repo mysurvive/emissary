@@ -15,34 +15,6 @@
         padding: 5px;
         width: 98%;
 
-        &.Hunted {
-            border-color: red;
-        }
-
-        &.Hated {
-            border-color: orangered;
-        }
-
-        &.Disliked {
-            border-color: orange;
-        }
-
-        &.Ignored {
-            border-color: white;
-        }
-
-        &.Liked {
-            border-color: yellow;
-        }
-
-        &.Admired {
-            border-color: yellowgreen;
-        }
-
-        &.Revered {
-            border-color: green;
-        }
-
         .faction-box {
             pointer-events: none;
 

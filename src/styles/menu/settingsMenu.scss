@@ -1,0 +1,81 @@
+.reputation-settings {
+    .setting-category {
+        h1 {
+            pointer-events: none;
+        }
+        .rollout {
+            margin-top: 0px;
+            max-height: 0px;
+            opacity: 0;
+            transition:
+                max-height 0.25s ease,
+                opacity 0.25s ease,
+                margin-top 0s ease 0.25s;
+            transition-behavior: allow-discrete;
+            justify-content: space-between;
+            display: none;
+
+            &.active {
+                margin-top: 15px;
+                opacity: 1;
+                max-height: 1000px;
+                display: flex;
+                flex-direction: column;
+
+                @starting-style {
+                    opacity: 0;
+                    max-height: 0px;
+                }
+
+                .setting {
+                    display: flex;
+                    justify-content: space-between;
+                    align-content: center;
+                    max-height: 1000px;
+                    width: 98%;
+
+                    &.vertical {
+                        flex-direction: column;
+
+                        .sub-settings {
+                            margin-top: 10px;
+                        }
+                    }
+
+                    .reputation-increment {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-evenly;
+                    }
+
+                    .info {
+                        display: flex;
+                        flex-direction: column;
+
+                        .hint {
+                            margin-top: 5px;
+                            padding-left: 10px;
+                            font-style: italic;
+                        }
+                    }
+
+                    .sub-settings {
+                        flex-direction: column;
+
+                        .specific-setting {
+                            display: flex;
+                            justify-content: right;
+                            align-items: center;
+
+                            input {
+                                width: 60px;
+                                text-align: right;
+                                margin-left: 2px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

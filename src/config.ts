@@ -1,19 +1,19 @@
-import { ApplicationRenderOptions } from "types/types/foundry/client-esm/applications/_types.js";
-import ApplicationV2 from "types/types/foundry/client-esm/applications/api/application.js";
+import { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client-esm/applications/_types.mts";
 import { ReputationTracker } from "./module/menus/reputationTracker/reputationTracker.ts";
 import { registerSettings } from "./scripts/registerSettings.ts";
 import { registerTemplates } from "./scripts/registerTemplates.ts";
+import ApplicationV2 from "node_modules/fvtt-types/src/foundry/client-esm/applications/api/application.mts";
+import { registerHandlebarsHelpers } from "./scripts/registerHandlebarsHelpers.ts";
 
 class EmissaryConfig {
-    static MODNAME = "emissary";
-
     static initialize(): void {
         EmissaryConfig.registerHooks();
+        EmissaryConfig.registerEmissaryHandlebarsHelpers();
     }
 
     static registerHooks(): void {
         Hooks.on("init", () => {
-            EmissaryConfig.registerEmissarySettings(EmissaryConfig.MODNAME);
+            EmissaryConfig.registerEmissarySettings();
             EmissaryConfig.registerEmissaryTemplates();
         });
 
@@ -25,15 +25,26 @@ class EmissaryConfig {
             targetTab?.classList.add("active");
         });
 
-        Hooks.on("getSceneControlButtons", (controls: Record<string, SceneControl>) =>
-            EmissaryConfig.setControlTools(controls),
-        );
+        Hooks.on("getSceneControlButtons", (controls: Record<string, SceneControls.Control>) => {
+            controls.tokens.tools.reputation = {
+                icon: "fa-solid fa-face-smile",
+                name: "reputation",
+                title: "Reputation Tracker",
+                visible: true,
+                button: true,
+                onClick: () => {
+                    new ReputationTracker().render(true);
+                },
+            };
+
+            console.log("Emissary | Tools Registered");
+        });
 
         console.log("Emissary | Hooks Registered");
     }
 
-    static registerEmissarySettings(MODNAME: string): void {
-        registerSettings(MODNAME);
+    static registerEmissarySettings(): void {
+        registerSettings();
 
         console.log("Emissary | Settings Registered");
     }
@@ -44,20 +55,10 @@ class EmissaryConfig {
         console.log("Emissary | Templates Registered");
     }
 
-    static setControlTools(controls: Record<string, SceneControl>): void {
-        const tokenTools = controls.tokens?.tools;
-        tokenTools.reputation = {
-            icon: "fa-solid fa-face-smile",
-            name: "reputation",
-            title: "Reputation Tracker",
-            visible: true,
-            button: true,
-            onClick: () => {
-                new ReputationTracker().render(true);
-            },
-        };
+    static registerEmissaryHandlebarsHelpers(): void {
+        registerHandlebarsHelpers();
 
-        console.log("Emissary | Tools Registered");
+        console.log("Emissary | Handlebars Helpers Registered");
     }
 }
 

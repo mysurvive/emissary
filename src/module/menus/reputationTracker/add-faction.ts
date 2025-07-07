@@ -1,4 +1,5 @@
-import { ApplicationRenderOptions } from "types/types/foundry/client-esm/applications/_types.js";
+import { DeepPartial, EmptyObject } from "fvtt-types/utils";
+import { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client-esm/applications/_types.mts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -8,6 +9,7 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         super();
         this.parent = parent;
     }
+
     static override DEFAULT_OPTIONS = {
         id: "add-faction-form",
         classes: ["emissary", "add-faction"],
@@ -28,11 +30,12 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 
     static async #onSubmit(_event, _form, formData): Promise<void> {
-        const factionReputations = game.settings.get("emissary", "factionReputation") as Array<Object>;
+        if (!game.settings) return;
+        const factionReputations = game.settings.get("emissary", "factionReputation") as Object[];
 
         const factionInformation = formData.object;
 
-        //TODO: fix
+        // TODO: fix
         if (formData.object.repNumber <= -30) factionInformation.repLevel = "Hunted";
         else if (formData.object.repNumber <= -15) factionInformation.repLevel = "Hated";
         else if (formData.object.repNumber <= -5) factionInformation.repLevel = "Disliked";
@@ -53,11 +56,13 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         super._onClose(options);
     }
 
-    protected override async _prepareContext(options: ApplicationRenderOptions): Promise<object> {
+    protected override async _prepareContext(
+        options: DeepPartial<Application.RenderOptions> & { isFirstRender: boolean },
+    ): Promise<EmptyObject> {
         const context = await super._prepareContext(options);
 
         const mergedContext = foundry.utils.mergeObject(context, {
-            buttons: { submit: { type: "submit", label: "Submit" } }, //TODO: i18n
+            buttons: { submit: { type: "submit", label: "Submit" } }, // TODO: i18n
         });
 
         return mergedContext;

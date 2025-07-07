@@ -1,8 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es6": true,
-        "jest/globals": true
+        "es6": true
     },
     "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
     "parserOptions": {
@@ -64,14 +63,6 @@
             }
         ]
     },
-    "plugins": ["jest", "prettier", "@typescript-eslint"],
-    "overrides": [
-        {
-            "files": "tests/**/*",
-            "rules": {
-                "global-require": "off"
-            }
-        }
-    ],
+    "plugins": ["prettier", "@typescript-eslint"],
     "parser": "@typescript-eslint/parser"
 }

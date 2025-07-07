@@ -1,8 +1,9 @@
-import { ApplicationRenderOptions } from "types/types/foundry/client-esm/applications/_types.js";
 import { ReputationTabs } from "./data.ts";
 import { ReputationTabConstructor } from "./tabs/reputationTabConstructor.ts";
 import { AddFactionMenu } from "./add-faction.ts";
 import { FactionReputation } from "./tabs/types.ts";
+import { DeepPartial, EmptyObject } from "fvtt-types/utils";
+import { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client-esm/applications/api/_module.mts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -38,9 +39,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async deleteFaction(e) {
+        if (!game.settings) return;
         const target = e.target as HTMLButtonElement;
         const uuid = target.getAttribute("faction-uuid");
-        const factionReputation = game.settings.get("emissary", "factionReputation") as Array<FactionReputation>;
+        const factionReputation = game.settings.get("emissary", "factionReputation") as FactionReputation[];
         for (const faction of factionReputation) {
             if (faction.id === uuid) {
                 factionReputation.splice(factionReputation.indexOf(faction), 1);
@@ -55,6 +57,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static openRollout(e) {
+        if (!game.user) return;
         if (game.user.isGM) {
             const target = e.target as HTMLDivElement;
             const rollout = target.getElementsByClassName("rollout") as HTMLCollectionOf<HTMLDivElement>;
@@ -65,10 +68,11 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async updateReputation(_e, t) {
+        if (!game.settings) return;
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("faction-uuid");
 
-        const factionReputation = game.settings.get("emissary", "factionReputation") as Array<FactionReputation>;
+        const factionReputation = game.settings.get("emissary", "factionReputation") as FactionReputation[];
 
         const faction = factionReputation
             .map((f) => {
@@ -78,7 +82,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
         factionReputation[faction].repNumber += value;
 
-        const repRange = game.settings.get("emissary", "reputation-factionRange") as {
+        const repRange = game.settings.get("emissary", "factionReputationRange") as {
             minimum: number;
             maximum: number;
         };
@@ -95,23 +99,29 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         });
     }
 
-    protected override async _prepareContext(options: ApplicationRenderOptions): Promise<object> {
-        const context = await super._prepareContext(options);
+    protected override async _prepareContext(
+        options: DeepPartial<AV2.RenderOptions> & { isFirstRender: boolean },
+    ): Promise<EmptyObject> {
+        {
+            const context = await super._prepareContext(options);
 
-        const constructor = new ReputationTabConstructor();
-        constructor.setFactionReputationLevels();
-        const reputationData = {
-            faction: constructor.reputation.faction,
-            individual: constructor.reputation.individual,
-        };
+            const constructor = new ReputationTabConstructor();
+            constructor.setFactionReputationLevels();
+            const reputationData = {
+                faction: constructor.reputation.faction,
+                individual: constructor.reputation.individual,
+            };
 
-        const mergedContext = foundry.utils.mergeObject(context, {
-            tabs: ReputationTabs,
-            reputationData: reputationData,
-            isGM: game.user.isGM,
-        });
+            if (!game.user) return {};
 
-        return mergedContext;
+            const mergedContext = foundry.utils.mergeObject(context, {
+                tabs: ReputationTabs,
+                reputationData: reputationData,
+                isGM: game.user.isGM,
+            });
+
+            return mergedContext;
+        }
     }
 
     protected override _preparePartContext(partId: string, context: any): Promise<any> {

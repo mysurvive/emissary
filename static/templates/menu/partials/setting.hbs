@@ -1,0 +1,22 @@
+<div class="setting{{#when type "eq" "reputationIncrement"}} vertical{{/when}}">
+    <div class="info">
+        <span class="title">
+            {{settingName}}
+        </span>
+        <span class="hint">
+            {{hint}}
+        </span>
+    </div>
+    <div class="sub-settings">
+        {{#when type "eq" "reputationRange"}}
+                {{>"modules/emissary/templates/menu/partials/reputationRange.hbs" this id=id}}
+        {{/when}}
+        {{#when type "eq" "reputationIncrement"}}
+            {{#each settingValue}}
+                <div class="reputation-increment">
+                    {{>"modules/emissary/templates/menu/partials/reputationIncrement.hbs" this id=../id}}
+                </div>
+            {{/each}}
+        {{/when}}
+    </div>
+</div>

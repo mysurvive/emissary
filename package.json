@@ -1,6 +1,7 @@
 {
     "type": "module",
     "devDependencies": {
+        "@league-of-foundry-developers/foundry-vtt-types": "^13.340.1",
         "@types/fs-extra": "^11.0.4",
         "@types/jquery": "^3.5.30",
         "@types/node": "^20.12.12",
@@ -13,8 +14,7 @@
         "eslint-plugin-json": "^3.1.0",
         "eslint-plugin-prettier": "^5.1.3",
         "fs-extra": "^11.2.0",
-        "fvtt-types": "npm:@league-of-foundry-developers/foundry-vtt-types@^13.340.1",
-        "@league-of-foundry-developers/foundry-vtt-types": "^13.340.1",
+        "fvtt-types": "npm:@league-of-foundry-developers/foundry-vtt-types@^12.331.5",
         "handlebars": "^4.7.7",
         "jquery": "^3.7.1",
         "prettier": "^3.2.5",
@@ -49,9 +49,9 @@
         "hot": "vite serve",
         "link": "tsx ./build/link-foundry.ts",
         "lint": "npm run lint:ts && npm run lint:json && npm run prettier:scss",
-        "lint:ts": "eslint ./build ./src ./tests ./types --ext .ts",
+        "lint:ts": "eslint ./build ./src --ext .ts",
         "prettier:scss": "prettier --check src/styles",
         "lint:json": "eslint ./static --ext .json --no-eslintrc --plugin json --rule \"json/*: error\" --rule \"linebreak-style: error\"",
-        "lint:fix": "eslint ./build ./src ./tests ./types --ext .ts --fix && prettier --write src/styles"
+        "lint:fix": "eslint ./build ./src --ext .ts --fix && prettier --write src/styles"
     }
 }

@@ -6,44 +6,7 @@
                 "factionRange": "Faction Reputation Range"
             }
         },
-        "subsystems": {
-            "chase": {
-                "label": "Chase"
-            },
-            "infiltration": {
-                "label": "Infiltration"
-            },
-            "duel": {
-                "label": "Duel"
-            }
-        },
         "menu": {
-            "adhoc": {
-                "chase": {
-                    "fieldset": {
-                        "basics": {
-                            "label": "Basics",
-                            "fields": {
-                                "encounterName": { "label": "Encounter Name" },
-                                "encounterLength": {
-                                    "label": "Encounter Length",
-                                    "short": "Short",
-                                    "medium": "Medium",
-                                    "long": "Long",
-                                    "custom": "Custom"
-                                }
-                            }
-                        }
-                    }
-                },
-                "footer": {
-                    "buttons": {
-                        "submitNow": "Submit and Run Now",
-                        "submitLater": "Submit and Run Later",
-                        "cancel": "Cancel"
-                    }
-                }
-            },
             "reputationTracker": {
                 "currentReputation": "Current reputation",
                 "buttons": {
@@ -59,17 +22,6 @@
                     },
                     "remove": "Remove Faction"
                 }
-            }
-        },
-        "reputation": {
-            "degrees": {
-                "hunted": "Hunted",
-                "hated": "Hated",
-                "disliked": "Disliked",
-                "ignored": "Ignored",
-                "liked": "Liked",
-                "admired": "Admired",
-                "revered": "Revered"
             }
         }
     }
