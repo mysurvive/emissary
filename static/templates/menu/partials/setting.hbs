@@ -2,21 +2,33 @@
     <div class="info">
         <span class="title">
             {{settingName}}
+            <button 
+                class="reset-button" 
+                id="reset-button"
+                parent-setting="{{id}}"
+                data-action="resetSettings" 
+                data-tooltip="Reset these settings to default."
+                type="reset"
+            >
+                <i class="fa-regular fa-rotate-left"></i>
+            </button>
         </span>
         <span class="hint">
             {{hint}}
         </span>
-    </div>
-    <div class="sub-settings">
-        {{#when type "eq" "reputationRange"}}
+
+        <div class="sub-settings">
+            {{#when type "eq" "reputationRange"}}
                 {{>"modules/emissary/templates/menu/partials/reputationRange.hbs" this id=id}}
-        {{/when}}
-        {{#when type "eq" "reputationIncrement"}}
-            {{#each settingValue}}
-                <div class="reputation-increment">
-                    {{>"modules/emissary/templates/menu/partials/reputationIncrement.hbs" this id=../id}}
-                </div>
-            {{/each}}
-        {{/when}}
+            {{/when}}
+            {{#when type "eq" "reputationIncrement"}}
+                {{#each settingValue}}
+                    <div class="reputation-increment">
+                        {{>"modules/emissary/templates/menu/partials/reputationIncrement.hbs" this id=../id}}
+                    </div>
+                {{/each}}
+            {{/when}}
+        </div>
     </div>
+
 </div>

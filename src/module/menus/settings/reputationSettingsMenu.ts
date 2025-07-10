@@ -1,23 +1,29 @@
-import { DeepPartial, EmptyObject } from "fvtt-types/utils";
+import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
+import { SettingsMenuObject } from "../types.ts";
+import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
-const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
+class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     static override DEFAULT_OPTIONS = {
         id: "reputation-settings-menu",
-        title: "Emissary Reputation Settings",
         tag: "form",
         form: {
             submitOnChange: false,
             closeOnSubmit: true,
             handler: ReputationSettingsMenu.#onSubmit,
         },
+        window: {
+            title: "Emissary Reputation Settings",
+        },
         position: {
             width: 650,
         },
         actions: {
             openRollout: ReputationSettingsMenu.openRollout,
+            resetSettings: ReputationSettingsMenu.resetSettings,
         },
     };
 
@@ -32,8 +38,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 
     protected override async _prepareContext(
-        options: DeepPartial<Application.RenderOptions> & { isFirstRender: boolean },
-    ): Promise<EmptyObject> {
+        options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
+    ): Promise<ApplicationV2.RenderContext> {
         const context = await super._prepareContext(options);
 
         const settings = ReputationSettingsMenu.getSettings();
@@ -66,7 +72,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         game.settings?.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);
     }
 
-    static getSettings() {
+    static getSettings(): SettingsMenuObject {
         const factionReputationRange = game.settings?.get(MODNAME, "factionReputationRange");
         const factionReputationIncrement = game.settings?.get(MODNAME, "factionReputationIncrement");
         return {
@@ -91,11 +97,28 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         };
     }
 
-    static openRollout(e) {
+    static openRollout(e: PointerEvent): void {
         const target = e.target as HTMLDivElement;
         const rollout = target.getElementsByClassName("rollout") as HTMLCollectionOf<HTMLDivElement>;
         for (const r of rollout) {
             r.classList.toggle("active");
+        }
+    }
+
+    static async resetSettings(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
+        const parentSetting = target.getAttribute("parent-setting") as ClientSettings.KeyFor<"emissary">;
+        if (!parentSetting) return;
+
+        const defaultSetting = game.settings.get(MODNAME, parentSetting, { document: true });
+        if (game.settings.storage.get("world")!.getSetting(`${MODNAME}.${parentSetting}`))
+            await defaultSetting.delete();
+
+        const openRollouts = this.element.querySelectorAll(".rollout.active");
+        console.log(this.parts["form"]);
+        const rerenderedApp = await this.render({ parts: ["form"] });
+        for (const element of openRollouts) {
+            const targetElement = rerenderedApp.element.querySelector(`#${element.id}`);
+            targetElement?.classList.add("active");
         }
     }
 }

@@ -1,4 +1,4 @@
-import { ApplicationTab } from "node_modules/fvtt-types/src/foundry/client-esm/applications/_types.mts";
+import type { ApplicationTab } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 
 export const FactionReputationTabNav: ApplicationTab = {
     id: "faction-reputation",

@@ -2,8 +2,10 @@ import { ReputationTabs } from "./data.ts";
 import { ReputationTabConstructor } from "./tabs/reputationTabConstructor.ts";
 import { AddFactionMenu } from "./add-faction.ts";
 import { FactionReputation } from "./tabs/types.ts";
-import { DeepPartial, EmptyObject } from "fvtt-types/utils";
-import { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client-esm/applications/api/_module.mts";
+import { DeepPartial } from "fvtt-types/utils";
+import { UUID } from "crypto";
+import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -34,11 +36,11 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         },
     };
 
-    static addFaction() {
+    static addFaction(): void {
         new AddFactionMenu(this).render(true);
     }
 
-    static async deleteFaction(e) {
+    static async deleteFaction(e: PointerEvent): Promise<void> {
         if (!game.settings) return;
         const target = e.target as HTMLButtonElement;
         const uuid = target.getAttribute("faction-uuid");
@@ -56,7 +58,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         });
     }
 
-    static openRollout(e) {
+    static openRollout(e: PointerEvent): void {
         if (!game.user) return;
         if (game.user.isGM) {
             const target = e.target as HTMLDivElement;
@@ -67,10 +69,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
     }
 
-    static async updateReputation(_e, t) {
+    static async updateReputation(_e: never, t: HTMLButtonElement): Promise<void> {
         if (!game.settings) return;
         const value = Number(t.getAttribute("data-value"));
-        const uuid = t.getAttribute("faction-uuid");
+        const uuid = t.getAttribute("faction-uuid") as UUID;
 
         const factionReputation = game.settings.get("emissary", "factionReputation") as FactionReputation[];
 
@@ -100,8 +102,8 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     protected override async _prepareContext(
-        options: DeepPartial<AV2.RenderOptions> & { isFirstRender: boolean },
-    ): Promise<EmptyObject> {
+        options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
+    ): Promise<AV2.RenderContext> {
         {
             const context = await super._prepareContext(options);
 

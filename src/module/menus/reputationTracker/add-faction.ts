@@ -1,11 +1,15 @@
-import { DeepPartial, EmptyObject } from "fvtt-types/utils";
-import { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client-esm/applications/_types.mts";
+import { DeepPartial } from "fvtt-types/utils";
+import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import { MODNAME } from "src/constants.ts";
+import { FactionReputationIncrement } from "../types.ts";
+import { ReputationTracker } from "./reputationTracker.ts";
+import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare parent;
-    constructor(parent) {
+    constructor(parent: typeof ReputationTracker) {
         super();
         this.parent = parent;
     }
@@ -32,17 +36,15 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #onSubmit(_event, _form, formData): Promise<void> {
         if (!game.settings) return;
         const factionReputations = game.settings.get("emissary", "factionReputation") as Object[];
+        const repSettings: FactionReputationIncrement[] = game.settings.get(MODNAME, "factionReputationIncrement");
 
         const factionInformation = formData.object;
 
-        // TODO: fix
-        if (formData.object.repNumber <= -30) factionInformation.repLevel = "Hunted";
-        else if (formData.object.repNumber <= -15) factionInformation.repLevel = "Hated";
-        else if (formData.object.repNumber <= -5) factionInformation.repLevel = "Disliked";
-        else if (formData.object.repNumber <= 4) factionInformation.repLevel = "Ignored";
-        else if (formData.object.repNumber <= 14) factionInformation.repLevel = "Liked";
-        else if (formData.object.repNumber <= 29) factionInformation.repLevel = "Admired";
-        else factionInformation.repLevel = "Revered";
+        for (const repLevel of repSettings) {
+            if (factionInformation.repNumber <= repLevel.maximum && factionInformation.repNumber >= repLevel.minimum) {
+                factionInformation.repLevel = repLevel.label;
+            } else continue;
+        }
 
         factionInformation.id = crypto.randomUUID();
 
@@ -57,8 +59,8 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     protected override async _prepareContext(
-        options: DeepPartial<Application.RenderOptions> & { isFirstRender: boolean },
-    ): Promise<EmptyObject> {
+        options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
+    ): Promise<AV2.RenderContext> {
         const context = await super._prepareContext(options);
 
         const mergedContext = foundry.utils.mergeObject(context, {

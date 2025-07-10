@@ -33,13 +33,16 @@
                     align-content: center;
                     max-height: 1000px;
                     width: 98%;
+                    margin-top: 15px;
+
+                    .title {
+                        display: flex;
+                        justify-content: space-between;
+                        flex-direction: row;
+                    }
 
                     &.vertical {
                         flex-direction: column;
-
-                        .sub-settings {
-                            margin-top: 10px;
-                        }
                     }
 
                     .reputation-increment {
@@ -51,6 +54,7 @@
                     .info {
                         display: flex;
                         flex-direction: column;
+                        width: 100%;
 
                         .hint {
                             margin-top: 5px;
@@ -60,6 +64,7 @@
                     }
 
                     .sub-settings {
+                        margin-top: 10px;
                         flex-direction: column;
 
                         .specific-setting {

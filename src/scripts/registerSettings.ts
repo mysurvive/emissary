@@ -1,10 +1,8 @@
 import { MODNAME } from "src/constants.ts";
 import { FactionReputation } from "src/module/menus/reputationTracker/tabs/types.ts";
 import { ReputationSettingsMenu } from "src/module/menus/settings/reputationSettingsMenu.ts";
-import { FactionReputationRangeSetting } from "src/settings.ts";
 
 export function registerSettings(): void {
-    if (!game.settings) return;
     /**
      * GENERAL MODULE SETTINGS
      */
@@ -41,7 +39,7 @@ export function registerSettings(): void {
         hint: "Set the minimum and the maximum range for faction reputation.",
         scope: "world",
         config: false,
-        type: FactionReputationRangeSetting,
+        type: Object,
         default: { minimum: -50, maximum: 50 },
     });
 

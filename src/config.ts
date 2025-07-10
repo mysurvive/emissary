@@ -1,9 +1,9 @@
-import { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client-esm/applications/_types.mts";
 import { ReputationTracker } from "./module/menus/reputationTracker/reputationTracker.ts";
 import { registerSettings } from "./scripts/registerSettings.ts";
 import { registerTemplates } from "./scripts/registerTemplates.ts";
-import ApplicationV2 from "node_modules/fvtt-types/src/foundry/client-esm/applications/api/application.mts";
 import { registerHandlebarsHelpers } from "./scripts/registerHandlebarsHelpers.ts";
+import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
+import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 
 class EmissaryConfig {
     static initialize(): void {
@@ -32,7 +32,8 @@ class EmissaryConfig {
                 title: "Reputation Tracker",
                 visible: true,
                 button: true,
-                onClick: () => {
+                order: Object.keys(controls.tokens.tools).length,
+                onChange: () => {
                     new ReputationTracker().render(true);
                 },
             };
