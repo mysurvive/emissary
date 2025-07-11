@@ -114,8 +114,6 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 individual: constructor.reputation.individual,
             };
 
-            if (!game.user) return {};
-
             const mergedContext = foundry.utils.mergeObject(context, {
                 tabs: ReputationTabs,
                 reputationData: reputationData,

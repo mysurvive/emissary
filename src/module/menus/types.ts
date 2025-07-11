@@ -21,6 +21,7 @@ interface SettingsMenuSettingData {
     settingName: string;
     hint: string;
     type: string;
+    subtype?: string;
     id: string;
     settingValue: SettingValues;
 }

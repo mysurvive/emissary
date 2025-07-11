@@ -29,6 +29,7 @@ declare global {
         "emissary.factionReputationRange": { minimum: number; maximum: number };
         "emissary.individualReputation": any[]; // TODO: Type
         "emissary.factionReputationIncrement": FactionReputationIncrement[];
+        "emissary.factionReputationControls": any[]; //TODO: Type
     }
 
     interface SceneControls {
