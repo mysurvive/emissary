@@ -45,7 +45,7 @@
                         flex-direction: column;
                     }
 
-                    .reputation-increment {
+                    .array-setting {
                         display: flex;
                         flex-direction: row;
                         justify-content: space-between;
@@ -67,20 +67,22 @@
                         margin-top: 10px;
                         flex-direction: column;
 
-                        .array-setting {
-                            margin-bottom: 3px;
-                        }
-
                         .specific-setting {
                             display: flex;
                             justify-content: right;
                             align-items: center;
 
                             input {
-                                width: 60px;
                                 text-align: right;
                                 margin-left: 2px;
+                                margin-right: 10px;
+                                flex-grow: 1;
+                                max-width: 120px;
                             }
+                        }
+
+                        .array-setting {
+                            margin-bottom: 3px;
                         }
 
                         .add-row-button {

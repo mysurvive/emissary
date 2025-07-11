@@ -1,6 +1,8 @@
 <section class="tab {{tab.cssClass}}" data-group="primary" data-tab="faction-reputation">
-    {{#each reputationData.faction}}
-        {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs"}}
-    {{/each}}
+    {{#with reputationData.faction as |faction|}}
+        {{#each settings}}
+            {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs" faction=faction}}
+        {{/each}}
+    {{/with}}
     <button class="{{#if isGM}}visible{{/if}}" id="add-faction" data-action="addFaction">Add Faction</button>
 </section>

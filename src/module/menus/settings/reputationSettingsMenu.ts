@@ -71,13 +71,14 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             }
         });
 
-        game.settings?.set(MODNAME, "factionReputationRange", obj.factionReputationRange);
-        game.settings?.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);
+        game.settings.set(MODNAME, "factionReputationRange", obj.factionReputationRange);
+        game.settings.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);
     }
 
     static getSettings(): SettingsMenuObject {
-        const factionReputationRange = game.settings?.get(MODNAME, "factionReputationRange");
-        const factionReputationIncrement = game.settings?.get(MODNAME, "factionReputationIncrement");
+        const factionReputationRange = game.settings.get(MODNAME, "factionReputationRange");
+        const factionReputationIncrement = game.settings.get(MODNAME, "factionReputationIncrement");
+        const factionReputationControls = game.settings.get(MODNAME, "factionReputationControls");
         return {
             notoriety: [],
             individual: [],
@@ -92,9 +93,18 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                 {
                     settingName: "Reputation Increment",
                     hint: "Sets the increment for each reputation level.",
-                    type: "reputationIncrement",
+                    type: "settingsArray",
+                    subtype: "increment",
                     id: "factionReputationIncrement",
                     settingValue: factionReputationIncrement,
+                },
+                {
+                    settingName: "Reputation Controls",
+                    hint: "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags.",
+                    type: "settingsArray",
+                    subtype: "control",
+                    id: "factionReputationControls",
+                    settingValue: factionReputationControls,
                 },
             ],
         };
@@ -143,7 +153,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         const settingsArray = subsettingTarget?.querySelector(".settings-array");
         const lastChild = settingsArray?.lastElementChild;
         if (!lastChild) return;
-        console.log(lastChild);
         settingsArray?.insertAdjacentHTML(
             "beforeend",
             await renderTemplate("modules/emissary/templates/menu/partials/reputationIncrement.hbs", {

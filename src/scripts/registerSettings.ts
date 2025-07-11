@@ -49,13 +49,26 @@ export function registerSettings(): void {
         config: false,
         type: Array,
         default: [
-            { label: "furious", minimum: -50, maximum: -30, color: "#FF0000" },
-            { label: "angry", minimum: -29, maximum: -15, color: "#FF4500" },
-            { label: "upset", minimum: -14, maximum: -5, color: "#FFA500" },
-            { label: "neutral", minimum: -4, maximum: 4, color: "#FFFFFF" },
-            { label: "pleased", minimum: 5, maximum: 14, color: "#FFFF00" },
-            { label: "happy", minimum: 15, maximum: 29, color: "#9acd32" },
-            { label: "revered", minimum: 30, maximum: 50, color: "#008000" },
+            { label: "Furious", minimum: -50, maximum: -30, color: "#FF0000" },
+            { label: "Angry", minimum: -29, maximum: -15, color: "#FF4500" },
+            { label: "Upset", minimum: -14, maximum: -5, color: "#FFA500" },
+            { label: "Neutral", minimum: -4, maximum: 4, color: "#FFFFFF" },
+            { label: "Pleased", minimum: 5, maximum: 14, color: "#FFFF00" },
+            { label: "Happy", minimum: 15, maximum: 29, color: "#9acd32" },
+            { label: "Revered", minimum: 30, maximum: 50, color: "#008000" },
+        ],
+    });
+
+    game.settings.register(MODNAME, "factionReputationControls", {
+        name: "Faction Reputation Controls",
+        scope: "world",
+        config: false,
+        type: Array,
+        default: [
+            { label: "Terrible Impression", amount: -5, icon: "fa-regular fa-face-nose-steam" },
+            { label: "Poor Impression", amount: -2, icon: "fa-regular fa-face-angry" },
+            { label: "Good Impression", amount: 2, icon: "fa-regular fa-face-smile" },
+            { label: "Great Impression", amount: 5, icon: "fa-regular fa-face-smile-hearts" },
         ],
     });
 }

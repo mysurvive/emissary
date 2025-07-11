@@ -1,4 +1,4 @@
-<div class="setting{{#when type "eq" "reputationIncrement"}} vertical{{/when}}">
+<div class="setting{{#when type "eq" "settingsArray"}} vertical{{/when}}">
     <div class="info">
         <span class="title">
             {{settingName}}
@@ -21,17 +21,22 @@
             {{#when type "eq" "reputationRange"}}
                 {{>"modules/emissary/templates/menu/partials/reputationRange.hbs" this id=id}}
             {{/when}}
-            {{#when type "eq" "reputationIncrement"}}
+            {{#when type "eq" "settingsArray"}}
                 <div class="settings-array">
                     {{#each settingValue}}
-                        {{>"modules/emissary/templates/menu/partials/reputationIncrement.hbs" this id=../id}}
+                        {{#when ../subtype "eq" "increment"}}
+                            {{>"modules/emissary/templates/menu/partials/reputationIncrement.hbs" this id=../id}}
+                        {{/when}}
+                        {{#when ../subtype "eq" "control"}}
+                            {{>"modules/emissary/templates/menu/partials/reputationControls.hbs" this id=../id}}
+                        {{/when}}
                     {{/each}}
                 </div>
                 <button 
                     class="add-row-button" 
                     type="button" 
                     data-action="addRow" 
-                    data-tooltip="Add a new increment"
+                    data-tooltip="Add Row"
                 >
                     +
                 </button>
