@@ -8,7 +8,7 @@
                 parent-setting="{{id}}"
                 data-action="resetSettings" 
                 data-tooltip="Reset these settings to default."
-                type="reset"
+                type="button"
             >
                 <i class="fa-regular fa-rotate-left"></i>
             </button>
@@ -17,16 +17,24 @@
             {{hint}}
         </span>
 
-        <div class="sub-settings">
+        <div class="sub-settings" id="{{id}}">
             {{#when type "eq" "reputationRange"}}
                 {{>"modules/emissary/templates/menu/partials/reputationRange.hbs" this id=id}}
             {{/when}}
             {{#when type "eq" "reputationIncrement"}}
-                {{#each settingValue}}
-                    <div class="reputation-increment">
+                <div class="settings-array">
+                    {{#each settingValue}}
                         {{>"modules/emissary/templates/menu/partials/reputationIncrement.hbs" this id=../id}}
-                    </div>
-                {{/each}}
+                    {{/each}}
+                </div>
+                <button 
+                    class="add-row-button" 
+                    type="button" 
+                    data-action="addRow" 
+                    data-tooltip="Add a new increment"
+                >
+                    +
+                </button>
             {{/when}}
         </div>
     </div>
