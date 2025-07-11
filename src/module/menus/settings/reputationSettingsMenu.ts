@@ -114,7 +114,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             await defaultSetting.delete();
 
         const openRollouts = this.element.querySelectorAll(".rollout.active");
-        console.log(this.parts["form"]);
+
         const rerenderedApp = await this.render({ parts: ["form"] });
         for (const element of openRollouts) {
             const targetElement = rerenderedApp.element.querySelector(`#${element.id}`);
