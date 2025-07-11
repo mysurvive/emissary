@@ -5,6 +5,7 @@ import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/found
 import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
+const { renderTemplate } = foundry.applications.handlebars;
 
 class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     static override DEFAULT_OPTIONS = {
@@ -22,8 +23,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             width: 650,
         },
         actions: {
-            openRollout: ReputationSettingsMenu.openRollout,
-            resetSettings: ReputationSettingsMenu.resetSettings,
+            openRollout: this.#openRollout,
+            resetSettings: this.#resetSettings,
+            addRow: this.#addRow,
+            removeRow: this.#removeRow,
         },
     };
 
@@ -97,7 +100,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         };
     }
 
-    static openRollout(e: PointerEvent): void {
+    static #openRollout(e: PointerEvent): void {
         const target = e.target as HTMLDivElement;
         const rollout = target.getElementsByClassName("rollout") as HTMLCollectionOf<HTMLDivElement>;
         for (const r of rollout) {
@@ -105,7 +108,11 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         }
     }
 
-    static async resetSettings(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
+    static async #resetSettings(
+        this: ReputationSettingsMenu,
+        _event: PointerEvent,
+        target: HTMLElement,
+    ): Promise<void> {
         const parentSetting = target.getAttribute("parent-setting") as ClientSettings.KeyFor<"emissary">;
         if (!parentSetting) return;
 
@@ -120,6 +127,35 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             const targetElement = rerenderedApp.element.querySelector(`#${element.id}`);
             targetElement?.classList.add("active");
         }
+    }
+    /* protected override _preSyncPartState(
+        partId: string,
+        newElement: HTMLElement,
+        priorElement: HTMLElement,
+        state: HandlebarsApplicationMixin.PartState,
+    ): void {
+        super._preSyncPartState(partId, newElement, priorElement, state);
+    }*/
+
+    static async #addRow(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
+        const subsettingTarget = target.closest(".sub-settings");
+        if (!subsettingTarget) return;
+        const settingsArray = subsettingTarget?.querySelector(".settings-array");
+        const lastChild = settingsArray?.lastElementChild;
+        if (!lastChild) return;
+        console.log(lastChild);
+        settingsArray?.insertAdjacentHTML(
+            "beforeend",
+            await renderTemplate("modules/emissary/templates/menu/partials/reputationIncrement.hbs", {
+                id: subsettingTarget.getAttribute("id"),
+                key: Number(lastChild.getAttribute("key")) + 1,
+                color: "#FFFFFF",
+            }),
+        );
+    }
+
+    static #removeRow(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): void {
+        target.closest(".array-setting")?.remove();
     }
 }
 

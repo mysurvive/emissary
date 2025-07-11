@@ -31,7 +31,7 @@ export function registerHandlebarsHelpers(): void {
     });
 
     Handlebars.registerHelper("key", function (opts) {
-        return opts.data.key;
+        return opts.data.key ?? opts.data.root.key;
     });
 
     Handlebars.registerHelper("cap", function (op) {

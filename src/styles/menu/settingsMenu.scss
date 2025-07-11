@@ -48,7 +48,7 @@
                     .reputation-increment {
                         display: flex;
                         flex-direction: row;
-                        justify-content: space-evenly;
+                        justify-content: space-between;
                     }
 
                     .info {
@@ -67,6 +67,10 @@
                         margin-top: 10px;
                         flex-direction: column;
 
+                        .array-setting {
+                            margin-bottom: 3px;
+                        }
+
                         .specific-setting {
                             display: flex;
                             justify-content: right;
@@ -77,6 +81,16 @@
                                 text-align: right;
                                 margin-left: 2px;
                             }
+                        }
+
+                        .add-row-button {
+                            margin-left: auto;
+                            margin-right: 0;
+                        }
+
+                        button {
+                            width: 28px;
+                            height: 28px;
                         }
                     }
                 }
