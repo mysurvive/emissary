@@ -9,7 +9,7 @@ export class ReputationTabConstructor {
                 : ([] as FactionReputation[]),
             controls: game.settings.get(MODNAME, "factionReputationControls"),
         },
-        individual: game.settings ? (game.settings.get("emissary", "individualReputation") as any[]) : [],
+        interpersonal: game.settings ? (game.settings.get("emissary", "interpersonalReputation") as any[]) : [],
     };
 
     setFactionReputationLevels(): void {

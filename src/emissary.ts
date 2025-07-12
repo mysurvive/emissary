@@ -1,6 +1,6 @@
 import { EmissaryConfig } from "./config.ts";
 import { FactionReputation } from "./module/menus/reputationTracker/tabs/types.ts";
-import { FactionReputationIncrement } from "./module/menus/types.ts";
+import { ReputationIncrementSetting, ReputationRangeSetting } from "./module/menus/types.ts";
 import "./styles/emissary.scss";
 
 /**
@@ -26,10 +26,13 @@ declare global {
 
     interface SettingConfig {
         "emissary.factionReputation": typeof Array<FactionReputation>;
-        "emissary.factionReputationRange": { minimum: number; maximum: number };
-        "emissary.individualReputation": any[]; // TODO: Type
-        "emissary.factionReputationIncrement": FactionReputationIncrement[];
+        "emissary.factionReputationRange": typeof ReputationRangeSetting;
+        "emissary.factionReputationIncrement": ReputationIncrementSetting[];
         "emissary.factionReputationControls": any[]; //TODO: Type
+        "emissary.interpersonalReputation": any[]; // TODO: Type
+        "emissary.interpersonalReputationRange": typeof ReputationRangeSetting;
+        "emissary.interpersonalReputationIncrement": any[];
+        "emissary.interpersonalReputationControls": any[];
     }
 
     interface SceneControls {

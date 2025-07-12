@@ -128,19 +128,40 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     }
 
     static getSettings(): SettingsMenuObject {
-        const factionReputationRange = game.settings.get(MODNAME, "factionReputationRange");
-        const factionReputationIncrement = game.settings.get(MODNAME, "factionReputationIncrement");
-        const factionReputationControls = game.settings.get(MODNAME, "factionReputationControls");
         return {
             notoriety: [],
-            individual: [],
+            interpersonal: [
+                {
+                    settingName: "Reputation Range",
+                    hint: "Sets the maximum and minimum allowed reputation for interpersonal relationships.",
+                    type: "reputationRange",
+                    id: "interpersonalReputationRange",
+                    settingValue: game.settings.get(MODNAME, "interpersonalReputationRange"),
+                },
+                {
+                    settingName: "Reputation Increment",
+                    hint: "Sets the increment for each reputation level.",
+                    type: "settingsArray",
+                    subtype: "increment",
+                    id: "interpersonalReputationIncrement",
+                    settingValue: game.settings.get(MODNAME, "interpersonalReputationIncrement"),
+                },
+                {
+                    settingName: "Reputation Controls",
+                    hint: "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags.",
+                    type: "settingsArray",
+                    subtype: "control",
+                    id: "interpersonalReputationControls",
+                    settingValue: game.settings.get(MODNAME, "interpersonalReputationControls"),
+                },
+            ],
             faction: [
                 {
                     settingName: "Reputation Range",
                     hint: "Sets the maximum and minimum allowed reputation for factions.",
                     type: "reputationRange",
                     id: "factionReputationRange",
-                    settingValue: factionReputationRange,
+                    settingValue: game.settings.get(MODNAME, "factionReputationRange"),
                 },
                 {
                     settingName: "Reputation Increment",
@@ -148,7 +169,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "settingsArray",
                     subtype: "increment",
                     id: "factionReputationIncrement",
-                    settingValue: factionReputationIncrement,
+                    settingValue: game.settings.get(MODNAME, "factionReputationIncrement"),
                 },
                 {
                     settingName: "Reputation Controls",
@@ -156,7 +177,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "settingsArray",
                     subtype: "control",
                     id: "factionReputationControls",
-                    settingValue: factionReputationControls,
+                    settingValue: game.settings.get(MODNAME, "factionReputationControls"),
                 },
             ],
         };

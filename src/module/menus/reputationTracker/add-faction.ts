@@ -1,7 +1,7 @@
 import { DeepPartial } from "fvtt-types/utils";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import { MODNAME } from "src/constants.ts";
-import { FactionReputationIncrement } from "../types.ts";
+import { ReputationIncrementSetting } from "../types.ts";
 import { ReputationTracker } from "./reputationTracker.ts";
 import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
@@ -36,7 +36,7 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #onSubmit(_event, _form, formData): Promise<void> {
         if (!game.settings) return;
         const factionReputations = game.settings.get("emissary", "factionReputation") as Object[];
-        const repSettings: FactionReputationIncrement[] = game.settings.get(MODNAME, "factionReputationIncrement");
+        const repSettings: ReputationIncrementSetting[] = game.settings.get(MODNAME, "factionReputationIncrement");
 
         const factionInformation = formData.object;
 
