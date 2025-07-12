@@ -8,6 +8,10 @@
         overflow-y: auto;
     }
 
+    .preview.hidden {
+        display: none;
+    }
+
     .faction-item {
         border: 1px solid;
         border-radius: 5px;

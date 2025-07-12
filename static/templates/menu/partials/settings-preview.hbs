@@ -1,0 +1,38 @@
+<div>
+    <h1>Preview</h1>
+    <h2>Faction</h2>
+    <p>Click the element to cycle through previews</p>
+    {{#each preview.data.faction}}
+        <div
+            class="faction-item preview{{#when hidden "eq" "true"}} hidden{{/when}}"
+            style="border-color:{{color}}"
+            data-action="nextPreview"
+            index="{{index}}"
+            preview-type="faction-item"
+            id="faction-item-{{index}}"
+        >
+            <div class="faction-box">
+                <span class="item-name">{{name}}</span>
+                <span
+                    class="reputation-level"
+                    data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
+                >
+                    {{label}}
+                </span>
+            </div>
+            <div class="rollout active">
+                <span class="control-buttons">
+                    {{#each controls}}
+                        <button
+                            class="reputation-control"
+                            data-value="{{amount}}"
+                            data-tooltip="{{label}}"
+                            type="button"
+                        >
+                            <i class="{{icon}}"></i>
+                        </button>
+                    {{/each}}
+            </div>
+        </div>
+    {{/each}}
+</div>

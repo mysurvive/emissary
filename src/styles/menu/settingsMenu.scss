@@ -1,4 +1,8 @@
 .reputation-settings {
+    max-height: 900px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
     .setting-category {
         h1 {
             pointer-events: none;
