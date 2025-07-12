@@ -26,9 +26,9 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static override PARTS = {
         tabs: { template: "modules/emissary/templates/reputation-tracker/partials/tabs.hbs" },
-        "individual-reputation": {
-            template: "modules/emissary/templates/reputation-tracker/individual.hbs",
-            id: "individual-reputation",
+        "interpersonal-reputation": {
+            template: "modules/emissary/templates/reputation-tracker/interpersonal.hbs",
+            id: "interpersonal-reputation",
         },
         "faction-reputation": {
             template: "modules/emissary/templates/reputation-tracker/faction.hbs",
@@ -111,7 +111,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             constructor.setFactionReputationLevels();
             const reputationData = {
                 faction: constructor.reputation.faction,
-                individual: constructor.reputation.individual,
+                interpersonal: constructor.reputation.interpersonal,
             };
 
             const mergedContext = foundry.utils.mergeObject(context, {
