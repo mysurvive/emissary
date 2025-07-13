@@ -93,38 +93,45 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         return mergedContext;
     }
 
-    #formDataToSettings(formData): Object {
-        const obj: any = {};
-        obj.factionReputationIncrement = [];
-        obj.factionReputationControls = [];
-        obj.factionReputationRange = {};
+    #formDataToSettings(formData: Record<string, unknown>): Object {
         const keys = Object.keys(formData);
 
+        const settingsObject = {};
+
         keys.forEach((k) => {
-            const key = k.split("-");
-            switch (key[0]) {
-                case "factionReputationRange":
-                    obj.factionReputationRange[key[1]] = formData[k];
-                    break;
-                case "factionReputationIncrement":
-                    if (!obj.factionReputationIncrement[key[1]]) obj.factionReputationIncrement.push({});
-                    obj.factionReputationIncrement[key[1]][key[2]] = formData[k];
-                    break;
-                case "factionReputationControls":
-                    if (!obj.factionReputationControls[key[1]]) obj.factionReputationControls.push({});
-                    obj.factionReputationControls[key[1]][key[2]] = formData[k];
-                    break;
+            const [settingName, index, subSetting] = k.split("-");
+            const settingData = formData[k];
+
+            function isArray(x: string) {
+                return !isNaN(parseFloat(x));
+            }
+
+            if (isArray(index)) {
+                if (!settingsObject[settingName]) {
+                    settingsObject[settingName] = [{ [subSetting]: settingData }];
+                } else if (!settingsObject[settingName][index]) {
+                    settingsObject[settingName].push({ [subSetting]: settingData });
+                } else settingsObject[settingName][index][subSetting] = settingData;
+            } else {
+                if (!settingsObject[settingName]) {
+                    settingsObject[settingName] = { [index]: settingData };
+                } else {
+                    settingsObject[settingName][index] = settingData;
+                }
             }
         });
-        return obj;
+        return settingsObject;
     }
 
-    static async #onSubmit(this: ReputationSettingsMenu, _event, _form, formData): Promise<void> {
+    static async #onSubmit(this: ReputationSettingsMenu, _event, _form, formData: FormDataExtended): Promise<void> {
         const obj: any = this.#formDataToSettings(formData.object);
 
-        game.settings.set(MODNAME, "factionReputationRange", obj.factionReputationRange);
-        game.settings.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);
-        game.settings.set(MODNAME, "factionReputationControls", obj.factionReputationControls);
+        await game.settings.set(MODNAME, "factionReputationRange", obj.factionReputationRange);
+        await game.settings.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);
+        await game.settings.set(MODNAME, "factionReputationControls", obj.factionReputationControls);
+        await game.settings.set(MODNAME, "interpersonalReputationRange", obj.interpersonalReputationRange);
+        await game.settings.set(MODNAME, "interpersonalReputationIncrement", obj.interpersonalReputationIncrement);
+        await game.settings.set(MODNAME, "interpersonalReputationControls", obj.interpersonalReputationControls);
     }
 
     static getSettings(): SettingsMenuObject {
