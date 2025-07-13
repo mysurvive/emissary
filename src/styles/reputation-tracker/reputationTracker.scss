@@ -75,6 +75,13 @@
                     opacity: 0;
                     max-height: 0px;
                 }
+
+                &.no-transition {
+                    transition: none;
+                    transition-behavior: unset;
+                    @starting-style {
+                    }
+                }
             }
         }
     }

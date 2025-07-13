@@ -5,7 +5,10 @@ import { FactionReputation } from "./tabs/types.ts";
 import { DeepPartial } from "fvtt-types/utils";
 import { UUID } from "crypto";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
-import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
+import type {
+    ApplicationV2 as AV2,
+    HandlebarsApplicationMixin as hbs,
+} from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -36,6 +39,19 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         },
     };
 
+    protected override _preSyncPartState(
+        partId: string,
+        newElement: HTMLElement,
+        priorElement: HTMLElement,
+        state: hbs.PartState,
+    ): void {
+        const openRollouts = priorElement.querySelectorAll(".rollout.active");
+        for (const openRollout of openRollouts) {
+            newElement.querySelector(`#${openRollout.id}`)?.classList.add("active", "no-transition");
+        }
+        super._preSyncPartState(partId, newElement, priorElement, state);
+    }
+
     static addFaction(): void {
         new AddFactionMenu(this).render(true);
     }
@@ -64,6 +80,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             const target = e.target as HTMLDivElement;
             const rollout = target.getElementsByClassName("rollout") as HTMLCollectionOf<HTMLDivElement>;
             for (const r of rollout) {
+                if (r.classList.contains("no-transition")) r.classList.remove("no-transition");
                 r.classList.toggle("active");
             }
         }
