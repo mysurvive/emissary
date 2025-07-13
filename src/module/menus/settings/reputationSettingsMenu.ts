@@ -2,7 +2,10 @@ import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
 import { SettingsMenuObject } from "../types.ts";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
-import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
+import type {
+    ApplicationV2,
+    HandlebarsApplicationMixin as hbs,
+} from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 import { ReputationTabConstructor } from "../reputationTracker/tabs/reputationTabConstructor.ts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -91,6 +94,24 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         });
 
         return mergedContext;
+    }
+
+    protected override _onChangeForm(formConfig: ApplicationV2.FormConfiguration, event: Event): void {
+        this.render({ parts: ["preview"] });
+        super._onChangeForm(formConfig, event);
+    }
+
+    protected override _preSyncPartState(
+        partId: string,
+        newElement: HTMLElement,
+        priorElement: HTMLElement,
+        state: hbs.PartState,
+    ): void {
+        const openRollouts = priorElement.querySelectorAll(".rollout.active");
+        for (const openRollout of openRollouts) {
+            newElement.querySelector(`#${openRollout.id}`)?.classList.add("active", "no-transition");
+        }
+        super._preSyncPartState(partId, newElement, priorElement, state);
     }
 
     #formDataToSettings(formData: Record<string, unknown>): Object {
@@ -194,6 +215,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         const target = e.target as HTMLDivElement;
         const rollout = target.getElementsByClassName("rollout") as HTMLCollectionOf<HTMLDivElement>;
         for (const r of rollout) {
+            if (r.classList.contains("no-transition")) r.classList.remove("no-transition");
             r.classList.toggle("active");
         }
     }
@@ -210,32 +232,11 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         if (game.settings.storage.get("world")!.getSetting(`${MODNAME}.${parentSetting}`))
             await defaultSetting.delete();
 
-        const openRollouts = this.element.querySelectorAll(".rollout.active");
-
-        const rerenderedApp = await this.render({ parts: ["form"] });
-        for (const element of openRollouts) {
-            if (element.id) {
-                const targetElement = rerenderedApp.element.querySelector(`#${element.id}`);
-                targetElement?.classList.add("active");
-            }
-        }
+        await this.render({ parts: ["form"] });
 
         // The form isn't ready during _prepareContext, so the preview part has to be rendered after the form part is rendered
         await this.render({ parts: ["preview"] });
     }
-
-    protected override _onChangeForm(formConfig: ApplicationV2.FormConfiguration, event: Event): void {
-        this.render({ parts: ["preview"] });
-        super._onChangeForm(formConfig, event);
-    }
-    /* protected override _preSyncPartState(
-        partId: string,
-        newElement: HTMLElement,
-        priorElement: HTMLElement,
-        state: HandlebarsApplicationMixin.PartState,
-    ): void {
-        super._preSyncPartState(partId, newElement, priorElement, state);
-    }*/
 
     static async #addRow(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
         const subsettingTarget = target.closest(".sub-settings");
