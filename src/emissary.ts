@@ -1,6 +1,6 @@
 import { EmissaryConfig } from "./config.ts";
-import { FactionReputation } from "./module/menus/reputationTracker/tabs/types.ts";
-import { ReputationIncrementSetting, ReputationRangeSetting } from "./module/menus/types.ts";
+import { FactionReputation, IndividualReputation } from "./module/menus/reputationTracker/tabs/types.ts";
+import { ReputationControls, ReputationIncrement, ReputationRangeSetting } from "./module/menus/types.ts";
 import "./styles/emissary.scss";
 
 /**
@@ -14,7 +14,7 @@ import "./styles/emissary.scss";
 declare module "fvtt-types/configuration" {
     namespace Hooks {
         interface HookConfig {
-            [k: string]: (...args: any[]) => any;
+            getSceneControlButtons: (controls: Record<string, SceneControls.Control>) => void;
         }
     }
 }
@@ -25,14 +25,14 @@ declare global {
     }
 
     interface SettingConfig {
-        "emissary.factionReputation": typeof Array<FactionReputation>;
+        "emissary.factionReputation": FactionReputation[];
         "emissary.factionReputationRange": typeof ReputationRangeSetting;
-        "emissary.factionReputationIncrement": ReputationIncrementSetting[];
-        "emissary.factionReputationControls": any[]; //TODO: Type
-        "emissary.interpersonalReputation": any[]; // TODO: Type
+        "emissary.factionReputationIncrement": ReputationIncrement[];
+        "emissary.factionReputationControls": ReputationControls[];
+        "emissary.interpersonalReputation": IndividualReputation[]; // TODO: Type
         "emissary.interpersonalReputationRange": typeof ReputationRangeSetting;
-        "emissary.interpersonalReputationIncrement": any[];
-        "emissary.interpersonalReputationControls": any[];
+        "emissary.interpersonalReputationIncrement": ReputationIncrement[];
+        "emissary.interpersonalReputationControls": ReputationControls[];
     }
 
     interface SceneControls {

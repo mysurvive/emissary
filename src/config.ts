@@ -2,8 +2,6 @@ import { ReputationTracker } from "./module/menus/reputationTracker/reputationTr
 import { registerSettings } from "./scripts/registerSettings.ts";
 import { registerTemplates } from "./scripts/registerTemplates.ts";
 import { registerHandlebarsHelpers } from "./scripts/registerHandlebarsHelpers.ts";
-import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
-import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 
 class EmissaryConfig {
     static initialize(): void {
@@ -15,14 +13,6 @@ class EmissaryConfig {
         Hooks.on("init", () => {
             EmissaryConfig.registerEmissarySettings();
             EmissaryConfig.registerEmissaryTemplates();
-        });
-
-        Hooks.on("renderMenuChanges", async (x: ApplicationV2, options: ApplicationRenderOptions) => {
-            const currentTab = x.element.querySelector(".tab.active");
-            const tabId = currentTab?.id;
-            const y = await x.render(options);
-            const targetTab = y.element.querySelector(`#${tabId}`);
-            targetTab?.classList.add("active");
         });
 
         Hooks.on("getSceneControlButtons", (controls: Record<string, SceneControls.Control>) => {
