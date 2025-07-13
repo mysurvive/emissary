@@ -68,7 +68,6 @@ export function registerSettings(): void {
     });
 
     // Interpersonal Settings
-
     game.settings.register(MODNAME, "interpersonalReputation", {
         name: "Interpersonal Reputations",
         scope: "world",
