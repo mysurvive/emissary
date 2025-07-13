@@ -7,13 +7,6 @@ export type NavTabs = Record<string, ApplicationTab>;
 
 export type FooterButtons = Record<string, FormFooterButton>;
 
-export interface ReputationIncrementSetting {
-    label: string;
-    minimum: number;
-    maximum: number;
-    color: string;
-}
-
 export type SettingsMenuObject = Record<string, SettingCategory>;
 
 type SettingCategory = SettingsMenuSettingData[];
@@ -27,7 +20,7 @@ interface SettingsMenuSettingData {
     settingValue: SettingValues;
 }
 
-type SettingValues = ReputationRange | ReputationIncrementSetting[] | undefined;
+type SettingValues = ReputationControls[] | ReputationRange | ReputationIncrement[] | undefined;
 
 interface ReputationRange {
     minimum: number;
@@ -41,4 +34,26 @@ export class ReputationRangeSetting implements ReputationRange {
         this.minimum = args.minimum;
         this.maximum = args.maximum;
     }
+}
+
+export interface EmissarySettings {
+    factionReputationControls: ReputationControls[];
+    factionReputationIncrement: ReputationIncrement[];
+    factionReputationRange: ReputationRange;
+    interpersonalReputationControls: ReputationControls[];
+    interpersonalReputationIncrement: ReputationIncrement[];
+    interpersonalReputationRange: ReputationRange;
+}
+
+export interface ReputationControls {
+    label: string;
+    amount: number;
+    icon: string;
+}
+
+export interface ReputationIncrement {
+    label: string;
+    minimum: number;
+    maximum: number;
+    color: string;
 }

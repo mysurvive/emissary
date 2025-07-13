@@ -4,12 +4,10 @@ import { FactionReputation } from "./types.ts";
 export class ReputationTabConstructor {
     reputation = {
         faction: {
-            settings: game.settings
-                ? (game.settings.get(MODNAME, "factionReputation") as FactionReputation[])
-                : ([] as FactionReputation[]),
+            settings: game.settings.get(MODNAME, "factionReputation") as FactionReputation[],
             controls: game.settings.get(MODNAME, "factionReputationControls"),
         },
-        interpersonal: game.settings ? (game.settings.get("emissary", "interpersonalReputation") as any[]) : [],
+        interpersonal: game.settings.get("emissary", "interpersonalReputation"),
     };
 
     setFactionReputationLevels(): void {

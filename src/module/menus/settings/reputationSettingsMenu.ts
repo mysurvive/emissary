@@ -1,6 +1,6 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
-import { SettingsMenuObject } from "../types.ts";
+import { EmissarySettings, SettingsMenuObject } from "../types.ts";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import type {
     ApplicationV2,
@@ -63,7 +63,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         } else if (this.form) {
             this.previewSettings.data.faction = [];
             const formData = Object.fromEntries(new FormData(this.form));
-            const obj: any = this.#formDataToSettings(formData);
+            const obj: EmissarySettings = this.#formDataToSettings(formData);
             this.previewSettings.settings.faction.controls = obj.factionReputationControls;
             this.previewSettings.settings.faction.increments = obj.factionReputationIncrement;
         }
@@ -114,10 +114,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         super._preSyncPartState(partId, newElement, priorElement, state);
     }
 
-    #formDataToSettings(formData: Record<string, unknown>): Object {
+    #formDataToSettings(formData: Record<string, unknown>): EmissarySettings {
         const keys = Object.keys(formData);
 
-        const settingsObject = {};
+        const tmpObj = {};
 
         keys.forEach((k) => {
             const [settingName, index, subSetting] = k.split("-");
@@ -128,24 +128,27 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             }
 
             if (isArray(index)) {
-                if (!settingsObject[settingName]) {
-                    settingsObject[settingName] = [{ [subSetting]: settingData }];
-                } else if (!settingsObject[settingName][index]) {
-                    settingsObject[settingName].push({ [subSetting]: settingData });
-                } else settingsObject[settingName][index][subSetting] = settingData;
+                if (!tmpObj[settingName]) {
+                    tmpObj[settingName] = [{ [subSetting]: settingData }];
+                } else if (!tmpObj[settingName][index]) {
+                    tmpObj[settingName].push({ [subSetting]: settingData });
+                } else tmpObj[settingName][index][subSetting] = settingData;
             } else {
-                if (!settingsObject[settingName]) {
-                    settingsObject[settingName] = { [index]: settingData };
+                if (!tmpObj[settingName]) {
+                    tmpObj[settingName] = { [index]: settingData };
                 } else {
-                    settingsObject[settingName][index] = settingData;
+                    tmpObj[settingName][index] = settingData;
                 }
             }
         });
-        return settingsObject;
+
+        return tmpObj as EmissarySettings;
     }
 
     static async #onSubmit(this: ReputationSettingsMenu, _event, _form, formData: FormDataExtended): Promise<void> {
-        const obj: any = this.#formDataToSettings(formData.object);
+        const obj: EmissarySettings = this.#formDataToSettings(formData.object);
+
+        console.log(obj);
 
         await game.settings.set(MODNAME, "factionReputationRange", obj.factionReputationRange);
         await game.settings.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);

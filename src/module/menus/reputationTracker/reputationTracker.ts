@@ -56,7 +56,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         new AddFactionMenu(this).render(true);
     }
 
-    static async deleteFaction(e: PointerEvent): Promise<void> {
+    static async deleteFaction(this: ReputationTracker, e: PointerEvent): Promise<void> {
         if (!game.settings) return;
         const target = e.target as HTMLButtonElement;
         const uuid = target.getAttribute("faction-uuid");
@@ -68,7 +68,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
         await game.settings.set("emissary", "factionReputation", factionReputation);
 
-        Hooks.call("renderMenuChanges", this, {
+        this.render({
             force: true,
             parts: ["faction-reputation"],
         });
@@ -86,7 +86,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
     }
 
-    static async updateReputation(_e: never, t: HTMLButtonElement): Promise<void> {
+    static async updateReputation(this: ReputationTracker, _e: never, t: HTMLButtonElement): Promise<void> {
         if (!game.settings) return;
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("faction-uuid") as UUID;
@@ -112,7 +112,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
         await game.settings.set("emissary", "factionReputation", factionReputation);
 
-        Hooks.call("renderMenuChanges", this, {
+        this.render({
             force: true,
             parts: ["faction-reputation"],
         });
@@ -139,11 +139,6 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
             return mergedContext;
         }
-    }
-
-    protected override _preparePartContext(partId: string, context: any): Promise<any> {
-        context.tab = context.tabs[partId];
-        return context;
     }
 }
 
