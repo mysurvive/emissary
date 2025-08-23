@@ -1,5 +1,19 @@
-import { UUID } from "crypto";
+import fields = foundry.data.fields;
 
-export type FactionReputation = { name: string; id: UUID; repLevel: ReputationLevels; repNumber: number };
-export type IndividualReputation = { name: string; id: UUID; repLevel: ReputationLevels; repNumber: number };
-type ReputationLevels = { color: string; label: string };
+export const FactionReputation = new fields.ArrayField(
+    new fields.SchemaField({
+        name: new fields.StringField(),
+        id: new fields.StringField(),
+        repLevel: new fields.SchemaField({ color: new fields.StringField(), label: new fields.StringField() }),
+        repNumber: new fields.NumberField(),
+    }),
+);
+
+export const IndividualReputation = new fields.ArrayField(
+    new fields.SchemaField({
+        name: new fields.StringField(),
+        id: new fields.StringField(),
+        repLevel: new fields.SchemaField({ color: new fields.StringField(), label: new fields.StringField() }),
+        repNumber: new fields.NumberField(),
+    }),
+);

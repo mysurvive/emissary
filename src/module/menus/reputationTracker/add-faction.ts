@@ -1,7 +1,7 @@
 import { DeepPartial } from "fvtt-types/utils";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import { MODNAME } from "src/constants.ts";
-import { ReputationIncrementSetting } from "../types.ts";
+
 import { ReputationTracker } from "./reputationTracker.ts";
 import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 
@@ -34,13 +34,14 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 
     static async #onSubmit(_event, _form, formData): Promise<void> {
-        if (!game.settings) return;
-        const factionReputations = game.settings.get("emissary", "factionReputation") as Object[];
-        const repSettings: ReputationIncrementSetting[] = game.settings.get(MODNAME, "factionReputationIncrement");
-
+        const factionReputations = game.settings.get(MODNAME, "factionReputation");
+        const reputationIncrements = game.settings.get(MODNAME, "factionReputationIncrement");
         const factionInformation = formData.object;
 
-        for (const repLevel of repSettings) {
+        if (!reputationIncrements) return;
+        if (!factionReputations) return;
+
+        for (const repLevel of Object.values(reputationIncrements)) {
             if (factionInformation.repNumber <= repLevel.maximum && factionInformation.repNumber >= repLevel.minimum) {
                 factionInformation.repLevel = repLevel.label;
             } else continue;
@@ -48,13 +49,14 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         factionInformation.id = crypto.randomUUID();
 
-        factionReputations.push(factionInformation);
+        const factionReputationsArray = Object.values(factionReputations);
+        factionReputationsArray.push(factionInformation);
 
-        await game.settings.set("emissary", "factionReputation", factionReputations);
+        await game.settings.set("emissary", "factionReputation", factionReputationsArray);
     }
 
     protected override _onClose(options: ApplicationRenderOptions): void {
-        Hooks.call("renderMenuChanges", this.parent, { force: true, parts: ["faction-reputation"] });
+        this.parent.render({ force: true });
         super._onClose(options);
     }
 

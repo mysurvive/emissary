@@ -1,7 +1,12 @@
 import { MODNAME } from "src/constants.ts";
-import { FactionReputation } from "src/module/menus/reputationTracker/tabs/types.ts";
+import { FactionReputation, IndividualReputation } from "src/module/menus/reputationTracker/tabs/types.ts";
 import { ReputationSettingsMenu } from "src/module/menus/settings/reputationSettingsMenu.ts";
-import { ReputationRangeSetting } from "src/module/menus/types.ts";
+import {
+    reputationControls,
+    reputationIncrements,
+    reputationRange,
+    reputationSettingsTemplates,
+} from "src/module/menus/types.ts";
 
 export function registerSettings(): void {
     /**
@@ -21,11 +26,12 @@ export function registerSettings(): void {
      */
 
     // Faction Settings
+
     game.settings.register(MODNAME, "factionReputation", {
         name: "Faction Reputations",
         scope: "world",
         config: false,
-        type: Array<FactionReputation>,
+        type: FactionReputation,
         default: [],
     });
 
@@ -34,23 +40,23 @@ export function registerSettings(): void {
         hint: "Set the minimum and the maximum range for faction reputation.",
         scope: "world",
         config: false,
-        type: ReputationRangeSetting,
-        default: { minimum: -50, maximum: 50 },
+        type: reputationRange,
+        default: { minimum: -100, maximum: 100 },
     });
 
     game.settings.register(MODNAME, "factionReputationIncrement", {
         name: "Faction Reputation Increment",
         scope: "world",
         config: false,
-        type: Array,
+        type: reputationIncrements,
         default: [
-            { label: "Furious", minimum: -50, maximum: -30, color: "#FF0000" },
-            { label: "Angry", minimum: -29, maximum: -15, color: "#FF4500" },
-            { label: "Upset", minimum: -14, maximum: -5, color: "#FFA500" },
-            { label: "Neutral", minimum: -4, maximum: 4, color: "#FFFFFF" },
-            { label: "Pleased", minimum: 5, maximum: 14, color: "#FFFF00" },
-            { label: "Happy", minimum: 15, maximum: 29, color: "#9acd32" },
-            { label: "Revered", minimum: 30, maximum: 50, color: "#008000" },
+            { label: "Furious", minimum: -100, maximum: -50, color: "#FF0000" },
+            { label: "Angry", minimum: -49, maximum: -25, color: "#FF4500" },
+            { label: "Upset", minimum: -24, maximum: -15, color: "#FFA500" },
+            { label: "Neutral", minimum: -14, maximum: 14, color: "#FFFFFF" },
+            { label: "Pleased", minimum: 15, maximum: 24, color: "#FFFF00" },
+            { label: "Happy", minimum: 25, maximum: 49, color: "#9acd32" },
+            { label: "Revered", minimum: 50, maximum: 100, color: "#008000" },
         ],
     });
 
@@ -58,7 +64,7 @@ export function registerSettings(): void {
         name: "Faction Reputation Controls",
         scope: "world",
         config: false,
-        type: Array,
+        type: reputationControls,
         default: [
             { label: "Terrible Impression", amount: -5, icon: "fa-regular fa-face-nose-steam" },
             { label: "Poor Impression", amount: -2, icon: "fa-regular fa-face-angry" },
@@ -68,11 +74,12 @@ export function registerSettings(): void {
     });
 
     // Interpersonal Settings
+
     game.settings.register(MODNAME, "interpersonalReputation", {
         name: "Interpersonal Reputations",
         scope: "world",
         config: false,
-        type: Array,
+        type: IndividualReputation,
         default: [],
     });
 
@@ -81,7 +88,7 @@ export function registerSettings(): void {
         hint: "Set the minimum and the maximum range for interpersonal reputation.",
         scope: "world",
         config: false,
-        type: ReputationRangeSetting,
+        type: reputationRange,
         default: { minimum: -10, maximum: 10 },
     });
 
@@ -89,7 +96,7 @@ export function registerSettings(): void {
         name: "Interpersonal Reputation Increment",
         scope: "world",
         config: false,
-        type: Array,
+        type: reputationIncrements,
         default: [
             { label: "Hated", minimum: -10, maximum: -5, color: "#FF0000" },
             { label: "Unhappy", minimum: -4, maximum: -2, color: "#FFA500" },
@@ -103,12 +110,20 @@ export function registerSettings(): void {
         name: "Interpersonal Reputation Controls",
         scope: "world",
         config: false,
-        type: Array,
+        type: reputationControls,
         default: [
             { label: "Terrible Impression", amount: -5, icon: "fa-regular fa-face-nose-steam" },
             { label: "Poor Impression", amount: -2, icon: "fa-regular fa-face-angry" },
             { label: "Good Impression", amount: 2, icon: "fa-regular fa-face-smile" },
             { label: "Great Impression", amount: 5, icon: "fa-regular fa-face-smile-hearts" },
         ],
+    });
+
+    // Data Settings
+
+    game.settings.register(MODNAME, "reputationSettingsTemplates", {
+        scope: "world",
+        config: false,
+        type: reputationSettingsTemplates,
     });
 }

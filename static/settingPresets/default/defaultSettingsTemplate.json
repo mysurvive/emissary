@@ -1,0 +1,135 @@
+{
+    "name": "Default Settings Template",
+    "id": "default",
+    "description": "The default settings template for the Emissary module.",
+    "settings": {
+        "factionReputationControls": [
+            {
+                "amount": -5,
+                "icon": "fa-regular fa-face-nose-steam",
+                "label": "Terrible Impression"
+            },
+            {
+                "label": "Poor Impression",
+                "amount": -2,
+                "icon": "fa-regular fa-face-angry"
+            },
+            {
+                "label": "Good Impression",
+                "amount": 2,
+                "icon": "fa-regular fa-face-smile"
+            },
+            {
+                "label": "Great Impression",
+                "amount": 5,
+                "icon": "fa-regular fa-face-smile-hearts"
+            }
+        ],
+        "factionReputationIncrements": [
+            {
+                "label": "Furious",
+                "minimum": -100,
+                "maximum": -50,
+                "color": "#FF0000"
+            },
+            {
+                "label": "Angry",
+                "minimum": -49,
+                "maximum": -25,
+                "color": "#FF4500"
+            },
+            {
+                "label": "Upset",
+                "minimum": -24,
+                "maximum": -15,
+                "color": "#FFA500"
+            },
+            {
+                "label": "Neutral",
+                "minimum": -14,
+                "maximum": 14,
+                "color": "#FFFFFF"
+            },
+            {
+                "label": "Pleased",
+                "minimum": 15,
+                "maximum": 24,
+                "color": "#FFFF00"
+            },
+            {
+                "label": "Happy",
+                "minimum": 25,
+                "maximum": 49,
+                "color": "#9acd32"
+            },
+            {
+                "label": "Revered",
+                "minimum": 50,
+                "maximum": 100,
+                "color": "#008000"
+            }
+        ],
+        "factionReputationRange": {
+            "minimum": -100,
+            "maximum": 100
+        },
+        "interpersonalReputationControls": [
+            {
+                "label": "Terrible Impression",
+                "amount": -5,
+                "icon": "fa-regular fa-face-nose-steam"
+            },
+            {
+                "label": "Poor Impression",
+                "amount": -2,
+                "icon": "fa-regular fa-face-angry"
+            },
+            {
+                "label": "Good Impression",
+                "amount": 2,
+                "icon": "fa-regular fa-face-smile"
+            },
+            {
+                "label": "Great Impression",
+                "amount": 5,
+                "icon": "fa-regular fa-face-smile-hearts"
+            }
+        ],
+        "interpersonalReputationIncrements": [
+            {
+                "label": "Hated",
+                "minimum": -10,
+                "maximum": -5,
+                "color": "#FF0000"
+            },
+            {
+                "label": "Unhappy",
+                "minimum": -4,
+                "maximum": -2,
+                "color": "#FFA500"
+            },
+            {
+                "label": "Neutral",
+                "minimum": -1,
+                "maximum": 1,
+                "color": "#FFFFFF"
+            },
+            {
+                "label": "Happy",
+                "minimum": 2,
+                "maximum": 4,
+                "color": "#9acd32"
+            },
+            {
+                "label": "Honored",
+                "minimum": 5,
+                "maximum": 10,
+                "color": "#008000"
+            }
+        ],
+        "interpersonalReputationRange": {
+            "minimum": -10,
+            "maximum": 10
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import { DeepPartial } from "fvtt-types/utils";
-import { MODNAME } from "src/constants.ts";
+import { MODNAME, settingKeys } from "src/constants.ts";
 import { EmissarySettings, SettingsMenuObject } from "../types.ts";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import type {
@@ -7,12 +7,20 @@ import type {
     HandlebarsApplicationMixin as hbs,
 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 import { ReputationTabConstructor } from "../reputationTracker/tabs/reputationTabConstructor.ts";
+import { TemplateManagerMenu } from "../templateManager/templateManager.ts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 
 class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     previewSettings: any = { settings: { faction: {} }, data: { faction: [] } };
+    declare template;
+
+    constructor(template?) {
+        super();
+        this.template = template;
+    }
+
     static override DEFAULT_OPTIONS = {
         id: "reputation-settings-menu",
         tag: "form",
@@ -33,10 +41,16 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             addRow: this.#addRow,
             removeRow: this.#removeRow,
             nextPreview: this.#nextPreview,
+            exportSettings: this.#exportSettings,
+            openTemplateManager: this.#openTemplateManager,
         },
     };
 
     static override PARTS = {
+        settingsTemplates: {
+            template: "modules/emissary/templates/menu/partials/settings-templates.hbs",
+            classes: ["emissary", "reputation-settings"],
+        },
         form: {
             template: "modules/emissary/templates/menu/reputationSettingsMenu.hbs",
             classes: ["emissary", "reputation-settings"],
@@ -85,12 +99,13 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
 
         this.previewSettings.data.faction[0].hidden = false;
 
-        const settings = ReputationSettingsMenu.getSettings();
-
         const mergedContext = foundry.utils.mergeObject(context, {
-            settings: settings,
+            settings: this.getSettings(),
             preview: this.previewSettings,
-            buttons: [{ type: "submit", icon: "fa-solid fa-save", label: "Submit" }], // TODO: i18n
+            footerButtons: [
+                { type: "button", icon: "fa-solid fa-upload", label: "Export Settings", action: "exportSettings" },
+                { type: "submit", icon: "fa-solid fa-save", label: "Submit" },
+            ], // TODO: i18n
         });
 
         return mergedContext;
@@ -148,17 +163,15 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     static async #onSubmit(this: ReputationSettingsMenu, _event, _form, formData: FormDataExtended): Promise<void> {
         const obj: EmissarySettings = this.#formDataToSettings(formData.object);
 
-        console.log(obj);
-
-        await game.settings.set(MODNAME, "factionReputationRange", obj.factionReputationRange);
-        await game.settings.set(MODNAME, "factionReputationIncrement", obj.factionReputationIncrement);
-        await game.settings.set(MODNAME, "factionReputationControls", obj.factionReputationControls);
-        await game.settings.set(MODNAME, "interpersonalReputationRange", obj.interpersonalReputationRange);
-        await game.settings.set(MODNAME, "interpersonalReputationIncrement", obj.interpersonalReputationIncrement);
-        await game.settings.set(MODNAME, "interpersonalReputationControls", obj.interpersonalReputationControls);
+        for (const setting in obj) {
+            if (settingKeys.includes(setting)) {
+                const s = setting as ClientSettings.KeyFor<"emissary">;
+                await game.settings.set(MODNAME, s, obj[s]);
+            }
+        }
     }
 
-    static getSettings(): SettingsMenuObject {
+    getSettings(): SettingsMenuObject {
         return {
             notoriety: [],
             interpersonal: [
@@ -167,7 +180,9 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     hint: "Sets the maximum and minimum allowed reputation for interpersonal relationships.",
                     type: "reputationRange",
                     id: "interpersonalReputationRange",
-                    settingValue: game.settings.get(MODNAME, "interpersonalReputationRange"),
+                    settingValue:
+                        this.template?.interpersonalReputationRange ??
+                        game.settings.get(MODNAME, "interpersonalReputationRange"),
                 },
                 {
                     settingName: "Reputation Increment",
@@ -175,7 +190,9 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "settingsArray",
                     subtype: "increment",
                     id: "interpersonalReputationIncrement",
-                    settingValue: game.settings.get(MODNAME, "interpersonalReputationIncrement"),
+                    settingValue:
+                        this.template?.interpersonalReputationIncrement ??
+                        game.settings.get(MODNAME, "interpersonalReputationIncrement"),
                 },
                 {
                     settingName: "Reputation Controls",
@@ -183,7 +200,9 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "settingsArray",
                     subtype: "control",
                     id: "interpersonalReputationControls",
-                    settingValue: game.settings.get(MODNAME, "interpersonalReputationControls"),
+                    settingValue:
+                        this.template?.interpersonalReputationControls ??
+                        game.settings.get(MODNAME, "interpersonalReputationControls"),
                 },
             ],
             faction: [
@@ -192,7 +211,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     hint: "Sets the maximum and minimum allowed reputation for factions.",
                     type: "reputationRange",
                     id: "factionReputationRange",
-                    settingValue: game.settings.get(MODNAME, "factionReputationRange"),
+                    settingValue:
+                        this.template?.factionReputationRange ?? game.settings.get(MODNAME, "factionReputationRange"),
                 },
                 {
                     settingName: "Reputation Increment",
@@ -200,7 +220,9 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "settingsArray",
                     subtype: "increment",
                     id: "factionReputationIncrement",
-                    settingValue: game.settings.get(MODNAME, "factionReputationIncrement"),
+                    settingValue:
+                        this.template?.factionReputationIncrement ??
+                        game.settings.get(MODNAME, "factionReputationIncrement"),
                 },
                 {
                     settingName: "Reputation Controls",
@@ -208,7 +230,9 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "settingsArray",
                     subtype: "control",
                     id: "factionReputationControls",
-                    settingValue: game.settings.get(MODNAME, "factionReputationControls"),
+                    settingValue:
+                        this.template?.factionReputationControls ??
+                        game.settings.get(MODNAME, "factionReputationControls"),
                 },
             ],
         };
@@ -272,6 +296,16 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         nextDiv.classList.toggle("hidden");
         this.previewSettings.data.faction[currentIndex].hidden = "true";
         this.previewSettings.data.faction[nextIndex].hidden = "false";
+    }
+
+    static #openTemplateManager(): void {
+        new TemplateManagerMenu(this).render(true);
+    }
+
+    static #exportSettings(this: ReputationSettingsMenu): void {
+        if (!this.form) return;
+        const settings = JSON.stringify(this.#formDataToSettings(Object.fromEntries(new FormData(this.form))));
+        foundry.utils.saveDataToFile(settings, "application/json", "settings");
     }
 }
 
