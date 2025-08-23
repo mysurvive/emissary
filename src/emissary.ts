@@ -1,6 +1,11 @@
 import { EmissaryConfig } from "./config.ts";
 import { FactionReputation, IndividualReputation } from "./module/menus/reputationTracker/tabs/types.ts";
-import { ReputationControls, ReputationIncrement, ReputationRangeSetting } from "./module/menus/types.ts";
+import {
+    reputationControls,
+    reputationIncrements,
+    reputationRange,
+    reputationSettingsTemplates,
+} from "./module/menus/types.ts";
 import "./styles/emissary.scss";
 
 /**
@@ -17,25 +22,21 @@ declare module "fvtt-types/configuration" {
             getSceneControlButtons: (controls: Record<string, SceneControls.Control>) => void;
         }
     }
+    interface SettingConfig {
+        "emissary.factionReputation": typeof FactionReputation;
+        "emissary.factionReputationRange": typeof reputationRange;
+        "emissary.factionReputationIncrement": typeof reputationIncrements;
+        "emissary.factionReputationControls": typeof reputationControls;
+        "emissary.interpersonalReputation": typeof IndividualReputation;
+        "emissary.interpersonalReputationRange": typeof reputationRange;
+        "emissary.interpersonalReputationIncrement": typeof reputationIncrements;
+        "emissary.interpersonalReputationControls": typeof reputationControls;
+        "emissary.reputationSettingsTemplates": typeof reputationSettingsTemplates;
+    }
 }
 
 declare global {
     interface AssumeHookRan {
         ready: true;
-    }
-
-    interface SettingConfig {
-        "emissary.factionReputation": FactionReputation[];
-        "emissary.factionReputationRange": typeof ReputationRangeSetting;
-        "emissary.factionReputationIncrement": ReputationIncrement[];
-        "emissary.factionReputationControls": ReputationControls[];
-        "emissary.interpersonalReputation": IndividualReputation[]; // TODO: Type
-        "emissary.interpersonalReputationRange": typeof ReputationRangeSetting;
-        "emissary.interpersonalReputationIncrement": ReputationIncrement[];
-        "emissary.interpersonalReputationControls": ReputationControls[];
-    }
-
-    interface SceneControls {
-        "Control.tools": Record<string, SceneControls.Tool>;
     }
 }

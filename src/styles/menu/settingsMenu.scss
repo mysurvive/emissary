@@ -1,7 +1,21 @@
+@use "../generic/form-footer.scss";
+
 .reputation-settings {
     max-height: 900px;
     overflow-x: hidden;
     overflow-y: auto;
+
+    .template-selection,
+    .template-import {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 3px;
+
+        button {
+            margin-left: 3px;
+            width: 200px;
+        }
+    }
 
     .setting-category {
         h1 {

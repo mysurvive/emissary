@@ -8,6 +8,10 @@
         },
         "menu": {
             "reputationTracker": {
+                "tab": {
+                    "faction": "Faction",
+                    "interpersonal": "Interpersonal"
+                },
                 "currentReputation": "Current reputation",
                 "buttons": {
                     "favors": {

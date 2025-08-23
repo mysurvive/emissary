@@ -26,5 +26,14 @@
                     <i class="{{icon}}"></i>
                 </button>
             {{/each}}
+        </span>
+        <button
+            class="remove-faction"
+            data-action="deleteFaction"
+            faction-uuid="{{id}}"
+            data-tooltip="{{localize 'emissary.menu.reputationTracker.buttons.remove'}}"
+        >
+            <i class="fa-regular fa-trash"></i>
+        </button>
     </div>
 </div>
