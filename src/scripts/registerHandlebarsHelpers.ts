@@ -37,4 +37,8 @@ export function registerHandlebarsHelpers(): void {
     Handlebars.registerHelper("cap", function (op) {
         return String(op).charAt(0).toUpperCase() + String(op).slice(1);
     });
+
+    Handlebars.registerHelper("concat", (...params: unknown[]): string => {
+        return params.slice(0, -1).join("");
+    });
 }

@@ -17,7 +17,7 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
         id: "template-manager-menu",
         tag: "div",
         window: {
-            title: "Emissary Template Manager",
+            title: "emissary.menu.templateManager.title",
         },
         position: {
             width: 650,
@@ -66,7 +66,7 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
                 this.parent.template = chosenTemplate.settings;
                 this.close();
             } else {
-                throw "Error with pre-built template.";
+                throw game.i18n.localize("emissary.menu.templateManager.errors.preBuiltTemplate.generic");
             }
         } catch (error) {
             ui.notifications.error(error);
@@ -80,7 +80,7 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
                 this.parent.template = JSON.parse(await foundry.utils.readTextFromFile(fileInput.files[0]));
                 this.close();
             } else {
-                throw "No file selected.";
+                throw game.i18n.localize("emissary.menu.templateManager.errors.importTemplate.noFile");
             }
         } catch (error) {
             ui.notifications.error(error);

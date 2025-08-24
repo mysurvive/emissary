@@ -19,7 +19,7 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         classes: ["emissary", "add-faction"],
         tag: "form",
         position: { width: 400, height: 170 },
-        window: { title: "Add Faction" },
+        window: { title: "emissary.menu.addFaction.title" },
         form: { submitOnChange: false, closeOnSubmit: true, handler: this.#onSubmit },
     };
 
@@ -66,7 +66,7 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const context = await super._prepareContext(options);
 
         const mergedContext = foundry.utils.mergeObject(context, {
-            buttons: { submit: { type: "submit", label: "Submit" } }, // TODO: i18n
+            buttons: { submit: { type: "submit", label: "emissary.menu.generic.buttons.submit" } },
         });
 
         return mergedContext;

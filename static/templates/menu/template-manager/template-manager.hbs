@@ -1,6 +1,6 @@
 <section>
     <div>
-        <h1>Select a template</h1>
+        <h1>{{localize "emissary.menu.templateManager.labels.selectTemplate"}}</h1>
         <div class="template-selection">
             <select name="template" id="settings-template-select">
                 {{#each templatesOption as |option|}}
@@ -8,17 +8,19 @@
                 {{/each}}
             </select>
             <span id="settings-template-description"></span>
-            <button type="button" data-action="applyTemplate">Apply Template</button>
+            <button type="button" data-action="applyTemplate">{{localize
+                    "emissary.menu.templateManager.buttons.applyTemplate"
+                }}</button>
         </div>
     </div>
-    <span><h1>OR</h1></span>
+    <span><h1>{{localize "emissary.menu.templateManager.labels.or"}}</h1></span>
     <div>
-        <h1>Import a custom template</h1>
+        <h1>{{localize "emissary.menu.templateManager.labels.importTemplate"}}</h1>
         <div class="template-import">
             <input type="file" id="settingsFile" />
             <button type="button" data-action="importTemplate">
                 <i class="fa-solid fa-download"></i>
-                Import
+                {{localize "emissary.menu.templateManager.buttons.importTemplate"}}
             </button>
         </div>
     </div>

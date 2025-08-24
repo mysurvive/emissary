@@ -1,7 +1,7 @@
 <div class="setting{{#when type "eq" "settingsArray"}} vertical{{/when}}">
     <div class="info">
         <span class="title">
-            {{settingName}}
+            {{localize settingName}}
             <button 
                 class="reset-button" 
                 id="reset-button"
@@ -14,7 +14,7 @@
             </button>
         </span>
         <span class="hint">
-            {{hint}}
+            {{localize hint}}
         </span>
 
         <div class="sub-settings" id="{{id}}">
@@ -36,7 +36,7 @@
                     class="add-row-button" 
                     type="button" 
                     data-action="addRow" 
-                    data-tooltip="Add Row"
+                    data-tooltip={{localize "emissary.menu.reputationSettings.buttons.addRow"}}
                 >
                     +
                 </button>
