@@ -1,0 +1,35 @@
+.emissary {
+    .hr-text {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+
+        span {
+            padding: 0 15px;
+            white-space: nowrap;
+        }
+
+        &::before,
+        &::after {
+            content: "";
+            flex-grow: 1;
+            height: 1px;
+            background-color: #ccc;
+            margin: 0 5px;
+        }
+    }
+
+    .template-selection,
+    .template-import {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 3px;
+        align-items: center;
+
+        button {
+            margin-left: 3px;
+            width: 200px;
+        }
+    }
+}

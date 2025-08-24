@@ -31,6 +31,7 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
     static override PARTS = {
         div: {
             template: "modules/emissary/templates/menu/template-manager/template-manager.hbs",
+            classes: ["emissary", "template-manager"],
         },
     };
 
