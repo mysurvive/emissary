@@ -1,21 +1,26 @@
 <div class="array-setting reputation-increment" key="{{key}}" id="{{id}}">
     <div class="specific-setting">
-        <label for="{{id}}-{{key}}-label">Label</label>:
+        <label for="{{id}}-{{key}}-label">{{localize "emissary.menu.reputationSettings.labels.label"}}</label>:
         <input name="{{id}}-{{key}}-label" type="text" value="{{this.label}}" required />
     </div>
     <div class="specific-setting">
-        <label for="{{id}}-{{key}}-minimum">Minimum</label>:
+        <label for="{{id}}-{{key}}-minimum">{{localize "emissary.menu.reputationSettings.labels.minimum"}}</label>:
         <input name="{{id}}-{{key}}-minimum" type="text" value="{{this.minimum}}" required />
     </div>
     <div class="specific-setting">
-        <label for="{{id}}-{{key}}-maximum">Maximum</label>:
+        <label for="{{id}}-{{key}}-maximum">{{localize "emissary.menu.reputationSettings.labels.maximum"}}</label>:
         <input name="{{id}}-{{key}}-maximum" type="text" value="{{this.maximum}}" required />
     </div>
     <div class="specific-setting">
-        <label for="{{id}}-{{key}}-color">Color</label>:
+        <label for="{{id}}-{{key}}-color">{{localize "emissary.menu.reputationSettings.labels.color"}}</label>:
         <input name="{{id}}-{{key}}-color" type="color" value="{{this.color}}" required />
     </div>
-    <button class="remove-row-button" type="button" data-action="removeRow" data-tooltip="Remove Row">
+    <button
+        class="remove-row-button"
+        type="button"
+        data-action="removeRow"
+        data-tooltip={{localize "emissary.menu.reputationSettings.buttons.removeRow"}}
+    >
         -
     </button>
 </div>

@@ -4,5 +4,5 @@
             {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs" faction=faction}}
         {{/each}}
     {{/with}}
-    <button class="{{#if isGM}}visible{{/if}}" id="add-faction" data-action="addFaction">Add Faction</button>
+    <button class="{{#if isGM}}visible{{/if}}" id="add-faction" data-action="addFaction">{{localize "emissary.menu.addFaction.title"}}</button>
 </section>

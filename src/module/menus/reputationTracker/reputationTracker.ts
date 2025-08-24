@@ -16,7 +16,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         classes: ["emissary", "reputation-tracker"],
         tag: "div",
         position: { width: 400, height: 850 },
-        window: { title: "Emissary" },
+        window: { title: "emissary.menu.reputationTracker.title" },
         actions: {
             addFaction: ReputationTracker.addFaction,
             openRollout: ReputationTracker.openRollout,

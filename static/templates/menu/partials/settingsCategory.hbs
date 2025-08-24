@@ -1,5 +1,5 @@
 <div class="setting-category" id="category-{{key}}" data-action="openRollout">
-    <h1>{{cap (key)}}</h1>
+    <h1>{{localize (concat "emissary.generic." (key))}}</h1>
     <div class="rollout" id="{{key}}-rollout">
         {{#each this}}
             {{>"modules/emissary/templates/menu/partials/setting.hbs"}}

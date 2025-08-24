@@ -13,11 +13,11 @@ export function registerSettings(): void {
      * GENERAL MODULE SETTINGS
      */
     game.settings.registerMenu(MODNAME, "reputationSettings", {
-        name: "Reputation Settings",
-        label: "Reputation Settings",
-        hint: "Menu to change default reputation settings",
+        name: "emissary.menu.reputationSettings.title",
+        label: "emissary.menu.reputationSettings.title",
+        hint: "emissary.menu.reputationSettings.hint",
         type: ReputationSettingsMenu,
-        icon: "",
+        icon: "fa-solid fa-face-smile",
         restricted: true,
     });
 

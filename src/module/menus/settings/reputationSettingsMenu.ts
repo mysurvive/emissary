@@ -30,7 +30,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             handler: ReputationSettingsMenu.#onSubmit,
         },
         window: {
-            title: "Emissary Reputation Settings",
+            title: "emissary.menu.reputationSettings.title",
         },
         position: {
             width: 650,
@@ -103,9 +103,14 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             settings: this.getSettings(),
             preview: this.previewSettings,
             footerButtons: [
-                { type: "button", icon: "fa-solid fa-upload", label: "Export Settings", action: "exportSettings" },
-                { type: "submit", icon: "fa-solid fa-save", label: "Submit" },
-            ], // TODO: i18n
+                {
+                    type: "button",
+                    icon: "fa-solid fa-upload",
+                    label: "emissary.menu.reputationSettings.buttons.export",
+                    action: "exportSettings",
+                },
+                { type: "submit", icon: "fa-solid fa-save", label: "emissary.menu.generic.buttons.submit" },
+            ],
         });
 
         return mergedContext;
@@ -176,8 +181,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             notoriety: [],
             interpersonal: [
                 {
-                    settingName: "Reputation Range",
-                    hint: "Sets the maximum and minimum allowed reputation for interpersonal relationships.",
+                    settingName: "emissary.menu.reputationSettings.settings.reputationRange.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationRange.hint",
                     type: "reputationRange",
                     id: "interpersonalReputationRange",
                     settingValue:
@@ -185,8 +190,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                         game.settings.get(MODNAME, "interpersonalReputationRange"),
                 },
                 {
-                    settingName: "Reputation Increment",
-                    hint: "Sets the increment for each reputation level.",
+                    settingName: "emissary.menu.reputationSettings.settings.reputationIncrement.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationIncrement.hint",
                     type: "settingsArray",
                     subtype: "increment",
                     id: "interpersonalReputationIncrement",
@@ -195,8 +200,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                         game.settings.get(MODNAME, "interpersonalReputationIncrement"),
                 },
                 {
-                    settingName: "Reputation Controls",
-                    hint: "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags.",
+                    settingName: "emissary.menu.reputationSettings.settings.reputationControls.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationControls.hint",
                     type: "settingsArray",
                     subtype: "control",
                     id: "interpersonalReputationControls",
@@ -207,16 +212,16 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             ],
             faction: [
                 {
-                    settingName: "Reputation Range",
-                    hint: "Sets the maximum and minimum allowed reputation for factions.",
+                    settingName: "emissary.menu.reputationSettings.settings.reputationRange.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationRange.hint",
                     type: "reputationRange",
                     id: "factionReputationRange",
                     settingValue:
                         this.template?.factionReputationRange ?? game.settings.get(MODNAME, "factionReputationRange"),
                 },
                 {
-                    settingName: "Reputation Increment",
-                    hint: "Sets the increment for each reputation level.",
+                    settingName: "emissary.menu.reputationSettings.settings.reputationIncrement.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationIncrement.hint",
                     type: "settingsArray",
                     subtype: "increment",
                     id: "factionReputationIncrement",
@@ -225,8 +230,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                         game.settings.get(MODNAME, "factionReputationIncrement"),
                 },
                 {
-                    settingName: "Reputation Controls",
-                    hint: "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags.",
+                    settingName: "emissary.menu.reputationSettings.settings.reputationControls.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationControls.hint",
                     type: "settingsArray",
                     subtype: "control",
                     id: "factionReputationControls",

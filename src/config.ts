@@ -19,7 +19,7 @@ class EmissaryConfig {
             controls.tokens.tools.reputation = {
                 icon: "fa-solid fa-face-smile",
                 name: "reputation",
-                title: "Reputation Tracker",
+                title: "emissary.tools.reputationTracker.title",
                 visible: true,
                 button: true,
                 order: Object.keys(controls.tokens.tools).length,
