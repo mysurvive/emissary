@@ -1,7 +1,8 @@
 <div>
+    <hr>
     <h1>{{localize "emissary.menu.reputationSettings.preview.label"}}</h1>
-    <h2>{{localize "emissary.generic.faction"}}</h2>
     <p>{{localize "emissary.menu.reputationSettings.preview.hint"}}</p>
+    <h2>{{localize "emissary.generic.faction"}}</h2>
     {{#each preview.data.faction}}
         <div
             class="faction-item preview{{#when hidden "eq" "true"}} hidden{{/when}}"

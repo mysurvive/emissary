@@ -49,7 +49,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     static override PARTS = {
         settingsTemplates: {
             template: "modules/emissary/templates/menu/partials/settings-templates.hbs",
-            classes: ["emissary", "reputation-settings"],
+            classes: ["emissary"],
         },
         form: {
             template: "modules/emissary/templates/menu/reputationSettingsMenu.hbs",
@@ -57,7 +57,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         },
         preview: {
             template: "modules/emissary/templates/menu/partials/settings-preview.hbs",
-            classes: ["reputation-tracker"],
+            classes: ["emissary", "reputation-tracker", "reputation-settings", "preview"],
         },
         footer: {
             template: "modules/emissary/templates/menu/partials/form-footer.hbs",

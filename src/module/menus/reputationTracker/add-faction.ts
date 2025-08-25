@@ -25,11 +25,11 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static override PARTS = {
         form: {
-            id: "add-faction-form",
             template: "modules/emissary/templates/reputation-tracker/add-faction.hbs",
+            classes: ["emissary", "add-faction"],
         },
         footer: {
-            template: "modules/emissary/templates/reputation-tracker/partials/footer.hbs",
+            template: "modules/emissary/templates/menu/partials/form-footer.hbs",
         },
     };
 
@@ -66,7 +66,7 @@ class AddFactionMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const context = await super._prepareContext(options);
 
         const mergedContext = foundry.utils.mergeObject(context, {
-            buttons: { submit: { type: "submit", label: "emissary.menu.generic.buttons.submit" } },
+            footerButtons: [{ type: "submit", label: "emissary.menu.generic.buttons.submit" }],
         });
 
         return mergedContext;

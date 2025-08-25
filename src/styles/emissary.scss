@@ -1,3 +1,5 @@
 @use "./reputation-tracker/reputationTracker.scss";
 @use "./reputation-tracker/addFaction.scss";
-@use "./menu/settingsMenu.scss";
+@use "./reputationSettings/template-manager.scss";
+@use "./reputationSettings/settings-menu.scss";
+@use "./generic/form-footer.scss";
