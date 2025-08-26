@@ -1,6 +1,6 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME, settingKeys } from "src/constants.ts";
-import { EmissarySettings, SettingsMenuObject } from "../types.ts";
+import { EmissarySettings, reputationSettingsTemplates, SettingsMenuObject } from "../types.ts";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import type {
     ApplicationV2,
@@ -13,10 +13,10 @@ const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.application
 const { renderTemplate } = foundry.applications.handlebars;
 
 class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
-    previewSettings: any = { settings: { faction: {} }, data: { faction: [] } };
+    declare previewSettings;
     declare template;
 
-    constructor(template?) {
+    constructor(template?: typeof reputationSettingsTemplates) {
         super();
         this.template = template;
     }

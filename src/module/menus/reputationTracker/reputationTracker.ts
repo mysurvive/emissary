@@ -1,5 +1,5 @@
 import { ReputationTabConstructor } from "./tabs/reputationTabConstructor.ts";
-import { AddFactionMenu } from "./add-faction.ts";
+import { AddFactionMenu } from "../addEntity/addFaction.ts";
 import { DeepPartial } from "fvtt-types/utils";
 import { UUID } from "crypto";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
@@ -7,6 +7,7 @@ import type {
     ApplicationV2 as AV2,
     HandlebarsApplicationMixin as hbs,
 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
+import { FactionReputation } from "./tabs/types.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -56,10 +57,25 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
             const constructor = new ReputationTabConstructor();
             constructor.setFactionReputationLevels();
+
             const reputationData = {
                 faction: constructor.reputation.faction,
                 interpersonal: constructor.reputation.interpersonal,
             };
+
+            if (Array.isArray(reputationData.faction.settings))
+                reputationData.faction.settings!.forEach(
+                    async (f: typeof FactionReputation.element & { imgsrc; journalUuid }) => {
+                        if (f && f.journalUuid) {
+                            const factionJournal = (await fromUuid(f.journalUuid)) as JournalEntry;
+                            const iconPage = factionJournal.pages.find((p) => p.name === "emissary-icon");
+                            f.imgsrc = iconPage ? iconPage.src : undefined;
+                            f.journalUuid = await foundry.applications.ux.TextEditor.enrichHTML(
+                                `@UUID[${f.journalUuid}]`,
+                            );
+                        }
+                    },
+                );
 
             const mergedContext = foundry.utils.mergeObject(context, {
                 tabs: this._prepareTabs("primary"),

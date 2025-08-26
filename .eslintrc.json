@@ -12,7 +12,7 @@
     "ignorePatterns": ["dist/"],
     "rules": {
         "eqeqeq": "error",
-        "prettier/prettier": "error",
+        "prettier/prettier": ["error", { "endOfLine": "auto" }],
         "no-console": "off",
         "no-plusplus": [
             "error",

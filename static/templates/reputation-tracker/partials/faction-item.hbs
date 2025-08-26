@@ -14,7 +14,13 @@
         </span>
     </div>
     <div class="rollout" id="rollout-{{id}}">
+        <div class="faction-information">
+            {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
+            {{#if journalUuid}}<span>{{{journalUuid}}}</span>{{/if}}
+        </div>
+        {{#if @root.isGM}}
         <span class="control-buttons">
+            <span class="reputation-controls">
             {{#each faction.controls}}
                 <button
                     class="reputation-control"
@@ -26,14 +32,19 @@
                     <i class="{{icon}}"></i>
                 </button>
             {{/each}}
+            </span>
+            <span class="meta-controls">
+                <button
+                class="remove-faction"
+                data-action="deleteFaction"
+                faction-uuid="{{id}}"
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.remove'}}"
+                >
+                    <i class="fa-regular fa-trash"></i>
+                </button>
+            </span>
         </span>
-        <button
-            class="remove-faction"
-            data-action="deleteFaction"
-            faction-uuid="{{id}}"
-            data-tooltip="{{localize 'emissary.menu.reputationTracker.remove'}}"
-        >
-            <i class="fa-regular fa-trash"></i>
-        </button>
+        
+        {{/if}}
     </div>
 </div>

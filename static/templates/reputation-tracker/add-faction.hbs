@@ -1,6 +1,28 @@
 <section>
-    <label for="name">{{localize "emissary.menu.addFaction.labels.name"}}: </label>
-    <input type="text" name="name" id="name" required></input>
-    <label for="repNumber">{{localize "emissary.menu.addFaction.labels.startingReputation"}}: </label>
-    <input type="number" name="repNumber" id="repNumber" value="0" required></input>
+    {{#with inputData}}
+    <div class="input-area">
+        <div class="input-item">
+            <label for="name">{{localize "emissary.menu.addFaction.labels.name"}}: </label>
+            <input type="text" name="name" id="name" value="{{name}}" required></input>
+        </div>
+        <div class="input-item">
+            <label for="repNumber">{{localize "emissary.menu.addFaction.labels.startingReputation"}}: </label>
+            <input type="number" name="repNumber" id="repNumber" value="0" required></input>
+        </div>
+        <div class="input-item">
+            <label for="imgsrc">{{localize "emissary.menu.addFaction.labels.image"}}</label>
+            <input type="text" name="imgsrc" id="imgsrc" value="{{imgsrc}}"></input>
+            <button type="button" data-action="openPicker">{{localize "emissary.menu.generic.buttons.browse"}}</button>
+        </div>
+        <input class="hidden" type="text" name="journalUuid" value="{{uuid}}">
+    </div>
+    <div class="dropbox {{#unless uuid}}empty{{/unless}}">
+        {{#if uuid}}
+        {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
+        <span>{{{enrichedUuid}}}</span>
+        {{else}}
+        {{localize "emissary.menu.addFaction.dropJournal"}}
+        {{/if}}
+    </div>
+    {{/with}}
 </section>

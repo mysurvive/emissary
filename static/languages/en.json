@@ -1,92 +1,102 @@
 {
-  "emissary": {
-    "generic": {
-      "faction": "Faction",
-      "interpersonal": "Interpersonal",
-      "notoriety": "Notoriety"
-    },
-    "tools": {
-      "reputationTracker": {
-        "title": "Emissary Reputation Tracker"
-      }
-    },
-    "menu": {
-      "reputationTracker": {
-        "title": "Emissary Reputation Tracker",
-        "tab": {
-          "faction": "Faction",
-          "interpersonal": "Interpersonal"
+    "emissary": {
+        "generic": {
+            "faction": "Faction",
+            "interpersonal": "Interpersonal",
+            "notoriety": "Notoriety"
         },
-        "currentReputation": "Current reputation",
-        "remove": "Remove Faction"
-      },
-      "addFaction": {
-        "title": "Add Faction",
-        "labels": {
-          "name": "Name",
-          "startingReputation": "Starting Reputation"
+        "tools": {
+            "reputationTracker": {
+                "title": "Emissary Reputation Tracker"
+            }
+        },
+        "menu": {
+            "reputationTracker": {
+                "title": "Emissary Reputation Tracker",
+                "tab": {
+                    "faction": "Faction",
+                    "interpersonal": "Interpersonal"
+                },
+                "currentReputation": "Current reputation",
+                "remove": "Remove Faction"
+            },
+            "addEntity": {
+                "errors": {
+                    "folder": "Error creating or finding the Emissary journal folder.",
+                    "subfolder": "Error creating of finding the Emissary journal subolder.",
+                    "journal": "Error creating Journal Entry."
+                }
+            },
+            "addFaction": {
+                "title": "Add Faction",
+                "labels": {
+                    "name": "Name",
+                    "startingReputation": "Starting Reputation",
+                    "image": "Image"
+                },
+                "dropJournal": "Drag an existing journal entry here to link it or click Submit to create a new journal for this faction."
+            },
+            "templateManager": {
+                "title": "Template Manager",
+                "labels": {
+                    "or": "OR",
+                    "selectTemplate": "Select a template",
+                    "importTemplate": "Import a custom template"
+                },
+                "buttons": {
+                    "applyTemplate": "Apply Template",
+                    "importTemplate": "Import"
+                },
+                "errors": {
+                    "preBuiltTemplate": {
+                        "generic": "Error with pre-built template."
+                    },
+                    "importTemplate": {
+                        "noFile": "No file selected."
+                    }
+                }
+            },
+            "generic": {
+                "buttons": {
+                    "submit": "Submit",
+                    "browse": "Browse"
+                }
+            },
+            "reputationSettings": {
+                "title": "Emissary Reputation Settings",
+                "hint": "Menu to change default reputation settings",
+                "settings": {
+                    "reputationRange": {
+                        "name": "Reputation Range",
+                        "hint": "Sets the maximum and minimum allowed reputation."
+                    },
+                    "reputationIncrement": {
+                        "name": "Reputation Increments",
+                        "hint": "Sets the increment for each reputation level."
+                    },
+                    "reputationControls": {
+                        "name": "Reputation Controls",
+                        "hint": "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags."
+                    }
+                },
+                "preview": {
+                    "label": "Preview",
+                    "hint": "Click the elements to cycle through previews"
+                },
+                "buttons": {
+                    "export": "Export Settings",
+                    "removeRow": "Remove Row",
+                    "addRow": "Add Row"
+                },
+                "labels": {
+                    "label": "Label",
+                    "amount": "Amount",
+                    "icon": "Icon",
+                    "minimum": "Minimum",
+                    "maximum": "Maximum",
+                    "color": "Color"
+                }
+            }
         }
-      },
-      "templateManager": {
-        "title": "Template Manager",
-        "labels": {
-          "or": "OR",
-          "selectTemplate": "Select a template",
-          "importTemplate": "Import a custom template"
-        },
-        "buttons": {
-          "applyTemplate": "Apply Template",
-          "importTemplate": "Import"
-        },
-        "errors": {
-          "preBuiltTemplate": {
-            "generic": "Error with pre-built template."
-          },
-          "importTemplate": {
-            "noFile": "No file selected."
-          }
-        }
-      },
-      "generic": {
-        "buttons": {
-          "submit": "Submit"
-        }
-      },
-      "reputationSettings": {
-        "title": "Emissary Reputation Settings",
-        "hint": "Menu to change default reputation settings",
-        "settings": {
-          "reputationRange": {
-            "name": "Reputation Range",
-            "hint": "Sets the maximum and minimum allowed reputation."
-          },
-          "reputationIncrement": {
-            "name": "Reputation Increments",
-            "hint": "Sets the increment for each reputation level."
-          },
-          "reputationControls": {
-            "name": "Reputation Controls",
-            "hint": "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags."
-          }
-        },
-        "preview": {
-          "label": "Preview",
-          "hint": "Click the elements to cycle through previews"
-        },
-        "buttons": {
-          "export": "Export Settings",
-          "removeRow": "Remove Row",
-          "addRow": "Add Row"
-        },
-        "labels": {
-          "label": "Label",
-          "amount": "Amount",
-          "icon": "Icon",
-          "minimum": "Minimum",
-          "maximum": "Maximum",
-          "color": "Color"
-        }
-      }
     }
-  }
 }
