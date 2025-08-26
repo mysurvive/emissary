@@ -77,7 +77,7 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
     static async #importTemplate(this: TemplateManagerMenu): Promise<void> {
         const fileInput = this.parts["div"]?.querySelector("#settingsFile") as HTMLInputElement;
         try {
-            if (fileInput.files && fileInput.files.length != 0) {
+            if (fileInput.files && fileInput.files.length !== 0) {
                 this.parent.template = JSON.parse(await foundry.utils.readTextFromFile(fileInput.files[0]));
                 this.close();
             } else {
