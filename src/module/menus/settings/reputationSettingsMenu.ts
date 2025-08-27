@@ -1,5 +1,5 @@
 import { DeepPartial } from "fvtt-types/utils";
-import { MODNAME, settingKeys } from "src/constants.ts";
+import { MODNAME } from "src/constants.ts";
 import { EmissarySettings, reputationSettingsTemplates, SettingsMenuObject } from "../types.ts";
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import type {
@@ -67,11 +67,17 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     protected override async _prepareContext(
         options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
     ): Promise<ApplicationV2.RenderContext> {
+        // TODO: add context data for enriched UUID and image
         const context = await super._prepareContext(options);
 
         if (options.isFirstRender) {
             const constructor = new ReputationTabConstructor();
             constructor.setFactionReputationLevels();
+            this.previewSettings = {
+                ...this.previewSettings,
+                settings: { faction: { controls: {}, increments: {} } },
+                data: { faction: [] },
+            };
             this.previewSettings.settings.faction.controls = game.settings.get(MODNAME, "factionReputationControls");
             this.previewSettings.settings.faction.increments = game.settings.get(MODNAME, "factionReputationIncrement");
         } else if (this.form) {
@@ -147,7 +153,11 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                 return !isNaN(parseFloat(x));
             }
 
-            if (isArray(index)) {
+            if (index === "hidden") {
+                if (!tmpObj["hiddenElements"]) {
+                    tmpObj["hiddenElements"] = [{ settingName: settingName, hidden: settingData }];
+                } else tmpObj["hiddenElements"].push({ settingName: settingName, hidden: settingData });
+            } else if (isArray(index)) {
                 if (!tmpObj[settingName]) {
                     tmpObj[settingName] = [{ [subSetting]: settingData }];
                 } else if (!tmpObj[settingName][index]) {
@@ -169,10 +179,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         const obj: EmissarySettings = this.#formDataToSettings(formData.object);
 
         for (const setting in obj) {
-            if (settingKeys.includes(setting)) {
-                const s = setting as ClientSettings.KeyFor<"emissary">;
-                await game.settings.set(MODNAME, s, obj[s]);
-            }
+            const s = setting as ClientSettings.KeyFor<"emissary">;
+            await game.settings.set(MODNAME, s, obj[setting]);
         }
     }
 
@@ -238,6 +246,13 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     settingValue:
                         this.template?.factionReputationControls ??
                         game.settings.get(MODNAME, "factionReputationControls"),
+                },
+                {
+                    settingName: "Hidden Elements",
+                    hint: "Hide the following elements on the Reputation Tracker from players.",
+                    type: "checkboxes",
+                    id: "factionHiddenElements",
+                    settingValue: game.settings.get(MODNAME, "factionHiddenElements"),
                 },
             ],
         };

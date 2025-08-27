@@ -41,6 +41,14 @@
                     +
                 </button>
             {{/when}}
+            {{#when type "eq" "checkboxes"}}
+                {{#each settingValue}}
+                    <div class="specific-setting">
+                        <label for="{{id}}-{{key}}">{{localize settingName}}</label>:
+                        <input name="{{id}}-{{key}}" type="checkbox" {{#if hidden}}checked{{/if}} />
+                    </div>
+                {{/each}}
+            {{/when}}
         </div>
     </div>
 

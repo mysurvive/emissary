@@ -12,17 +12,22 @@
             preview-type="faction-item"
             id="faction-item-{{index}}"
         >
-            <div class="faction-box">
-                <span class="item-name">{{name}}</span>
-                <span
-                    class="reputation-level"
-                    data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
-                >
-                    {{label}}
-                </span>
-            </div>
+        <div class="faction-box">
+            <span class="item-name">{{name}}</span>
+            <span
+            class="reputation-level"
+            data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
+            >
+            {{label}}
+            </span>
+        </div>
             <div class="rollout active no-transition" id="reputation-control-{{@index}}">
+                <div class="faction-information">
+                    {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
+                    {{#if journalUuid}}<span>{{{journalUuid}}}</span>{{/if}}
+                </div>
                 <span class="control-buttons">
+                    <span class="reputation-controls">
                     {{#each controls}}
                         <button
                             class="reputation-control"
@@ -33,6 +38,15 @@
                             <i class="{{icon}}"></i>
                         </button>
                     {{/each}}
+                    </span>
+                    <span class="meta-controls">
+                    <button
+                    class="remove-faction"
+                    data-tooltip="{{localize 'emissary.menu.reputationTracker.remove'}}"
+                    >
+                        <i class="fa-regular fa-trash"></i>
+                    </button>
+                </span>
             </div>
         </div>
     {{/each}}

@@ -1,6 +1,8 @@
 import { EmissaryConfig } from "./config.ts";
 import { FactionReputation, IndividualReputation } from "./module/menus/reputationTracker/tabs/types.ts";
 import {
+    factionHiddenElements,
+    interpersonalHiddenElements,
     reputationControls,
     reputationIncrements,
     reputationRange,
@@ -32,6 +34,8 @@ declare module "fvtt-types/configuration" {
         "emissary.interpersonalReputationIncrement": typeof reputationIncrements;
         "emissary.interpersonalReputationControls": typeof reputationControls;
         "emissary.reputationSettingsTemplates": typeof reputationSettingsTemplates;
+        "emissary.factionHiddenElements": typeof factionHiddenElements;
+        "emissary.interpersonalHiddenElements": typeof interpersonalHiddenElements;
     }
 }
 

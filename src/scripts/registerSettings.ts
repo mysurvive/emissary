@@ -2,6 +2,8 @@ import { MODNAME } from "src/constants.ts";
 import { FactionReputation, IndividualReputation } from "src/module/menus/reputationTracker/tabs/types.ts";
 import { ReputationSettingsMenu } from "src/module/menus/settings/reputationSettingsMenu.ts";
 import {
+    factionHiddenElements,
+    interpersonalHiddenElements,
     reputationControls,
     reputationIncrements,
     reputationRange,
@@ -117,6 +119,18 @@ export function registerSettings(): void {
             { label: "Good Impression", amount: 2, icon: "fa-regular fa-face-smile" },
             { label: "Great Impression", amount: 5, icon: "fa-regular fa-face-smile-hearts" },
         ],
+    });
+
+    game.settings.register(MODNAME, "factionHiddenElements", {
+        scope: "world",
+        config: false,
+        type: factionHiddenElements,
+    });
+
+    game.settings.register(MODNAME, "interpersonalHiddenElements", {
+        scope: "world",
+        config: false,
+        type: interpersonalHiddenElements,
     });
 
     // Data Settings

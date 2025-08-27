@@ -1,3 +1,101 @@
+.reputation-tracker .faction-item,
+.reputation-settings.preview .faction-item {
+    border: 1px solid;
+    border-radius: 5px;
+    margin-top: 0.5em;
+    padding: 5px;
+    width: 98%;
+
+    .faction-box {
+        pointer-events: none;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .item-name {
+            justify-self: left;
+            pointer-events: none;
+        }
+
+        .reputation-level {
+            pointer-events: all;
+            justify-self: center;
+        }
+    }
+
+    .rollout {
+        margin-top: 0px;
+        max-height: 0px;
+        opacity: 0;
+        transition:
+            all 0.25s ease,
+            margin-top 0s ease 0.25s;
+        transition-behavior: allow-discrete;
+        justify-content: space-between;
+        width: 100%;
+        display: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        button {
+            width: 25px;
+            height: 25px;
+            flex-basis: 25px;
+            justify-content: center;
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-direction: row;
+            margin-top: 15px;
+            justify-content: space-between;
+            width: 100%;
+
+            .reputation-controls {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .meta-controls {
+                display: flex;
+                flex-direction: row;
+            }
+        }
+
+        .faction-information {
+            display: flex;
+            width: 100%;
+            img {
+                height: 60px;
+                width: 60px;
+            }
+            align-items: center;
+        }
+
+        &.active {
+            margin-top: 15px;
+            opacity: 1;
+            max-height: 1000px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+
+            @starting-style {
+                opacity: 0;
+                max-height: 0px;
+            }
+
+            &.no-transition {
+                transition: none;
+                transition-behavior: unset;
+                @starting-style {
+                }
+            }
+        }
+    }
+}
+
 .reputation-tracker {
     .sheet-tabs {
         margin-bottom: 1em;

@@ -5,7 +5,9 @@
     data-action="openRollout"
 >
     <div class="faction-box">
-        <span class="item-name">{{name}}</span>
+        <span class="item-name">
+            {{name}}
+        </span>
         <span
             class="reputation-level"
             data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
@@ -43,8 +45,8 @@
                     <i class="fa-regular fa-trash"></i>
                 </button>
             </span>
-        </span>
-        
+            </span>
+        </div>
         {{/if}}
     </div>
 </div>

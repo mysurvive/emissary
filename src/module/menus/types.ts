@@ -17,6 +17,7 @@ interface SettingsMenuSettingData {
     subtype?: string;
     id: ClientSettings.KeyFor<"emissary">;
     settingValue: ClientSettings.SettingInitializedType<"emissary", ClientSettings.KeyFor<"emissary">>;
+    hidden?: boolean;
 }
 
 export interface EmissarySettings {
@@ -26,6 +27,7 @@ export interface EmissarySettings {
     interpersonalReputationControls: typeof reputationControls;
     interpersonalReputationIncrement: typeof reputationIncrements;
     interpersonalReputationRange: typeof reputationRange;
+    hiddenElements: typeof factionHiddenElements;
 }
 
 /**
@@ -95,4 +97,38 @@ export const reputationSettingsTemplates = new fields.ArrayField(
         settings: new fields.SchemaField(defineSettingsSchema()),
     }),
     { initial: [JSON.parse(JSON.stringify(defaultSettingsJSON)), JSON.parse(JSON.stringify(pf2eSettingsJSON))] },
+);
+
+// Hidden element settings
+
+export const factionHiddenElements = new fields.ArrayField(
+    new fields.SchemaField({
+        settingName: new fields.StringField({ required: true }),
+        hidden: new fields.BooleanField({ initial: false }),
+    }),
+    {
+        initial: [
+            { settingName: "incrementColor" },
+            { settingName: "incrementName" },
+            { settingName: "image" },
+            { settingName: "journal" },
+            { settingName: "currentReputation" },
+        ],
+    },
+);
+
+export const interpersonalHiddenElements = new fields.ArrayField(
+    new fields.SchemaField({
+        settingName: new fields.StringField({ required: true }),
+        hidden: new fields.BooleanField({ initial: false }),
+    }),
+    {
+        initial: [
+            { settingName: "incrementColor" },
+            { settingName: "incrementName" },
+            { settingName: "image" },
+            { settingName: "journal" },
+            { settingName: "currentReputation" },
+        ],
+    },
 );

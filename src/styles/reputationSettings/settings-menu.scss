@@ -94,9 +94,13 @@
                             input {
                                 text-align: right;
                                 margin-left: 2px;
-                                margin-right: 10px;
                                 flex-grow: 1;
                                 max-width: 120px;
+
+                                &[type="checkbox"] {
+                                    width: auto;
+                                    max-width: min-content;
+                                }
                             }
                         }
 
@@ -112,6 +116,7 @@
                         button {
                             width: 28px;
                             height: 28px;
+                            margin-left: 10px;
                         }
                     }
                 }
