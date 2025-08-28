@@ -153,10 +153,12 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                 return !isNaN(parseFloat(x));
             }
 
-            if (index === "hidden") {
-                if (!tmpObj["hiddenElements"]) {
-                    tmpObj["hiddenElements"] = [{ settingName: settingName, hidden: settingData }];
-                } else tmpObj["hiddenElements"].push({ settingName: settingName, hidden: settingData });
+            if (settingName.includes("Hidden")) {
+                if (!tmpObj[settingName]) {
+                    tmpObj[settingName] = { [index]: settingData };
+                } else {
+                    tmpObj[settingName][index] = settingData;
+                }
             } else if (isArray(index)) {
                 if (!tmpObj[settingName]) {
                     tmpObj[settingName] = [{ [subSetting]: settingData }];
@@ -216,6 +218,13 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     settingValue:
                         this.template?.interpersonalReputationControls ??
                         game.settings.get(MODNAME, "interpersonalReputationControls"),
+                },
+                {
+                    settingName: "Hidden Elements",
+                    hint: "Hide the following elements on the Reputation Tracker from players.",
+                    type: "checkboxes",
+                    id: "interpersonalHiddenElements",
+                    settingValue: game.settings.get(MODNAME, "interpersonalHiddenElements"),
                 },
             ],
             faction: [

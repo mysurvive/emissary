@@ -24,10 +24,11 @@ export interface EmissarySettings {
     factionReputationControls: typeof reputationControls;
     factionReputationIncrement: typeof reputationIncrements;
     factionReputationRange: typeof reputationRange;
+    factionHiddenElements: typeof hiddenElements;
     interpersonalReputationControls: typeof reputationControls;
     interpersonalReputationIncrement: typeof reputationIncrements;
     interpersonalReputationRange: typeof reputationRange;
-    hiddenElements: typeof factionHiddenElements;
+    interpersonalHiddenElements: typeof hiddenElements;
 }
 
 /**
@@ -50,8 +51,8 @@ export const reputationControls = new fields.ArrayField(new fields.SchemaField(d
 
 const defineReputationRangeSchema = () => {
     return {
-        minimum: new fields.NumberField(),
-        maximum: new fields.NumberField(),
+        minimum: new fields.NumberField({ required: true }),
+        maximum: new fields.NumberField({ required: true }),
     };
 };
 
@@ -101,34 +102,10 @@ export const reputationSettingsTemplates = new fields.ArrayField(
 
 // Hidden element settings
 
-export const factionHiddenElements = new fields.ArrayField(
-    new fields.SchemaField({
-        settingName: new fields.StringField({ required: true }),
-        hidden: new fields.BooleanField({ initial: false }),
-    }),
-    {
-        initial: [
-            { settingName: "incrementColor" },
-            { settingName: "incrementName" },
-            { settingName: "image" },
-            { settingName: "journal" },
-            { settingName: "currentReputation" },
-        ],
-    },
-);
-
-export const interpersonalHiddenElements = new fields.ArrayField(
-    new fields.SchemaField({
-        settingName: new fields.StringField({ required: true }),
-        hidden: new fields.BooleanField({ initial: false }),
-    }),
-    {
-        initial: [
-            { settingName: "incrementColor" },
-            { settingName: "incrementName" },
-            { settingName: "image" },
-            { settingName: "journal" },
-            { settingName: "currentReputation" },
-        ],
-    },
-);
+export const hiddenElements = new fields.SchemaField({
+    incrementColor: new fields.BooleanField({ initial: false }),
+    incrementName: new fields.BooleanField({ initial: false }),
+    image: new fields.BooleanField({ initial: false }),
+    journal: new fields.BooleanField({ initial: false }),
+    currentReputation: new fields.BooleanField({ initial: false }),
+});

@@ -5,14 +5,14 @@
     <h2>{{localize "emissary.generic.faction"}}</h2>
     {{#each preview.data.faction}}
         <div
-            class="faction-item preview{{#when hidden "eq" "true"}} hidden{{/when}}"
+            class="entity-item preview{{#when hidden "eq" "true"}} hidden{{/when}}"
             style="border-color:{{color}}"
             data-action="nextPreview"
             index="{{index}}"
-            preview-type="faction-item"
-            id="faction-item-{{index}}"
+            preview-type="entity-item"
+            id="entity-item-{{index}}"
         >
-        <div class="faction-box">
+        <div class="entity-box">
             <span class="item-name">{{name}}</span>
             <span
             class="reputation-level"
@@ -22,7 +22,7 @@
             </span>
         </div>
             <div class="rollout active no-transition" id="reputation-control-{{@index}}">
-                <div class="faction-information">
+                <div class="entity-information">
                     {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
                     {{#if journalUuid}}<span>{{{journalUuid}}}</span>{{/if}}
                 </div>
@@ -40,8 +40,25 @@
                     {{/each}}
                     </span>
                     <span class="meta-controls">
+                        <button
+                        type="button"
+                class="hide-entity"
+                data-tooltip=
+                {{#if hidden}}
+                "{{localize 'emissary.menu.reputationTracker.reveal'}}"
+                {{else}}
+                "{{localize 'emissary.menu.reputationTracker.hide'}}"
+                {{/if}}
+                >
+                    {{#if hidden}}
+                    <i class="fa-solid fa-eye-slash"></i>
+                    {{else}}
+                    <i class="fa-solid fa-eye"></i>
+                    {{/if}}
+                </button>
                     <button
-                    class="remove-faction"
+                    type="button"
+                    class="remove-entity"
                     data-tooltip="{{localize 'emissary.menu.reputationTracker.remove'}}"
                     >
                         <i class="fa-regular fa-trash"></i>

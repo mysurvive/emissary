@@ -1,8 +1,12 @@
 <section class="tab faction {{tab.cssClass}}" data-group="primary" data-tab="faction">
-    {{#with reputationData.faction as |faction|}}
+    {{#with reputationData.faction as |category|}}
         {{#each settings}}
-            {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs" faction=faction}}
+            {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs" category=category}}
         {{/each}}
     {{/with}}
-    <button class="{{#if isGM}}visible{{/if}}" id="add-faction" data-action="addFaction">{{localize "emissary.menu.addFaction.title"}}</button>
+    <button class="{{#if isGM}}visible{{/if}}" 
+    id="add-entity" 
+    data-action="addEntity">
+        {{localize "emissary.menu.addFaction.title"}}
+    </button>
 </section>

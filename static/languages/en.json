@@ -18,13 +18,25 @@
                     "interpersonal": "Interpersonal"
                 },
                 "currentReputation": "Current reputation",
-                "remove": "Remove Faction"
+                "remove": "Remove Entity",
+                "hide": "Hide Entity from players",
+                "reveal": "Reveal Entity to players"
             },
             "addEntity": {
                 "errors": {
                     "folder": "Error creating or finding the Emissary journal folder.",
                     "subfolder": "Error creating of finding the Emissary journal subolder.",
                     "journal": "Error creating Journal Entry."
+                },
+                "labels": {
+                    "createHidden": "Create hidden",
+                    "name": "Name",
+                    "startingReputation": "Starting Reputation",
+                    "image": "Image"
+                },
+                "titles": {
+                    "person": "Add Person",
+                    "faction": "Add Faction"
                 }
             },
             "addFaction": {
@@ -77,6 +89,13 @@
                     "reputationControls": {
                         "name": "Reputation Controls",
                         "hint": "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags."
+                    },
+                    "hiddenElements": {
+                        "incrementColor": "Increment Color",
+                        "incrementName": "Increment Name",
+                        "image": "Image",
+                        "journal": "Journal",
+                        "currentReputation": "Current Reputation"
                     }
                 },
                 "preview": {

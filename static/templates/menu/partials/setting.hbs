@@ -42,12 +42,14 @@
                 </button>
             {{/when}}
             {{#when type "eq" "checkboxes"}}
+            <div class="array-setting">
                 {{#each settingValue}}
                     <div class="specific-setting">
-                        <label for="{{id}}-{{key}}">{{localize settingName}}</label>:
-                        <input name="{{id}}-{{key}}" type="checkbox" {{#if hidden}}checked{{/if}} />
+                        <label for="{{../id}}-{{key}}">{{localize (concat "emissary.menu.reputationSettings.settings.hiddenElements." (key))}}</label>:
+                        <input name="{{../id}}-{{key}}" type="checkbox" {{#if this}}checked{{/if}} />
                     </div>
                 {{/each}}
+            </div>
             {{/when}}
         </div>
     </div>
