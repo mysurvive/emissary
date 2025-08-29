@@ -2,69 +2,68 @@
     <hr>
     <h1>{{localize "emissary.menu.reputationSettings.preview.label"}}</h1>
     <p>{{localize "emissary.menu.reputationSettings.preview.hint"}}</p>
-    <h2>{{localize "emissary.generic.faction"}}</h2>
-    {{#each preview.data.faction}}
+    {{#each preview.data}}
+    <h2>{{localize (concat "emissary.generic." (key))}}</h2>
+    {{#each this}}
         <div
-            class="entity-item preview{{#when hidden "eq" "true"}} hidden{{/when}}"
-            style="border-color:{{color}}"
+            class="entity-item preview{{#if hiddenPreview}} hidden{{/if}}"
+            {{#unless hiddenElements.incrementColor}}style="border-color:{{color}}"{{/unless}}
             data-action="nextPreview"
             index="{{index}}"
-            preview-type="entity-item"
-            id="entity-item-{{index}}"
+            preview-type="{{@../key}}"
+            id="{{@../key}}-item-{{index}}"
         >
-        <div class="entity-box">
-            <span class="item-name">{{name}}</span>
-            <span
-            class="reputation-level"
-            data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
-            >
-            {{label}}
-            </span>
-        </div>
+            <div class="entity-box">
+                <span class="item-name">{{name}}</span>
+                {{#unless hiddenElements.incrementName}}<span
+                class="reputation-level"
+                {{#unless hiddenElements.currentReputation}}
+                data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
+                {{/unless}}
+                >
+                {{label}}
+                </span>
+                {{/unless}}
+            </div>
             <div class="rollout active no-transition" id="reputation-control-{{@index}}">
                 <div class="entity-information">
-                    {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
-                    {{#if journalUuid}}<span>{{{journalUuid}}}</span>{{/if}}
+                    {{#unless hiddenElements.image}}<img src="{{imgsrc}}">{{/unless}}
+                    {{#unless hiddenElements.journal}}<span>{{{enrichedUuid}}}</span>{{/unless}}
                 </div>
-                <span class="control-buttons">
-                    <span class="reputation-controls">
-                    {{#each controls}}
-                        <button
-                            class="reputation-control"
-                            data-value="{{amount}}"
-                            data-tooltip="{{label}}"
-                            type="button"
-                        >
-                            <i class="{{icon}}"></i>
-                        </button>
-                    {{/each}}
-                    </span>
-                    <span class="meta-controls">
-                        <button
-                        type="button"
-                class="hide-entity"
-                data-tooltip=
-                {{#if hidden}}
-                "{{localize 'emissary.menu.reputationTracker.reveal'}}"
-                {{else}}
-                "{{localize 'emissary.menu.reputationTracker.hide'}}"
-                {{/if}}
-                >
-                    {{#if hidden}}
-                    <i class="fa-solid fa-eye-slash"></i>
-                    {{else}}
-                    <i class="fa-solid fa-eye"></i>
-                    {{/if}}
-                </button>
+
+            <span class="control-buttons">
+                <span class="reputation-controls">
+                {{#each controls}}
                     <button
-                    type="button"
+                        class="reputation-control"
+                        entity-uuid="{{../id}}"
+                        data-value="{{amount}}"
+                        data-tooltip="{{label}}"
+                    >
+                        <i class="{{icon}}"></i>
+                    </button>
+                {{/each}}
+                </span>
+                <span class="meta-controls">
+                    <button
+                    class="hide-entity"
+                    entity-uuid="{{id}}"
+                    data-tooltip=
+                    "{{localize 'emissary.menu.reputationTracker.hide'}}"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button
                     class="remove-entity"
+                    entity-uuid="{{id}}"
                     data-tooltip="{{localize 'emissary.menu.reputationTracker.remove'}}"
                     >
                         <i class="fa-regular fa-trash"></i>
                     </button>
                 </span>
-            </div>
+            </span>
+                        </div>
         </div>
+        {{/each}}
     {{/each}}
 </div>

@@ -16,7 +16,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     declare hiddenElements;
     constructor() {
         super();
-        this.hiddenElements = game.settings.get(MODNAME, "factionHiddenElements");
+        this.hiddenElements = {
+            faction: game.settings.get(MODNAME, "factionHiddenElements"),
+            interpersonal: game.settings.get(MODNAME, "interpersonalHiddenElements"),
+        };
     }
     static override DEFAULT_OPTIONS = {
         id: "reputation-tracker",
@@ -95,11 +98,11 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                                     `@UUID[${e.journalUuid}]`,
                                 );
                             }
-                            e.hiddenElements = Object.keys(this.hiddenElements).reduce((acc, key) => {
+                            e.hiddenElements = Object.keys(this.hiddenElements[type]).reduce((acc, key) => {
                                 if (game.user.isGM) {
                                     acc[key] = false;
                                 } else {
-                                    acc[key] = this.hiddenElements[key];
+                                    acc[key] = this.hiddenElements[type][key];
                                 }
                                 return acc;
                             }, {});

@@ -100,7 +100,7 @@
                 },
                 "preview": {
                     "label": "Preview",
-                    "hint": "Click the elements to cycle through previews"
+                    "hint": "Click the elements to cycle through previews. These previews show what players see."
                 },
                 "buttons": {
                     "export": "Export Settings",
