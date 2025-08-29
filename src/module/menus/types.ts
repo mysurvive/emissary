@@ -17,15 +17,18 @@ interface SettingsMenuSettingData {
     subtype?: string;
     id: ClientSettings.KeyFor<"emissary">;
     settingValue: ClientSettings.SettingInitializedType<"emissary", ClientSettings.KeyFor<"emissary">>;
+    hidden?: boolean;
 }
 
 export interface EmissarySettings {
     factionReputationControls: typeof reputationControls;
     factionReputationIncrement: typeof reputationIncrements;
     factionReputationRange: typeof reputationRange;
+    factionHiddenElements: typeof hiddenElements;
     interpersonalReputationControls: typeof reputationControls;
     interpersonalReputationIncrement: typeof reputationIncrements;
     interpersonalReputationRange: typeof reputationRange;
+    interpersonalHiddenElements: typeof hiddenElements;
 }
 
 /**
@@ -48,8 +51,8 @@ export const reputationControls = new fields.ArrayField(new fields.SchemaField(d
 
 const defineReputationRangeSchema = () => {
     return {
-        minimum: new fields.NumberField(),
-        maximum: new fields.NumberField(),
+        minimum: new fields.NumberField({ required: true }),
+        maximum: new fields.NumberField({ required: true }),
     };
 };
 
@@ -96,3 +99,13 @@ export const reputationSettingsTemplates = new fields.ArrayField(
     }),
     { initial: [JSON.parse(JSON.stringify(defaultSettingsJSON)), JSON.parse(JSON.stringify(pf2eSettingsJSON))] },
 );
+
+// Hidden element settings
+
+export const hiddenElements = new fields.SchemaField({
+    incrementColor: new fields.BooleanField({ initial: false }),
+    incrementName: new fields.BooleanField({ initial: false }),
+    image: new fields.BooleanField({ initial: false }),
+    journal: new fields.BooleanField({ initial: false }),
+    currentReputation: new fields.BooleanField({ initial: false }),
+});

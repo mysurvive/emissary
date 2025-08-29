@@ -20,7 +20,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     };
     #dragDrop;
     #filePicker;
-    constructor(parent: typeof ReputationTracker) {
+    constructor(parent: ReputationTracker) {
         super();
         this.parent = parent;
         this.#dragDrop = new foundry.applications.ux.DragDrop({
@@ -50,6 +50,8 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         switch (this.entityType) {
             case "Factions":
                 return game.settings.get(MODNAME, "factionReputation");
+            case "People":
+                return game.settings.get(MODNAME, "interpersonalReputation");
             default:
                 return undefined;
         }
@@ -64,6 +66,8 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         switch (this.entityType) {
             case "Factions":
                 return game.settings.get(MODNAME, "factionReputationIncrement");
+            case "People":
+                return game.settings.get(MODNAME, "interpersonalReputationIncrement");
             default:
                 return undefined;
         }
@@ -114,7 +118,10 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
                 switch (this.entityType) {
                     case "Factions":
-                        await game.settings.set("emissary", "factionReputation", entityReputationsArray);
+                        await game.settings.set(MODNAME, "factionReputation", entityReputationsArray);
+                        break;
+                    case "People":
+                        await game.settings.set(MODNAME, "interpersonalReputation", entityReputationsArray);
                         break;
                     default:
                         break;

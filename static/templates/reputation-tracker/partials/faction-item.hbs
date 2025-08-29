@@ -1,30 +1,46 @@
 <div
-    class="faction-item {{repLevel.value}}"
+    class="entity-item{{#if hidden}} stripes{{/if}}"
     id="{{id}}"
+    {{#unless hiddenElements.incrementColor}}
     style="border-color:{{repLevel.color}}"
+    {{/unless}}
     data-action="openRollout"
 >
-    <div class="faction-box">
-        <span class="item-name">{{name}}</span>
+    <div class="entity-box">
+        <span class="item-name">
+            {{name}}
+        </span>
         <span
             class="reputation-level"
+            {{#unless hiddenElements.currentReputation}}
             data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{repNumber}}"
+            {{/unless}}
         >
-            {{repLevel.label}}
+           {{#unless hiddenElements.incrementName}} 
+           {{repLevel.label}} 
+           {{/unless}}
         </span>
     </div>
     <div class="rollout" id="rollout-{{id}}">
-        <div class="faction-information">
-            {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
-            {{#if journalUuid}}<span>{{{journalUuid}}}</span>{{/if}}
+        <div class="entity-information">
+            {{#unless hiddenElements.image}}
+            {{#if imgsrc}}
+            <img src="{{imgsrc}}">
+            {{/if}}
+            {{/unless}}
+            {{#unless hiddenElements.journal}}
+            {{#if journalUuid}}
+            <span>{{{enrichedUuid}}}</span>
+            {{/if}}
+            {{/unless}}
         </div>
         {{#if @root.isGM}}
         <span class="control-buttons">
             <span class="reputation-controls">
-            {{#each faction.controls}}
+            {{#each category.controls}}
                 <button
                     class="reputation-control"
-                    faction-uuid="{{../id}}"
+                    entity-uuid="{{../id}}"
                     data-value="{{amount}}"
                     data-action="updateReputation"
                     data-tooltip="{{label}}"
@@ -35,16 +51,33 @@
             </span>
             <span class="meta-controls">
                 <button
-                class="remove-faction"
-                data-action="deleteFaction"
-                faction-uuid="{{id}}"
+                class="hide-entity"
+                data-action="hideEntity"
+                entity-uuid="{{id}}"
+                data-tooltip=
+                {{#if hidden}}
+                "{{localize 'emissary.menu.reputationTracker.reveal'}}"
+                {{else}}
+                "{{localize 'emissary.menu.reputationTracker.hide'}}"
+                {{/if}}
+                >
+                    {{#if hidden}}
+                    <i class="fa-solid fa-eye-slash"></i>
+                    {{else}}
+                    <i class="fa-solid fa-eye"></i>
+                    {{/if}}
+                </button>
+                <button
+                class="remove-entity"
+                data-action="deleteEntity"
+                entity-uuid="{{id}}"
                 data-tooltip="{{localize 'emissary.menu.reputationTracker.remove'}}"
                 >
                     <i class="fa-regular fa-trash"></i>
                 </button>
             </span>
-        </span>
-        
+            </span>
+        </div>
         {{/if}}
     </div>
 </div>

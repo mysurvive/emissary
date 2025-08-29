@@ -1,3 +1,12 @@
-<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="interpersonal">
-    Coming Soon!
+<section class="tab interpersonal {{tab.cssClass}}" data-group="primary" data-tab="interpersonal">
+    {{#with reputationData.interpersonal as |category|}}
+        {{#each settings}}
+            {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs" category=category}}
+        {{/each}}
+    {{/with}}
+    <button class="{{#if isGM}}visible{{/if}}" 
+    id="add-entity" 
+    data-action="addEntity">
+        {{localize "emissary.menu.addEntity.titles.person"}}
+    </button>
 </section>
