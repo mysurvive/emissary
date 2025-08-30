@@ -18,8 +18,10 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         imgsrc: undefined,
         enrichedUuid: undefined,
     };
+
     #dragDrop;
     #filePicker;
+
     constructor(parent: ReputationTracker) {
         super();
         this.parent = parent;

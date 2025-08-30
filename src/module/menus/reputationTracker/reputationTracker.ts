@@ -14,6 +14,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     declare hiddenElements;
+
     constructor() {
         super();
         this.hiddenElements = {
@@ -21,6 +22,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             interpersonal: game.settings.get(MODNAME, "interpersonalHiddenElements"),
         };
     }
+
     static override DEFAULT_OPTIONS = {
         id: "reputation-tracker",
         classes: ["emissary", "reputation-tracker"],
@@ -36,7 +38,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         },
     };
 
-    get activeTab() {
+    get activeTab(): string | null | undefined {
         return this.element.querySelector(".tabs .active")?.getAttribute("data-tab");
     }
 
@@ -74,7 +76,13 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             constructor.setFactionReputationLevels();
             constructor.setInterpersonalReputationLevels();
 
-            const reputationData: Record<string, Record<string, any>> = {
+            const reputationData: Record<
+                string,
+                Record<
+                    string,
+                    ClientSettings.SettingInitializedType<"emissary", ClientSettings.KeyFor<"emissary">> | null
+                >
+            > = {
                 faction: {
                     settings: game.settings.get(MODNAME, "factionReputation"),
                     controls: game.settings.get(MODNAME, "factionReputationControls"),
@@ -86,30 +94,32 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             };
 
             for (const type in reputationData) {
-                reputationData[type].settings = Array.from(
-                    await Promise.all(
-                        reputationData[type].settings.map(async (e) => {
-                            if (e.hidden && !game.user.isGM) return undefined;
-                            if (e && e.journalUuid) {
-                                const factionJournal = (await fromUuid(e.journalUuid)) as JournalEntry;
-                                const iconPage = factionJournal.pages.find((p) => p.name === "emissary-icon");
-                                e.imgsrc = iconPage ? iconPage.src : undefined;
-                                e.enrichedUuid = await foundry.applications.ux.TextEditor.enrichHTML(
-                                    `@UUID[${e.journalUuid}]`,
-                                );
-                            }
-                            e.hiddenElements = Object.keys(this.hiddenElements[type]).reduce((acc, key) => {
-                                if (game.user.isGM) {
-                                    acc[key] = false;
-                                } else {
-                                    acc[key] = this.hiddenElements[type][key];
+                if (!reputationData[type].settings) throw "Error";
+                if (Array.isArray(reputationData[type].settings))
+                    reputationData[type].settings = Array.from(
+                        await Promise.all(
+                            reputationData[type].settings.map(async (e) => {
+                                if (e.hidden && !game.user.isGM) return undefined;
+                                if (e && e.journalUuid) {
+                                    const factionJournal = (await fromUuid(e.journalUuid)) as JournalEntry;
+                                    const iconPage = factionJournal.pages.find((p) => p.name === "emissary-icon");
+                                    e.imgsrc = iconPage ? iconPage.src : undefined;
+                                    e.enrichedUuid = await foundry.applications.ux.TextEditor.enrichHTML(
+                                        `@UUID[${e.journalUuid}]`,
+                                    );
                                 }
-                                return acc;
-                            }, {});
-                            return e;
-                        }),
-                    ),
-                ).filter((e) => e !== undefined);
+                                e.hiddenElements = Object.keys(this.hiddenElements[type]).reduce((acc, key) => {
+                                    if (game.user.isGM) {
+                                        acc[key] = false;
+                                    } else {
+                                        acc[key] = this.hiddenElements[type][key];
+                                    }
+                                    return acc;
+                                }, {});
+                                return e;
+                            }),
+                        ),
+                    ).filter((e) => e !== undefined);
             }
 
             const mergedContext = foundry.utils.mergeObject(context, {
@@ -241,7 +251,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         await this.render({ force: true });
     }
 
-    static async hideEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement) {
+    static async hideEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement): Promise<void> {
         const uuid = t.getAttribute("entity-uuid") as UUID;
         let setting;
         switch (this.activeTab) {
