@@ -326,6 +326,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static editEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement): void {
         const id = t.getAttribute("entity-uuid");
+        if (!id) throw "Error extracting ID";
         new EditEntityMenu(this, id).render({ force: true });
     }
 
