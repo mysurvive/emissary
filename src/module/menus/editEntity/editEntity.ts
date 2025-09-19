@@ -66,7 +66,6 @@ class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
         const playerCharacters = game.users
             .map((u) => {
                 const character = u.character;
-                console.log(character);
                 if (character) {
                     const charData = {
                         characterName: character.name,
