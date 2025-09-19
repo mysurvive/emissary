@@ -4,7 +4,7 @@ import { MODNAME } from "src/constants.ts";
 
 import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
-import { FactionReputation } from "../reputationTracker/tabs/types.ts";
+import { EntityReputation } from "../reputationTracker/tabs/types.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -54,6 +54,8 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                 return game.settings.get(MODNAME, "factionReputation");
             case "People":
                 return game.settings.get(MODNAME, "interpersonalReputation");
+            case "Notoriety":
+                return game.settings.get(MODNAME, "notorietyReputation");
             default:
                 return undefined;
         }
@@ -70,23 +72,12 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                 return game.settings.get(MODNAME, "factionReputationIncrement");
             case "People":
                 return game.settings.get(MODNAME, "interpersonalReputationIncrement");
+            case "Notoriety":
+                return game.settings.get(MODNAME, "notorietyReputationIncrement");
             default:
                 return undefined;
         }
     }
-
-    static override DEFAULT_OPTIONS = {
-        tag: "form",
-        position: { width: 400 },
-        form: { submitOnChange: false, closeOnSubmit: true, handler: this.#onSubmit },
-        actions: { openPicker: AddEntityMenu.openPicker },
-    };
-
-    static override PARTS = {
-        footer: {
-            template: "modules/emissary/templates/menu/partials/form-footer.hbs",
-        },
-    };
 
     protected override async _onRender(
         context: DeepPartial<AV2.RenderContext>,
@@ -96,7 +87,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         this.#dragDrop.bind(this.element);
     }
 
-    static async #onSubmit(this: AddEntityMenu, _event, _form, formData): Promise<void> {
+    static async onSubmit(this: AddEntityMenu, _event, _form, formData): Promise<void> {
         const entityReputations = this.entityReputations;
         const entityIncrements = this.reputationIncrements;
         const entityInformation = formData.object;
@@ -104,6 +95,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         if (!entityIncrements) return;
         if (!entityReputations) return;
 
+        // TODO: make more efficient
         for (const repLevel of Object.values(entityIncrements)) {
             if (entityInformation.repNumber <= repLevel.maximum && entityInformation.repNumber >= repLevel.minimum) {
                 entityInformation.repLevel = repLevel.label;
@@ -124,6 +116,9 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                         break;
                     case "People":
                         await game.settings.set(MODNAME, "interpersonalReputation", entityReputationsArray);
+                        break;
+                    case "Notoriety":
+                        await game.settings.set(MODNAME, "notorietyReputation", entityReputationsArray);
                         break;
                     default:
                         break;
@@ -175,7 +170,9 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         return subFolder._id;
     }
 
-    async createEntityJournal(entityInformation: typeof FactionReputation & { imgsrc?; journalUuid }): Promise<string> {
+    async createEntityJournal(
+        entityInformation: EntityReputation & { imgsrc?: string; journalUuid: string },
+    ): Promise<string> {
         const entityIcon =
             entityInformation.imgsrc === "" || !entityInformation.imgsrc ? this.defaultIcon : entityInformation.imgsrc;
         delete entityInformation.imgsrc;
@@ -213,7 +210,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         this.htmlContext = {
             uuid: droppedItem.uuid,
             name: droppedItem.name,
-            imgsrc: droppedItem.pages.find((p) => p.name === "emissary-icon")!.src ?? "cianjorsy.jpg",
+            imgsrc: droppedItem.pages.find((p) => p.name === "emissary-icon")!.src ?? this.defaultIcon,
         };
         this.render({ force: true });
     }

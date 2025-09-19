@@ -3,8 +3,7 @@
     border: 1px solid;
     border-radius: 5px;
     overflow: hidden;
-    margin-top: 0.5em;
-    width: 98%;
+    margin: 0.5em 0.5em 0px 0.5em;
 
     &.stripes {
         background-image: linear-gradient(
@@ -27,7 +26,8 @@
         }
     }
 
-    .entity-box {
+    .entity-box,
+    .player-reputation {
         pointer-events: none;
         display: flex;
         justify-content: space-between;
@@ -44,78 +44,25 @@
             justify-self: center;
         }
     }
-
-    .rollout {
-        margin-top: 0px;
-        max-height: 0px;
-        opacity: 0;
-        transition:
-            all 0.25s ease,
-            margin-top 0s ease 0.25s;
-        transition-behavior: allow-discrete;
-        justify-content: space-between;
+    .entity-information {
+        display: flex;
         width: 100%;
-        display: none;
-        flex-direction: row;
-        flex-wrap: wrap;
-        padding: 5px;
-
-        button {
-            width: 25px;
-            height: 25px;
-            flex-basis: 25px;
-            justify-content: center;
+        img {
+            height: 60px;
+            width: 60px;
         }
-
-        .control-buttons {
-            display: flex;
-            flex-direction: row;
-            margin-top: 15px;
-            justify-content: space-between;
-            width: 100%;
-
-            .reputation-controls {
-                display: flex;
-                flex-direction: row;
-            }
-
-            .meta-controls {
-                display: flex;
-                flex-direction: row;
-            }
-        }
-
-        .entity-information {
-            display: flex;
-            width: 100%;
-            img {
-                height: 60px;
-                width: 60px;
-            }
-            align-items: center;
-        }
-
-        &.active {
-            margin-top: 15px;
-            opacity: 1;
-            max-height: 1000px;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-
-            @starting-style {
-                opacity: 0;
-                max-height: 0px;
-            }
-
-            &.no-transition {
-                transition: none;
-                transition-behavior: unset;
-                @starting-style {
-                }
-            }
-        }
+        align-items: center;
+        margin-bottom: 15px;
     }
+}
+
+.flex-vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+.align-right {
+    align-items: end;
 }
 
 #add-entity {
@@ -124,6 +71,65 @@
     &.visible {
         display: block;
         margin-top: 1em;
-        width: 98%;
+        width: 100%;
+    }
+}
+
+.emissary .rollout {
+    margin-top: 0px;
+    max-height: 0px;
+    opacity: 0;
+    transition:
+        max-height 0.25s ease,
+        opacity 0.25s ease,
+        margin-top 0s ease 0.25s;
+    transition-behavior: allow-discrete;
+    justify-content: space-between;
+    display: none;
+
+    &.active {
+        margin-top: 15px;
+        opacity: 1;
+        max-height: 1000px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+
+        @starting-style {
+            opacity: 0;
+            max-height: 0px;
+        }
+
+        &.no-transition {
+            transition: none;
+            transition-behavior: unset;
+            @starting-style {
+            }
+        }
+    }
+
+    button {
+        width: 25px;
+        height: 25px;
+        flex-basis: 25px;
+        justify-content: center;
+    }
+
+    .control-buttons {
+        display: flex;
+        flex-direction: row;
+        margin: 0.5em;
+        justify-content: space-between;
+        width: auto;
+
+        .reputation-controls {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .meta-controls {
+            display: flex;
+            flex-direction: row;
+        }
     }
 }

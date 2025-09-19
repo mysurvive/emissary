@@ -1,0 +1,18 @@
+<section class="tab notoriety {{tab.cssClass}}" data-group="primary" data-tab="notoriety">
+    {{#with reputationData.notoriety as |category|}}
+        {{#each settings}}
+        {{#if @root.isGM}}
+            {{> "modules/emissary/templates/reputation-tracker/partials/notoriety-item.hbs" category=category}}
+        {{else}}
+        {{#unless hidden}}
+            {{> "modules/emissary/templates/reputation-tracker/partials/notoriety-item-player.hbs"}}
+        {{/unless}}
+        {{/if}}
+        {{/each}}
+    {{/with}}
+    <button class="{{#if isGM}}visible{{/if}}" 
+    id="add-entity" 
+    data-action="addEntity">
+        {{localize "emissary.menu.addEntity.titles.entity"}}
+    </button>
+</section>

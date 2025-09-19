@@ -15,12 +15,14 @@
                 "title": "Emissary Reputation Tracker",
                 "tab": {
                     "faction": "Faction",
-                    "interpersonal": "Interpersonal"
+                    "interpersonal": "Interpersonal",
+                    "notoriety": "Notoriety"
                 },
                 "currentReputation": "Current reputation",
                 "remove": "Remove Entity",
                 "hide": "Hide Entity from players",
-                "reveal": "Reveal Entity to players"
+                "reveal": "Reveal Entity to players",
+                "edit": "Edit Entity"
             },
             "addEntity": {
                 "errors": {
@@ -31,13 +33,22 @@
                 "labels": {
                     "createHidden": "Create hidden",
                     "name": "Name",
+                    "type": "Type",
                     "startingReputation": "Starting Reputation",
-                    "image": "Image"
+                    "image": "Image",
+                    "selectCharacters": "Select characters",
+                    "add": "Add",
+                    "characterName": "Character name",
+                    "editSettings": "Edit settings"
                 },
                 "titles": {
                     "person": "Add Person",
-                    "faction": "Add Faction"
+                    "faction": "Add Faction",
+                    "entity": "Add Entity"
                 }
+            },
+            "alternateSettings": {
+                "title": "Alternate Entity Settings"
             },
             "addFaction": {
                 "title": "Add Faction",
@@ -46,8 +57,9 @@
                     "startingReputation": "Starting Reputation",
                     "image": "Image"
                 },
-                "dropJournal": "Drag an existing journal entry here to link it or click Submit to create a new journal for this faction."
+                "dropJournal": "Drag an existing journal entry here to link it or click Submit to create a new journal for this entity."
             },
+            "editEntity": { "title": "Edit Entity" },
             "templateManager": {
                 "title": "Template Manager",
                 "labels": {
@@ -91,6 +103,8 @@
                         "hint": "Sets the configuration for the reputation gain and loss buttons. Label represents the tooltip for the button. Icons can be found at https://fontawesome.com/. Only enter the classes without the <i> tags."
                     },
                     "hiddenElements": {
+                        "name": "Hidden Elements",
+                        "hint": "Hide the following elements on the Reputation Tracker from players.",
                         "incrementColor": "Increment Color",
                         "incrementName": "Increment Name",
                         "image": "Image",

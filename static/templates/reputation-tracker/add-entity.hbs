@@ -1,0 +1,49 @@
+<section>
+    {{#with inputData}}
+    <div class="input-area">
+        <div class="input-item">
+            <label for="name">{{localize "emissary.menu.addFaction.labels.name"}}: </label>
+            <input type="text" name="name" id="name" value="{{name}}" required></input>
+        </div>
+        <div class="input-item">
+            <label for="type">{{localize "emissary.menu.addEntity.labels.type"}}: </label>
+            <input type="text" name="type" id="type" value="{{type}}" required></input>
+        </div>
+        <div class="input-item">
+            <label for="imgsrc">{{localize "emissary.menu.addFaction.labels.image"}}</label>
+            <input type="text" name="imgsrc" id="imgsrc" value="{{imgsrc}}"></input>
+            <button type="button" data-action="openPicker">{{localize "emissary.menu.generic.buttons.browse"}}</button>
+        </div>
+        <input class="hidden" type="text" name="journalUuid" value="{{uuid}}">
+    </div>
+    <fieldset class="character-select">
+        <legend>{{localize "emissary.menu.addEntity.labels.selectCharacters"}}</legend>
+        <span class="character-item-labels">
+            <span></span>
+            <span>{{localize "emissary.menu.addEntity.labels.characterName"}}</span>
+            <span>{{localize "emissary.menu.addEntity.labels.startingReputation"}}</span>
+        </span>
+        {{#each playerCharacters}}
+        <span class="character-item">
+            <input type="checkbox" name="character-select-{{characterUuid}}" {{#if existing}}checked{{/if}}></input>
+            <label>{{characterName}}</label>
+            <input type="number" name="character-repNumber-{{characterUuid}}" value="{{#if repNumber}}{{repNumber}}{{else}}0{{/if}}" required></input>
+        </span>
+        {{/each}}
+    </fieldset>
+    {{#unless @root.edit}}
+    <div class="input-item">   
+        <label for="hidden">{{localize "emissary.menu.addEntity.labels.createHidden"}}</label>
+        <input type="checkbox" name="hidden" id="hidden">
+    </div>
+    {{/unless}}
+    <div class="dropbox {{#unless uuid}}empty{{/unless}}">
+        {{#if uuid}}
+        {{#if imgsrc}}<img src="{{imgsrc}}">{{/if}}
+        <span>{{{enrichedUuid}}}</span>
+        {{else}}
+        {{localize "emissary.menu.addFaction.dropJournal"}}
+        {{/if}}
+    </div>
+    {{/with}}
+</section>

@@ -1,0 +1,36 @@
+<div class="entity-item" id="{{id}}" 
+{{#unless hiddenElements.incrementColor}}
+style="border-color:{{playerRep.repLevel.color}}" 
+{{/unless}}
+data-action="openRollout">
+    <div class="entity-box">
+        <span class="item-name">
+            {{name}}
+        </span>
+        <span class="flex-vertical align-right">
+            <span>{{type}}</span>
+            <span class="reputation-level"
+            {{#unless hiddenElements.currentReputation}}
+            data-tooltip="{{localize 'emissary.menu.reputationTracker.currentReputation'}}: {{playerRep.repNumber}}"
+            {{/unless}}>
+                {{#unless hiddenElements.incrementName}}
+                {{playerRep.repLevel.label}}
+                {{/unless}}
+            </span>
+        </span>
+    </div>
+    <div class="rollout" id="rollout-{{id}}">
+        <div class="entity-information">
+            {{#unless hiddenElements.image}}
+                {{#if imgsrc}}
+                    <img src="{{imgsrc}}" />
+                {{/if}}
+            {{/unless}}
+            {{#unless hiddenElements.journal}}
+                {{#if journalUuid}}
+                    <span>{{{enrichedUuid}}}</span>
+                {{/if}}
+            {{/unless}}
+        </div>
+    </div>
+</div>

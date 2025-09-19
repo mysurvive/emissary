@@ -8,12 +8,15 @@ class AddPersonMenu extends AddEntityMenu {
         this.entityType = "People";
     }
 
-    static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    static override DEFAULT_OPTIONS = {
         id: "add-person-form",
         classes: ["emissary", "add-entity"],
         tag: "form",
         window: { title: "emissary.menu.addEntity.titles.person" },
-    });
+        position: { width: 400 },
+        form: { submitOnChange: false, closeOnSubmit: true, handler: this.onSubmit },
+        actions: { openPicker: this.openPicker },
+    };
 
     static override PARTS = {
         form: {

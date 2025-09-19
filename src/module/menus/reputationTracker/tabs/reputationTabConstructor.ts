@@ -7,8 +7,12 @@ export class ReputationTabConstructor {
             controls: game.settings.get(MODNAME, "factionReputationControls"),
         },
         interpersonal: {
-            settings: game.settings.get("emissary", "interpersonalReputation"),
+            settings: game.settings.get(MODNAME, "interpersonalReputation"),
             controls: game.settings.get(MODNAME, "interpersonalReputationControls"),
+        },
+        notoriety: {
+            settings: game.settings.get(MODNAME, "notorietyReputation"),
+            controls: game.settings.get(MODNAME, "notorietyReputationControls"),
         },
     };
 
@@ -34,6 +38,29 @@ export class ReputationTabConstructor {
                 if (entity.repNumber <= repLevel.maximum && entity.repNumber >= repLevel.minimum) {
                     entity.repLevel = { label: repLevel.label, color: repLevel.color };
                 } else continue;
+            }
+        }
+    }
+
+    async setNotorietyReputationLevels(): Promise<void> {
+        if (!this.reputation.notoriety.settings || !Array.isArray(this.reputation.notoriety.settings)) throw "Error";
+        for (const entity of Object.values(this.reputation.notoriety.settings)) {
+            if (!entity || !entity.playerRep || !entity.increments || !Array.isArray(entity.increments)) continue;
+            for (const character of Object.values(entity.playerRep)) {
+                const repLevel = entity.increments.find((i) => {
+                    if (
+                        i &&
+                        i.maximum &&
+                        i.minimum &&
+                        i.maximum >= character.repNumber &&
+                        i.minimum <= character.repNumber
+                    ) {
+                        return i;
+                    } else {
+                        return undefined;
+                    }
+                });
+                character.repLevel = { color: repLevel?.color, label: repLevel?.label };
             }
         }
     }

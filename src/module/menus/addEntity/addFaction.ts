@@ -8,12 +8,15 @@ class AddFactionMenu extends AddEntityMenu {
         this.entityType = "Factions";
     }
 
-    static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    static override DEFAULT_OPTIONS = {
         id: "add-faction-form",
         classes: ["emissary", "add-entity"],
         tag: "form",
         window: { title: "emissary.menu.addFaction.title" },
-    });
+        position: { width: 400 },
+        form: { submitOnChange: false, closeOnSubmit: true, handler: this.onSubmit },
+        actions: { openPicker: AddEntityMenu.openPicker },
+    };
 
     static override PARTS = {
         form: {
