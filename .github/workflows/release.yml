@@ -101,6 +101,7 @@ jobs:
         run: zip -r ../${{ env.package_type }}.zip .
 
       - name: Get Changelog Body
+        if: ${{ !github.event.release.prerelease }}
         id: changelog
         uses: release-flow/keep-a-changelog-action@v3
         with:
