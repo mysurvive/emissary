@@ -4,6 +4,7 @@ import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/c
 import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
 import { UUID } from "crypto";
 import { clamp } from "../helpers.ts";
+import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
@@ -12,7 +13,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
     declare entityToEdit;
     declare parent;
 
-    constructor(parent, entityId) {
+    constructor(parent: ReputationTracker, entityId: string) {
         super();
 
         this.parent = parent;
@@ -127,12 +128,12 @@ class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
         return mergedContext;
     }
 
-    static async #onSubmit(this: EditEntityMenu, _event: any, _form: any, formData: any): Promise<void> {
+    static async #onSubmit(this: EditEntityMenu, _event, _form, formData): Promise<void> {
         const entityInformation = formData.object;
 
         // Normalize the settings
         const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        let normalizedSettings: Record<string, unknown> = settingKeys.reduce((acc, key) => {
+        const normalizedSettings: Record<string, unknown> = settingKeys.reduce((acc, key) => {
             const [settingName, index, subsetting] = key.split("-");
             if (settingName === "character") return acc;
             if (!isNaN(parseFloat(index))) {

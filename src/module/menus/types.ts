@@ -3,6 +3,7 @@ import defaultSettingsJSON from "static/settingPresets/default/defaultSettingsTe
 import pf2eSettingsJSON from "static/settingPresets/pf2e/pf2eSettingsTemplate.json" with { type: "json" };
 
 import fields = foundry.data.fields;
+import { DataField } from "node_modules/fvtt-types/src/foundry/common/data/fields.d.mts";
 
 export type FooterButtons = Record<string, FormFooterButton>;
 
@@ -37,7 +38,7 @@ export interface EmissarySettings {
 
 // Reputation Controls
 
-export const defineReputationControlsSchema = () => {
+export const defineReputationControlsSchema = (): Record<string, DataField<Record<string, boolean>>> => {
     return {
         label: new fields.StringField({ required: true }),
         amount: new fields.NumberField({ required: true }),
@@ -49,7 +50,7 @@ export const reputationControls = new fields.ArrayField(new fields.SchemaField(d
 
 // Reputation Ranges
 
-export const defineReputationRangeSchema = () => {
+export const defineReputationRangeSchema = (): Record<string, DataField<Record<string, boolean>>> => {
     return {
         minimum: new fields.NumberField({ required: true }),
         maximum: new fields.NumberField({ required: true }),
@@ -60,7 +61,7 @@ export const reputationRange = new fields.SchemaField(defineReputationRangeSchem
 
 // Reputation Increments
 
-export const defineReputationIncrementsSchema = () => {
+export const defineReputationIncrementsSchema = (): Record<string, DataField<Record<string, boolean>>> => {
     return {
         label: new fields.StringField({ required: true }),
         minimum: new fields.NumberField({ required: true, nullable: false }),

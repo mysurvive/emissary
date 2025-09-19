@@ -1,6 +1,7 @@
 import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
+import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
@@ -9,10 +10,9 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     declare parent;
     declare alternateSettings;
 
-    constructor(parent, alternateSettings?) {
+    constructor(parent: AddNotorietyMenu) {
         super();
         this.parent = parent;
-        this.alternateSettings = alternateSettings;
     }
 
     static override DEFAULT_OPTIONS = {
@@ -101,7 +101,7 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         _event,
         _form,
         formData: foundry.applications.ux.FormDataExtended,
-    ): Promise<any> {
+    ): Promise<void> {
         const settingKeys = Object.keys(formData.object as Record<string, unknown>);
         const normalizedSettings = settingKeys.reduce((acc, key) => {
             const [settingName, index, subsetting] = key.split("-");

@@ -62,7 +62,7 @@ class AddNotorietyMenu extends AddEntityMenu {
         await new AlternateSettingsMenu(this).render({ force: true });
     }
 
-    static async #onSubmit(this: AddNotorietyMenu, _event: any, _form: any, formData: any): Promise<void> {
+    static async #onSubmit(this: AddNotorietyMenu, _event, _form, formData): Promise<void> {
         const entityInformation = formData.object;
 
         const characterOpts = Object.keys(entityInformation)
