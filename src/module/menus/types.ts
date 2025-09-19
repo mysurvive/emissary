@@ -3,7 +3,7 @@ import defaultSettingsJSON from "static/settingPresets/default/defaultSettingsTe
 import pf2eSettingsJSON from "static/settingPresets/pf2e/pf2eSettingsTemplate.json" with { type: "json" };
 
 import fields = foundry.data.fields;
-import { DataField } from "node_modules/fvtt-types/src/foundry/common/data/fields.d.mts";
+import { DataField } from "node_modules/fvtt-types/src/foundry/common/data/fields.mts";
 
 export type FooterButtons = Record<string, FormFooterButton>;
 
