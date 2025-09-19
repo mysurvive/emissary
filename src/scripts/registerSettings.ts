@@ -1,5 +1,9 @@
 import { MODNAME } from "src/constants.ts";
-import { FactionReputation, IndividualReputation } from "src/module/menus/reputationTracker/tabs/types.ts";
+import {
+    FactionReputation,
+    IndividualReputation,
+    NotorietyReputation,
+} from "src/module/menus/reputationTracker/tabs/types.ts";
 import { ReputationSettingsMenu } from "src/module/menus/settings/reputationSettingsMenu.ts";
 import {
     hiddenElements,
@@ -29,7 +33,6 @@ export function registerSettings(): void {
     // Faction Settings
 
     game.settings.register(MODNAME, "factionReputation", {
-        name: "Faction Reputations",
         scope: "world",
         config: false,
         type: FactionReputation,
@@ -37,8 +40,6 @@ export function registerSettings(): void {
     });
 
     game.settings.register(MODNAME, "factionReputationRange", {
-        name: "Faction Reputation Range",
-        hint: "Set the minimum and the maximum range for faction reputation.",
         scope: "world",
         config: false,
         type: reputationRange,
@@ -46,7 +47,6 @@ export function registerSettings(): void {
     });
 
     game.settings.register(MODNAME, "factionReputationIncrement", {
-        name: "Faction Reputation Increment",
         scope: "world",
         config: false,
         type: reputationIncrements,
@@ -62,53 +62,6 @@ export function registerSettings(): void {
     });
 
     game.settings.register(MODNAME, "factionReputationControls", {
-        name: "Faction Reputation Controls",
-        scope: "world",
-        config: false,
-        type: reputationControls,
-        default: [
-            { label: "Terrible Impression", amount: -5, icon: "fa-regular fa-face-nose-steam" },
-            { label: "Poor Impression", amount: -2, icon: "fa-regular fa-face-angry" },
-            { label: "Good Impression", amount: 2, icon: "fa-regular fa-face-smile" },
-            { label: "Great Impression", amount: 5, icon: "fa-regular fa-face-smile-hearts" },
-        ],
-    });
-
-    // Interpersonal Settings
-
-    game.settings.register(MODNAME, "interpersonalReputation", {
-        name: "Interpersonal Reputations",
-        scope: "world",
-        config: false,
-        type: IndividualReputation,
-        default: [],
-    });
-
-    game.settings.register(MODNAME, "interpersonalReputationRange", {
-        name: "Interpersonal Reputation Range",
-        hint: "Set the minimum and the maximum range for interpersonal reputation.",
-        scope: "world",
-        config: false,
-        type: reputationRange,
-        default: { minimum: -10, maximum: 10 },
-    });
-
-    game.settings.register(MODNAME, "interpersonalReputationIncrement", {
-        name: "Interpersonal Reputation Increment",
-        scope: "world",
-        config: false,
-        type: reputationIncrements,
-        default: [
-            { label: "Hated", minimum: -10, maximum: -5, color: "#FF0000" },
-            { label: "Unhappy", minimum: -4, maximum: -2, color: "#FFA500" },
-            { label: "Neutral", minimum: -1, maximum: 1, color: "#FFFFFF" },
-            { label: "Happy", minimum: 2, maximum: 4, color: "#9acd32" },
-            { label: "Honored", minimum: 5, maximum: 10, color: "#008000" },
-        ],
-    });
-
-    game.settings.register(MODNAME, "interpersonalReputationControls", {
-        name: "Interpersonal Reputation Controls",
         scope: "world",
         config: false,
         type: reputationControls,
@@ -126,7 +79,95 @@ export function registerSettings(): void {
         type: hiddenElements,
     });
 
+    // Interpersonal Settings
+
+    game.settings.register(MODNAME, "interpersonalReputation", {
+        scope: "world",
+        config: false,
+        type: IndividualReputation,
+        default: [],
+    });
+
+    game.settings.register(MODNAME, "interpersonalReputationRange", {
+        scope: "world",
+        config: false,
+        type: reputationRange,
+        default: { minimum: -10, maximum: 10 },
+    });
+
+    game.settings.register(MODNAME, "interpersonalReputationIncrement", {
+        scope: "world",
+        config: false,
+        type: reputationIncrements,
+        default: [
+            { label: "Hated", minimum: -10, maximum: -5, color: "#FF0000" },
+            { label: "Unhappy", minimum: -4, maximum: -2, color: "#FFA500" },
+            { label: "Neutral", minimum: -1, maximum: 1, color: "#FFFFFF" },
+            { label: "Happy", minimum: 2, maximum: 4, color: "#9acd32" },
+            { label: "Honored", minimum: 5, maximum: 10, color: "#008000" },
+        ],
+    });
+
+    game.settings.register(MODNAME, "interpersonalReputationControls", {
+        scope: "world",
+        config: false,
+        type: reputationControls,
+        default: [
+            { label: "Terrible Impression", amount: -5, icon: "fa-regular fa-face-nose-steam" },
+            { label: "Poor Impression", amount: -2, icon: "fa-regular fa-face-angry" },
+            { label: "Good Impression", amount: 2, icon: "fa-regular fa-face-smile" },
+            { label: "Great Impression", amount: 5, icon: "fa-regular fa-face-smile-hearts" },
+        ],
+    });
+
     game.settings.register(MODNAME, "interpersonalHiddenElements", {
+        scope: "world",
+        config: false,
+        type: hiddenElements,
+    });
+
+    // Notoriety Settings
+
+    game.settings.register(MODNAME, "notorietyReputation", {
+        scope: "world",
+        config: false,
+        type: NotorietyReputation,
+        default: [],
+    });
+
+    game.settings.register(MODNAME, "notorietyReputationRange", {
+        scope: "world",
+        config: false,
+        type: reputationRange,
+        default: { minimum: -10, maximum: 10 },
+    });
+
+    game.settings.register(MODNAME, "notorietyReputationIncrement", {
+        scope: "world",
+        config: false,
+        type: reputationIncrements,
+        default: [
+            { label: "Hated", minimum: -10, maximum: -5, color: "#FF0000" },
+            { label: "Unhappy", minimum: -4, maximum: -2, color: "#FFA500" },
+            { label: "Neutral", minimum: -1, maximum: 1, color: "#FFFFFF" },
+            { label: "Happy", minimum: 2, maximum: 4, color: "#9acd32" },
+            { label: "Honored", minimum: 5, maximum: 10, color: "#008000" },
+        ],
+    });
+
+    game.settings.register(MODNAME, "notorietyReputationControls", {
+        scope: "world",
+        config: false,
+        type: reputationControls,
+        default: [
+            { label: "Terrible Impression", amount: -5, icon: "fa-regular fa-face-nose-steam" },
+            { label: "Poor Impression", amount: -2, icon: "fa-regular fa-face-angry" },
+            { label: "Good Impression", amount: 2, icon: "fa-regular fa-face-smile" },
+            { label: "Great Impression", amount: 5, icon: "fa-regular fa-face-smile-hearts" },
+        ],
+    });
+
+    game.settings.register(MODNAME, "notorietyHiddenElements", {
         scope: "world",
         config: false,
         type: hiddenElements,

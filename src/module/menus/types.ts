@@ -37,7 +37,7 @@ export interface EmissarySettings {
 
 // Reputation Controls
 
-const defineReputationControlsSchema = () => {
+export const defineReputationControlsSchema = () => {
     return {
         label: new fields.StringField({ required: true }),
         amount: new fields.NumberField({ required: true }),
@@ -49,7 +49,7 @@ export const reputationControls = new fields.ArrayField(new fields.SchemaField(d
 
 // Reputation Ranges
 
-const defineReputationRangeSchema = () => {
+export const defineReputationRangeSchema = () => {
     return {
         minimum: new fields.NumberField({ required: true }),
         maximum: new fields.NumberField({ required: true }),
@@ -60,16 +60,21 @@ export const reputationRange = new fields.SchemaField(defineReputationRangeSchem
 
 // Reputation Increments
 
-const defineReputationIncrementsSchema = () => {
+export const defineReputationIncrementsSchema = () => {
     return {
         label: new fields.StringField({ required: true }),
-        minimum: new fields.NumberField({ required: true }),
+        minimum: new fields.NumberField({ required: true, nullable: false }),
         maximum: new fields.NumberField({ required: true }),
         color: new fields.ColorField({ required: true }),
     };
 };
 
-export const reputationIncrements = new fields.ArrayField(new fields.SchemaField(defineReputationIncrementsSchema()));
+export const reputationIncrements = new fields.ArrayField(
+    new fields.SchemaField(defineReputationIncrementsSchema(), { required: true }),
+    {
+        required: true,
+    },
+);
 
 // Settings DataModel
 

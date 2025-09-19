@@ -4,125 +4,17 @@
     overflow-y: auto;
     margin-top: 20px;
 
-    .setting-category {
-        .title-header {
-            h1 {
-                margin: 0 0 0 10px;
-                line-height: normal;
-            }
-            pointer-events: none;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
+    .title-header {
+        h1 {
+            margin: 0 0 0 10px;
+            line-height: normal;
         }
-        .rollout {
-            margin-top: 0px;
-            max-height: 0px;
-            opacity: 0;
-            transition:
-                max-height 0.25s ease,
-                opacity 0.25s ease,
-                margin-top 0s ease 0.25s;
-            transition-behavior: allow-discrete;
-            justify-content: space-between;
-            display: none;
-
-            &.active {
-                margin-top: 15px;
-                opacity: 1;
-                max-height: 1000px;
-                display: flex;
-                flex-direction: column;
-
-                @starting-style {
-                    opacity: 0;
-                    max-height: 0px;
-                }
-
-                &.no-transition {
-                    transition: none;
-                    transition-behavior: unset;
-                    @starting-style {
-                    }
-                }
-
-                .setting {
-                    display: flex;
-                    justify-content: space-between;
-                    align-content: center;
-                    max-height: 1000px;
-                    width: 98%;
-                    margin-top: 15px;
-
-                    .title {
-                        display: flex;
-                        justify-content: space-between;
-                        flex-direction: row;
-                    }
-
-                    &.vertical {
-                        flex-direction: column;
-                    }
-
-                    .array-setting {
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                    }
-
-                    .info {
-                        display: flex;
-                        flex-direction: column;
-                        width: 100%;
-
-                        .hint {
-                            margin-top: 5px;
-                            padding-left: 10px;
-                            font-style: italic;
-                        }
-                    }
-
-                    .sub-settings {
-                        margin-top: 10px;
-                        flex-direction: column;
-
-                        .specific-setting {
-                            display: flex;
-                            justify-content: right;
-                            align-items: center;
-
-                            input {
-                                text-align: right;
-                                margin-left: 2px;
-                                flex-grow: 1;
-                                max-width: 120px;
-
-                                &[type="checkbox"] {
-                                    width: auto;
-                                    max-width: min-content;
-                                }
-                            }
-                        }
-
-                        .array-setting {
-                            margin-bottom: 3px;
-                        }
-
-                        .add-row-button {
-                            margin-left: auto;
-                            margin-right: 0;
-                        }
-
-                        button {
-                            width: 28px;
-                            height: 28px;
-                            margin-left: 10px;
-                        }
-                    }
-                }
-            }
-        }
+        pointer-events: none;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
     }
+
     &.preview {
         h1 {
             justify-self: center;
@@ -141,6 +33,81 @@
         }
         .entity-item {
             margin-bottom: 15px;
+        }
+    }
+
+    .setting {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        max-height: 1000px;
+        width: 98%;
+        margin-top: 15px;
+
+        .title {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+        }
+
+        &.vertical {
+            flex-direction: column;
+        }
+
+        .array-setting {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            .hint {
+                margin-top: 5px;
+                padding-left: 10px;
+                font-style: italic;
+            }
+        }
+
+        .sub-settings {
+            margin-top: 10px;
+            flex-direction: column;
+
+            .specific-setting {
+                display: flex;
+                justify-content: right;
+                align-items: center;
+
+                input {
+                    text-align: right;
+                    margin-left: 2px;
+                    flex-grow: 1;
+                    max-width: 120px;
+
+                    &[type="checkbox"] {
+                        width: auto;
+                        max-width: min-content;
+                    }
+                }
+            }
+
+            .array-setting {
+                margin-bottom: 3px;
+            }
+
+            .add-row-button {
+                margin-left: auto;
+                margin-right: 0;
+            }
+
+            button {
+                width: 28px;
+                height: 28px;
+                margin-left: 10px;
+            }
         }
     }
 }

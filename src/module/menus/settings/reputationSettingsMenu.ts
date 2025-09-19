@@ -277,8 +277,8 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                         game.settings.get(MODNAME, "factionReputationControls"),
                 },
                 {
-                    settingName: "Hidden Elements",
-                    hint: "Hide the following elements on the Reputation Tracker from players.",
+                    settingName: "emissary.menu.reputationSettings.settings.hiddenElements.name",
+                    hint: "emissary.menu.reputationSettings.settings.hiddenElements.hint",
                     type: "checkboxes",
                     id: "factionHiddenElements",
                     settingValue: game.settings.get(MODNAME, "factionHiddenElements"),
@@ -315,11 +315,49 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                         game.settings.get(MODNAME, "interpersonalReputationControls"),
                 },
                 {
-                    settingName: "Hidden Elements",
-                    hint: "Hide the following elements on the Reputation Tracker from players.",
+                    settingName: "emissary.menu.reputationSettings.settings.hiddenElements.name",
+                    hint: "emissary.menu.reputationSettings.settings.hiddenElements.hint",
                     type: "checkboxes",
                     id: "interpersonalHiddenElements",
                     settingValue: game.settings.get(MODNAME, "interpersonalHiddenElements"),
+                },
+            ],
+            notoriety: [
+                {
+                    settingName: "emissary.menu.reputationSettings.settings.reputationRange.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationRange.hint",
+                    type: "reputationRange",
+                    id: "notorietyReputationRange",
+                    settingValue:
+                        this.template?.notorietyReputationRange ??
+                        game.settings.get(MODNAME, "notorietyReputationRange"),
+                },
+                {
+                    settingName: "emissary.menu.reputationSettings.settings.reputationIncrement.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationIncrement.hint",
+                    type: "settingsArray",
+                    subtype: "increment",
+                    id: "notorietyReputationIncrement",
+                    settingValue:
+                        this.template?.notorietyReputationIncrement ??
+                        game.settings.get(MODNAME, "notorietyReputationIncrement"),
+                },
+                {
+                    settingName: "emissary.menu.reputationSettings.settings.reputationControls.name",
+                    hint: "emissary.menu.reputationSettings.settings.reputationControls.hint",
+                    type: "settingsArray",
+                    subtype: "control",
+                    id: "notorietyReputationControls",
+                    settingValue:
+                        this.template?.notorietyReputationControls ??
+                        game.settings.get(MODNAME, "notorietyReputationControls"),
+                },
+                {
+                    settingName: "emissary.menu.reputationSettings.settings.hiddenElements.name",
+                    hint: "emissary.menu.reputationSettings.settings.hiddenElements.hint",
+                    type: "checkboxes",
+                    id: "notorietyHiddenElements",
+                    settingValue: game.settings.get(MODNAME, "notorietyHiddenElements"),
                 },
             ],
         };
@@ -365,15 +403,19 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
             ? await renderTemplate("modules/emissary/templates/menu/partials/reputationIncrement.hbs", {
                   key: Number(lastChild.getAttribute("key")) + 1,
                   id: lastChild.id,
-                  color: "#f000",
+                  color: "#000000",
               })
             : await renderTemplate("modules/emissary/templates/menu/partials/reputationControls.hbs", {
                   key: Number(lastChild.getAttribute("key")) + 1,
                   id: lastChild.id,
               });
         settingsArray?.insertAdjacentHTML("beforeend", template);
-        const category = lastChild.id.includes("faction") ? "faction" : "interpersonal";
-        this.previewSettings.changeSettings[category][lastChild.id].push({});
+        const category = lastChild.id.includes("faction")
+            ? "faction"
+            : lastChild.id.includes("interpersonal")
+              ? "interpersonal"
+              : "notoriety";
+        if (category !== "notoriety") this.previewSettings.changeSettings[category][lastChild.id].push({});
         this.render({ parts: ["preview"] });
     }
 
@@ -382,8 +424,12 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         if (!element) throw "Error";
         const key = element.getAttribute("key");
         if (!key) throw "Error";
-        const category = element.id.includes("faction") ? "faction" : "interpersonal";
-        this.previewSettings.changeSettings[category][element.id].splice([key], 1);
+        const category = element.id.includes("faction")
+            ? "faction"
+            : element.id.includes("interpersonal")
+              ? "interpersonal"
+              : "notoriety";
+        if (category !== "notoriety") this.previewSettings.changeSettings[category][element.id].splice([key], 1);
         const settingsArray = element.closest(".settings-array")?.children;
         if (settingsArray)
             for (const el of settingsArray) {

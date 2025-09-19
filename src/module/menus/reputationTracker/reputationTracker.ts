@@ -9,6 +9,9 @@ import type {
 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 import { MODNAME } from "src/constants.ts";
 import { AddPersonMenu } from "../addEntity/addPerson.ts";
+import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
+import { clamp } from "../helpers.ts";
+import { EditEntityMenu } from "../editEntity/editEntity.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -20,6 +23,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         this.hiddenElements = {
             faction: game.settings.get(MODNAME, "factionHiddenElements"),
             interpersonal: game.settings.get(MODNAME, "interpersonalHiddenElements"),
+            notoriety: game.settings.get(MODNAME, "notorietyHiddenElements"),
         };
     }
 
@@ -35,6 +39,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             deleteEntity: ReputationTracker.deleteEntity,
             updateReputation: ReputationTracker.updateReputation,
             hideEntity: ReputationTracker.hideEntity,
+            editEntity: ReputationTracker.editEntity,
         },
     };
 
@@ -53,6 +58,14 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             templates: ["modules/emissary/templates/reputation-tracker/partials/faction-item.hbs"],
             id: "faction",
         },
+        notoriety: {
+            template: "modules/emissary/templates/reputation-tracker/notoriety.hbs",
+            templates: [
+                "modules/emissary/templates/reputation-tracker/partials/notoriety-item.hbs",
+                "modules/emissary/templates/reputation-tracker/partials/notoriety-item-player.hbs",
+            ],
+            id: "notoriety",
+        },
     };
 
     static override TABS = {
@@ -60,6 +73,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             tabs: [
                 { id: "faction", cssClass: "" },
                 { id: "interpersonal", cssClass: "" },
+                { id: "notoriety", cssClass: "" },
             ],
             labelPrefix: "emissary.menu.reputationTracker.tab",
             initial: "faction",
@@ -75,6 +89,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             const constructor = new ReputationTabConstructor();
             constructor.setFactionReputationLevels();
             constructor.setInterpersonalReputationLevels();
+            constructor.setNotorietyReputationLevels();
 
             const reputationData: Record<
                 string,
@@ -91,7 +106,21 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                     settings: game.settings.get(MODNAME, "interpersonalReputation"),
                     controls: game.settings.get(MODNAME, "interpersonalReputationControls"),
                 },
+                notoriety: {
+                    settings: game.settings.get(MODNAME, "notorietyReputation"),
+                    controls: game.settings.get(MODNAME, "notorietyReputationControls"),
+                },
             };
+
+            if (!game.user.isGM) {
+                const notorietySettings = game.settings.get(MODNAME, "notorietyReputation");
+                if (Array.isArray(notorietySettings))
+                    for (const rep of notorietySettings) {
+                        if (rep && rep.playerRep && Array.isArray(rep.playerRep))
+                            rep.playerRep = rep.playerRep.find((r) => r!.characterUuid === game.user.character?.uuid);
+                    }
+                reputationData.notoriety.settings = notorietySettings;
+            }
 
             for (const type in reputationData) {
                 if (!reputationData[type].settings) throw "Error";
@@ -102,7 +131,9 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                                 if (e.hidden && !game.user.isGM) return undefined;
                                 if (e && e.journalUuid) {
                                     const factionJournal = (await fromUuid(e.journalUuid)) as JournalEntry;
-                                    const iconPage = factionJournal.pages.find((p) => p.name === "emissary-icon");
+                                    const iconPage = factionJournal?.pages
+                                        ? factionJournal.pages.find((p) => p.name === "emissary-icon")
+                                        : undefined;
                                     e.imgsrc = iconPage ? iconPage.src : undefined;
                                     e.enrichedUuid = await foundry.applications.ux.TextEditor.enrichHTML(
                                         `@UUID[${e.journalUuid}]`,
@@ -163,6 +194,9 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             case "interpersonal":
                 new AddPersonMenu(this).render({ force: true });
                 break;
+            case "notoriety":
+                new AddNotorietyMenu(this).render({ force: true });
+                break;
             default:
                 throw "No active tab";
         }
@@ -178,6 +212,9 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 break;
             case "interpersonal":
                 setting = "interpersonalReputation";
+                break;
+            case "notoriety":
+                setting = "notorietyReputation";
                 break;
             default:
                 break;
@@ -200,8 +237,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         const target = e.target as HTMLDivElement;
         const rollout = target.getElementsByClassName("rollout") as HTMLCollectionOf<HTMLDivElement>;
         for (const r of rollout) {
-            if (r.classList.contains("no-transition")) r.classList.remove("no-transition");
-            r.classList.toggle("active");
+            if (r.id === `rollout-${target.id}`) {
+                if (r.classList.contains("no-transition")) r.classList.remove("no-transition");
+                r.classList.toggle("active");
+            }
         }
     }
 
@@ -223,32 +262,71 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                     range: game.settings.get(MODNAME, "interpersonalReputationRange"),
                 };
                 break;
+            case "notoriety":
+                settings = {
+                    reputations: "notorietyReputation",
+                };
+                break;
             default:
                 break;
         }
+        if (this.activeTab === "faction" || this.activeTab === "interpersonal") {
+            const entityReputation = game.settings.get(MODNAME, settings.reputations);
+            if (!entityReputation) return;
+            const entityReputations = Object.values(entityReputation);
 
-        const entityReputation = game.settings.get(MODNAME, settings.reputations);
-        if (!entityReputation) return;
-        const entityReputations = Object.values(entityReputation);
+            const entity = entityReputations
+                .map((f) => {
+                    return f.id;
+                })
+                .indexOf(uuid);
 
-        const entity = entityReputations
-            .map((f) => {
-                return f.id;
-            })
-            .indexOf(uuid);
+            entityReputations[entity].repNumber += value;
 
-        entityReputations[entity].repNumber += value;
+            const repRange = settings.range;
+            if (!repRange) return;
+            entityReputation[entity].repNumber = clamp(
+                entityReputation[entity].repNumber,
+                repRange.minimum,
+                repRange.maximum,
+            );
 
-        const repRange = settings.range;
-        if (!repRange) return;
-        if (repRange.minimum && entityReputations[entity].repNumber < repRange.minimum)
-            entityReputation[entity].repNumber = repRange.minimum;
-        if (repRange.maximum && entityReputations[entity].repNumber > repRange.maximum)
-            entityReputation[entity].repNumber = repRange.maximum;
+            await game.settings.set(MODNAME, settings.reputations, entityReputation);
 
-        await game.settings.set(MODNAME, settings.reputations, entityReputation);
+            await this.render({ force: true });
+        } else if (this.activeTab === "notoriety") {
+            const entityReputation = game.settings.get(MODNAME, settings.reputations);
+            if (!entityReputation) return;
+            const entityReputations = Object.values(entityReputation);
 
-        await this.render({ force: true });
+            const entity = entityReputations
+                .map((f) => {
+                    return f.id;
+                })
+                .indexOf(uuid);
+
+            const characterUuid = t.getAttribute("character-uuid");
+            const characterIndex = entityReputations[entity].playerRep
+                .map((f) => f.characterUuid)
+                .indexOf(characterUuid);
+
+            const repRange = entityReputations[entity].range;
+            if (!repRange) return;
+            entityReputations[entity].playerRep[characterIndex].repNumber = clamp(
+                entityReputations[entity].playerRep[characterIndex].repNumber + value,
+                repRange.minimum,
+                repRange.maximum,
+            );
+
+            await game.settings.set(MODNAME, settings.reputations, entityReputation);
+
+            await this.render({ force: true });
+        }
+    }
+
+    static editEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement): void {
+        const id = t.getAttribute("entity-uuid");
+        new EditEntityMenu(this, id).render({ force: true });
     }
 
     static async hideEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement): Promise<void> {
@@ -260,6 +338,9 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 break;
             case "interpersonal":
                 setting = "interpersonalReputation";
+                break;
+            case "notoriety":
+                setting = "notorietyReputation";
                 break;
             default:
                 break;

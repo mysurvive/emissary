@@ -1,4 +1,24 @@
 .add-entity {
+    fieldset.character-select {
+        margin-top: 5px;
+        margin-bottom: 10px;
+
+        .character-item,
+        .character-item-labels {
+            display: grid;
+            grid-template-columns: 1fr 6fr 2fr;
+            align-items: center;
+        }
+
+        .character-item-labels {
+            margin-bottom: 5px;
+        }
+
+        .character-item {
+            margin-bottom: 3px;
+        }
+    }
+
     .input-area {
         display: flex;
         flex-wrap: wrap;
