@@ -3,15 +3,15 @@ import {
     FactionReputation,
     IndividualReputation,
     NotorietyReputation,
-} from "src/module/menus/reputationTracker/tabs/types.ts";
-import { ReputationSettingsMenu } from "src/module/menus/settings/reputationSettingsMenu.ts";
+} from "../module/menus/reputationTracker/tabs/types.ts";
+import { ReputationSettingsMenu } from "../module/menus/settings/reputationSettingsMenu.ts";
 import {
     hiddenElements,
     reputationControls,
     reputationIncrements,
     reputationRange,
     reputationSettingsTemplates,
-} from "src/module/menus/types.ts";
+} from "../module/menus/types.ts";
 
 export function registerSettings(): void {
     /**

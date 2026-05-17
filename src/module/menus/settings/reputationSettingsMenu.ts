@@ -1,17 +1,14 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
 import { EmissarySettings, reputationSettingsTemplates, SettingsMenuObject } from "../types.ts";
-import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
-import type {
-    ApplicationV2,
-    HandlebarsApplicationMixin as hbs,
-} from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
+import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import { TemplateManagerMenu } from "../templateManager/templateManager.ts";
 
-const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 
-class ReputationSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
+class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare template;
     declare previewSettings;
 

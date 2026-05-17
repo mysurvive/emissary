@@ -1,13 +1,13 @@
 import { DeepPartial } from "fvtt-types/utils";
-import { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.mts";
-import ApplicationV2 from "node_modules/fvtt-types/src/foundry/client/applications/api/application.mts";
+import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
 import { AlternateSettingsMenu } from "../alternateSettings/alternateSettings.ts";
 import { MODNAME } from "src/constants.ts";
 
 class AddNotorietyMenu extends AddEntityMenu {
-    declare alternateSettings;
+    declare alternateSettings: any;
     constructor(parent: ReputationTracker) {
         super(parent);
         this.defaultIcon = "icons/svg/mystery-man.svg";
@@ -62,12 +62,17 @@ class AddNotorietyMenu extends AddEntityMenu {
         await new AlternateSettingsMenu(this).render({ force: true });
     }
 
-    static async #onSubmit(this: AddNotorietyMenu, _event, _form, formData): Promise<void> {
+    static async #onSubmit(
+        this: AddNotorietyMenu,
+        _event: Event,
+        _form: HTMLFormElement,
+        formData: FormDataExtended,
+    ): Promise<void> {
         const entityInformation = formData.object;
 
         const characterOpts = Object.keys(entityInformation)
             .filter((e) => e.includes("character"))
-            .reduce((acc, key) => {
+            .reduce((acc: any, key) => {
                 const [_a, subkey, uuid] = key.split("-");
                 acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
                 delete entityInformation[key];

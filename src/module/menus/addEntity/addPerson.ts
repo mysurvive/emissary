@@ -28,7 +28,12 @@ class AddPersonMenu extends AddEntityMenu {
         },
     };
 
-    static async #onSubmit(this: AddEntityMenu, _event, _form, formData): Promise<void> {
+    static async #onSubmit(
+        this: AddEntityMenu,
+        _event: Event,
+        _form: HTMLFormElement,
+        formData: FormDataExtended,
+    ): Promise<void> {
         const entityReputations = this.entityReputations;
         const entityIncrements = this.reputationIncrements;
         const entityInformation = formData.object;
@@ -38,7 +43,11 @@ class AddPersonMenu extends AddEntityMenu {
 
         // TODO: make more efficient
         for (const repLevel of Object.values(entityIncrements)) {
-            if (entityInformation.repNumber <= repLevel.maximum && entityInformation.repNumber >= repLevel.minimum) {
+            if (
+                entityInformation.repNumber &&
+                entityInformation.repNumber <= repLevel.maximum &&
+                entityInformation.repNumber >= repLevel.minimum
+            ) {
                 entityInformation.repLevel = repLevel.label;
             } else continue;
         }
@@ -64,7 +73,7 @@ class AddPersonMenu extends AddEntityMenu {
                     default:
                         break;
                 }
-            } catch (error) {
+            } catch (error: any) {
                 ui.notifications.error(error);
             }
         }

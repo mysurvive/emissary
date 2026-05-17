@@ -1,17 +1,17 @@
-import { DeepPartial } from "fvtt-types/utils";
-import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import { AnyMutableObject, DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
 
 import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
-import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 import { EntityReputation } from "../reputationTracker/tabs/types.ts";
 
-const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
 
 class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare parent;
-    declare defaultIcon;
-    declare entityType;
+    declare parentApp;
+    declare defaultIcon: string;
+    declare entityType: string;
     htmlContext: Record<string, string | undefined> = {
         name: undefined,
         uuid: undefined,
@@ -22,9 +22,9 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     #dragDrop;
     #filePicker;
 
-    constructor(parent: ReputationTracker) {
+    constructor(parentApp: ReputationTracker) {
         super();
-        this.parent = parent;
+        this.parentApp = parentApp;
         this.#dragDrop = new foundry.applications.ux.DragDrop({
             dropSelector: ".dropbox",
             callbacks: { drop: this.handleDrop.bind(this) },
@@ -80,21 +80,21 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     protected override async _onRender(
-        context: DeepPartial<AV2.RenderContext>,
-        options: DeepPartial<AV2.RenderOptions>,
+        context: DeepPartial<foundry.applications.api.ApplicationV2.RenderContext>,
+        options: DeepPartial<ApplicationV2.RenderOptions>,
     ): Promise<void> {
         super._onRender(context, options);
         this.#dragDrop.bind(this.element);
     }
 
     protected override _onClose(options: ApplicationRenderOptions): void {
-        this.parent.render({ force: true });
+        this.parentApp.render({ force: true });
         super._onClose(options);
     }
 
     protected override async _prepareContext(
         options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
-    ): Promise<AV2.RenderContext> {
+    ): Promise<ApplicationV2.RenderContext> {
         const context = await super._prepareContext(options);
 
         this.htmlContext.enrichedUuid = this.htmlContext.uuid
@@ -129,7 +129,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     async createEntityJournal(
-        entityInformation: EntityReputation & { imgsrc?: string; journalUuid: string },
+        entityInformation: (EntityReputation & { imgsrc?: string; journalUuid: string }) | AnyMutableObject,
     ): Promise<string> {
         const entityIcon =
             entityInformation.imgsrc === "" || !entityInformation.imgsrc ? this.defaultIcon : entityInformation.imgsrc;
@@ -142,7 +142,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         ];
 
         const subFolderId = await this.createFolderStructure();
-        const data: JournalEntry.CreateData = { name: entityInformation.name ?? "", folder: subFolderId };
+        const data: JournalEntry.CreateData = { name: (entityInformation.name as string) ?? "", folder: subFolderId };
 
         const journalEntry = await JournalEntry.create(data);
         if (!journalEntry) throw game.i18n.localize("emissary.menu.addEntity.errors.journal");
@@ -156,9 +156,10 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const dataString = null === (_a = event.dataTransfer) || void 0 === _a ? void 0 : _a.getData("text/plain"),
             dropData = (() => {
                 try {
-                    return JSON.parse(null !== dataString ? dataString : "");
+                    if (typeof dataString === "string") return JSON.parse(null !== dataString ? dataString : "");
+                    else throw "dataString not of type string";
                 } catch (_a) {
-                    return null;
+                    return _a;
                 }
             })();
 
