@@ -2,12 +2,11 @@
     "compilerOptions": {
         "allowImportingTsExtensions": true,
         "allowUnusedLabels": false,
-        "baseUrl": ".",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "lib": ["dom", "dom.iterable", "esnext"],
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "module": "preserve",
+        "moduleResolution": "bundler",
         "noEmit": true,
         "noErrorTruncation": true,
         "noFallthroughCasesInSwitch": true,
@@ -16,17 +15,22 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "outDir": "dist",
+        "paths": {
+            "src/*": ["./src/*"],
+            "static/*": ["./static/*"]
+        },
         "removeComments": false,
         "resolveJsonModule": true,
         "rootDir": ".",
         "skipLibCheck": true,
         "sourceMap": true,
+        "strict": true,
         "strictBindCallApply": true,
         "strictFunctionTypes": false,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "target": "esnext",
-        "types": ["jquery", "node", "tooltipster", "fvtt-types"],
+        "types": ["jquery", "node", "fvtt-types"],
         "useDefineForClassFields": true
     },
     "watchOptions": {

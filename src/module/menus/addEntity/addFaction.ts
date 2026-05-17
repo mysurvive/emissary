@@ -3,8 +3,8 @@ import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
 
 class AddFactionMenu extends AddEntityMenu {
-    constructor(parent: ReputationTracker) {
-        super(parent);
+    constructor(parentApp: ReputationTracker) {
+        super(parentApp);
         this.defaultIcon = "icons/svg/shield.svg";
         this.entityType = "Factions";
     }
@@ -19,7 +19,12 @@ class AddFactionMenu extends AddEntityMenu {
         actions: { openPicker: AddEntityMenu.openPicker },
     };
 
-    static async #onSubmit(this: AddEntityMenu, _event, _form, formData): Promise<void> {
+    static async #onSubmit(
+        this: AddEntityMenu,
+        _event: Event,
+        _form: HTMLFormElement,
+        formData: FormDataExtended,
+    ): Promise<void> {
         const entityReputations = this.entityReputations;
         const entityIncrements = this.reputationIncrements;
         const entityInformation = formData.object;
@@ -29,7 +34,12 @@ class AddFactionMenu extends AddEntityMenu {
 
         // TODO: make more efficient
         for (const repLevel of Object.values(entityIncrements)) {
-            if (entityInformation.repNumber <= repLevel.maximum && entityInformation.repNumber >= repLevel.minimum) {
+            if (
+                entityInformation.repNumber &&
+                repLevel &&
+                entityInformation.repNumber <= repLevel.maximum &&
+                entityInformation.repNumber >= repLevel.minimum
+            ) {
                 entityInformation.repLevel = repLevel.label;
             } else continue;
         }
@@ -55,7 +65,7 @@ class AddFactionMenu extends AddEntityMenu {
                     default:
                         break;
                 }
-            } catch (error) {
+            } catch (error: any) {
                 ui.notifications.error(error);
             }
         }

@@ -1,4 +1,4 @@
-import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
 import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
@@ -8,7 +8,7 @@ const { renderTemplate } = foundry.applications.handlebars;
 
 class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     declare parent;
-    declare alternateSettings;
+    declare alternateSettings: any;
 
     constructor(parent: AddNotorietyMenu) {
         super();
@@ -98,12 +98,12 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
 
     static async #onSubmit(
         this: AlternateSettingsMenu,
-        _event,
-        _form,
-        formData: foundry.applications.ux.FormDataExtended,
+        _event: Event,
+        _form: HTMLFormElement,
+        formData: FormDataExtended,
     ): Promise<void> {
         const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        const normalizedSettings = settingKeys.reduce((acc, key) => {
+        const normalizedSettings = settingKeys.reduce((acc: any, key) => {
             const [settingName, index, subsetting] = key.split("-");
             if (!isNaN(parseFloat(index))) {
                 if (!acc[settingName]) acc[settingName] = [];

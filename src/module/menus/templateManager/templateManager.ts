@@ -1,16 +1,15 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
-import type { ApplicationV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
 import { ReputationSettingsMenu } from "../settings/reputationSettingsMenu.ts";
-import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
+import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
 
-const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
-
-export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
-    declare parent;
-    constructor(parent: typeof ReputationSettingsMenu) {
+export class TemplateManagerMenu extends HandlebarsApplicationMixin(ApplicationV2) {
+    declare parentApp;
+    constructor(parentApp: ReputationSettingsMenu) {
         super();
-        this.parent = parent;
+        this.parentApp = parentApp;
     }
 
     static override DEFAULT_OPTIONS = {
@@ -47,7 +46,7 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
     }
 
     protected override _onClose(options: ApplicationRenderOptions): void {
-        this.parent.render({ force: true });
+        this.parentApp.render({ force: true });
         super._onClose(options);
     }
 
@@ -63,13 +62,13 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
         });
 
         try {
-            if (chosenTemplate) {
-                this.parent.template = chosenTemplate.settings;
+            if (chosenTemplate && chosenTemplate.settings) {
+                this.parentApp.template = chosenTemplate.settings;
                 this.close();
             } else {
                 throw game.i18n.localize("emissary.menu.templateManager.errors.preBuiltTemplate.generic");
             }
-        } catch (error) {
+        } catch (error: any) {
             ui.notifications.error(error);
         }
     }
@@ -78,12 +77,12 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(AppV2) {
         const fileInput = this.parts["div"]?.querySelector("#settingsFile") as HTMLInputElement;
         try {
             if (fileInput.files && fileInput.files.length !== 0) {
-                this.parent.template = JSON.parse(await foundry.utils.readTextFromFile(fileInput.files[0]));
+                this.parentApp.template = JSON.parse(await foundry.utils.readTextFromFile(fileInput.files[0]));
                 this.close();
             } else {
                 throw game.i18n.localize("emissary.menu.templateManager.errors.importTemplate.noFile");
             }
-        } catch (error) {
+        } catch (error: any) {
             ui.notifications.error(error);
         }
     }

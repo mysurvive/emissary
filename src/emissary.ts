@@ -11,7 +11,7 @@ import {
     reputationRange,
     reputationSettingsTemplates,
 } from "./module/menus/types.ts";
-import "./styles/emissary.scss";
+import "src/styles/emissary.scss";
 
 /**
  * Entrypoint for emissary

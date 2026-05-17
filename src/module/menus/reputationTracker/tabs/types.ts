@@ -8,31 +8,37 @@ import fields = foundry.data.fields;
 export type EntityReputation = typeof FactionReputation | typeof IndividualReputation | typeof NotorietyReputation;
 
 export const FactionReputation = new fields.ArrayField(
-    new fields.SchemaField({
-        name: new fields.StringField(),
-        id: new fields.StringField(),
-        repLevel: new fields.SchemaField({ color: new fields.StringField(), label: new fields.StringField() }),
-        repNumber: new fields.NumberField(),
-        journalUuid: new fields.DocumentUUIDField(),
-        hidden: new fields.BooleanField({ initial: false }),
-    }),
+    new fields.SchemaField(
+        {
+            name: new fields.StringField({ required: true, initial: "" }),
+            id: new fields.StringField(),
+            repLevel: new fields.SchemaField({ color: new fields.StringField(), label: new fields.StringField() }),
+            repNumber: new fields.NumberField(),
+            journalUuid: new fields.DocumentUUIDField(),
+            hidden: new fields.BooleanField({ initial: false }),
+        },
+        { required: true, nullable: false },
+    ),
 );
 
 export const IndividualReputation = new fields.ArrayField(
-    new fields.SchemaField({
-        name: new fields.StringField(),
-        id: new fields.StringField(),
-        repLevel: new fields.SchemaField({ color: new fields.StringField(), label: new fields.StringField() }),
-        repNumber: new fields.NumberField(),
-        journalUuid: new fields.DocumentUUIDField(),
-        hidden: new fields.BooleanField({ initial: false }),
-    }),
+    new fields.SchemaField(
+        {
+            name: new fields.StringField({ required: true, initial: "" }),
+            id: new fields.StringField(),
+            repLevel: new fields.SchemaField({ color: new fields.StringField(), label: new fields.StringField() }),
+            repNumber: new fields.NumberField(),
+            journalUuid: new fields.DocumentUUIDField(),
+            hidden: new fields.BooleanField({ initial: false }),
+        },
+        { required: true, nullable: false },
+    ),
 );
 
 export const NotorietyReputation = new fields.ArrayField(
     new fields.SchemaField(
         {
-            name: new fields.StringField(),
+            name: new fields.StringField({ required: true, initial: "" }),
             type: new fields.StringField(),
             id: new fields.StringField({ required: true }),
             controls: new fields.ArrayField(new fields.SchemaField(defineReputationControlsSchema())),
@@ -72,5 +78,5 @@ export const NotorietyReputation = new fields.ArrayField(
         },
         { required: true },
     ),
-    { required: true },
+    { required: true, nullable: false },
 );

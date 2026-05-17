@@ -1,16 +1,16 @@
 import { MODNAME } from "src/constants.ts";
 import { DeepPartial } from "fvtt-types/utils";
-import type { ApplicationV2 as AV2 } from "node_modules/fvtt-types/src/foundry/client/applications/api/_module.d.mts";
-import type { ApplicationRenderOptions } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import { UUID } from "crypto";
 import { clamp } from "../helpers.ts";
 import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 
-const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 
-class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
-    declare entityToEdit;
+class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
+    declare entityToEdit: any;
     declare parent;
 
     constructor(parent: ReputationTracker, entityId: string) {
@@ -61,19 +61,19 @@ class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
 
     protected override async _prepareContext(
         options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
-    ): Promise<AV2.RenderContext> {
+    ): Promise<ApplicationV2.RenderContext> {
         const context = await super._prepareContext(options);
         const playerCharacters = game.users
             .map((u) => {
                 const character = u.character;
-                console.log(character);
                 if (character) {
                     const charData = {
                         characterName: character.name,
                         characterUuid: character.uuid,
-                        existing: this.entityToEdit.playerRep.some((c) => c.characterUuid === character.uuid),
+                        existing: this.entityToEdit.playerRep.some((c: any) => c.characterUuid === character.uuid),
                         repNumber:
-                            this.entityToEdit.playerRep.find((c) => c.characterUuid === character.uuid)?.repNumber ?? 0,
+                            this.entityToEdit.playerRep.find((c: any) => c.characterUuid === character.uuid)
+                                ?.repNumber ?? 0,
                     };
                     return charData;
                 } else return undefined;
@@ -128,12 +128,17 @@ class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
         return mergedContext;
     }
 
-    static async #onSubmit(this: EditEntityMenu, _event, _form, formData): Promise<void> {
+    static async #onSubmit(
+        this: EditEntityMenu,
+        _event: Event,
+        _form: HTMLFormElement,
+        formData: FormDataExtended,
+    ): Promise<void> {
         const entityInformation = formData.object;
 
         // Normalize the settings
         const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        const normalizedSettings: Record<string, unknown> = settingKeys.reduce((acc, key) => {
+        const normalizedSettings: Record<string, unknown> = settingKeys.reduce((acc: any, key) => {
             const [settingName, index, subsetting] = key.split("-");
             if (settingName === "character") return acc;
             if (!isNaN(parseFloat(index))) {
@@ -150,7 +155,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(AppV2) {
         // Information about the characters added to the reputation entity
         const characterOpts = Object.keys(entityInformation)
             .filter((e) => e.includes("character"))
-            .reduce((acc, key) => {
+            .reduce((acc: any, key) => {
                 const [_a, subkey, uuid] = key.split("-");
                 acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
                 delete entityInformation[key];
