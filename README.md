@@ -1,6 +1,6 @@
 # Emissary
 
-<p align="center"><img src="https://img.shields.io/badge/Foundry-v13-informational"></br>
+<p align="center"><img src="https://img.shields.io/badge/Foundry-v14-informational"></br>
 <img src="https://img.shields.io/github/downloads/MySurvive/emissary/latest/module.zip">
 <img src="https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Femissary&colorB=4aa94a"><br>
 <a href="https://gitlocalize.com/repo/10428?utm_source=badge"> <img src="https://gitlocalize.com/repo/10428/whole_project/badge.svg" /> </a></br>
