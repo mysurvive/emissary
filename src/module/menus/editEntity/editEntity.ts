@@ -11,12 +11,12 @@ const { renderTemplate } = foundry.applications.handlebars;
 
 class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare entityToEdit: any;
-    declare parent;
+    declare parentApp;
 
-    constructor(parent: ReputationTracker, entityId: string) {
+    constructor(parentApp: ReputationTracker, entityId: string) {
         super();
 
-        this.parent = parent;
+        this.parentApp = parentApp;
 
         const reputations = game.settings.get(MODNAME, "notorietyReputation");
         if (!reputations || !Array.isArray(reputations)) throw "Error finding Notoriety reputations";
@@ -199,7 +199,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         await game.settings.set(MODNAME, "notorietyReputation", entityReputationsArray);
 
-        this.parent.render();
+        this.parentApp.render();
     }
 
     static async #resetSettings(this: EditEntityMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
