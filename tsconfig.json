@@ -35,5 +35,6 @@
     },
     "watchOptions": {
         "excludeDirectories": ["packs/", "static/packs/"]
-    }
+    },
+    "include": ["./src/declaraions.d.ts", "./src/**/*"]
 }
