@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "allowImportingTsExtensions": true,
+        "allowJs": true,
         "allowUnusedLabels": false,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
@@ -36,5 +37,5 @@
     "watchOptions": {
         "excludeDirectories": ["packs/", "static/packs/"]
     },
-    "include": ["./src/declaraions.d.ts", "./src/**/*"]
+    "include": ["./src/declaraions.d.ts", "./src/**/*", "./build/**/*", "./static/**/*"]
 }
