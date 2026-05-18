@@ -1,9 +1,9 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
-import { ReputationSettingsMenu } from "../settings/reputationSettingsMenu.ts";
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
+import { ReputationSettingsMenu } from "../settings/reputationSettingsMenu";
 
 export class TemplateManagerMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare parentApp;

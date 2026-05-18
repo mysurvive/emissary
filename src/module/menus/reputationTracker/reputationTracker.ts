@@ -268,7 +268,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
         if (!settings) return;
         if (this.activeTab === "faction" || this.activeTab === "interpersonal") {
-            const entityReputation = game.settings.get(
+            const entityReputation: any = game.settings.get(
                 MODNAME,
                 settings.reputations as ClientSettings.KeyFor<"emissary">,
             );
@@ -284,10 +284,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             entityReputations[entity].repNumber += value;
 
             if (!settings.range) return;
-            const repRange: ClientSettings.SettingInitializedType<"emissary", "factionReputationRange"> & {
-                maximum: number;
-                minimum: number;
-            } = settings.range;
+            const repRange: any = settings.range;
             if (repRange)
                 entityReputation[entity].repNumber = clamp(
                     entityReputation[entity].repNumber,
@@ -295,23 +292,30 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                     repRange.maximum,
                 );
 
-            await game.settings.set(MODNAME, settings.reputations, entityReputation);
+            await game.settings.set(
+                MODNAME,
+                settings.reputations as ClientSettings.KeyFor<"emissary">,
+                entityReputation,
+            );
 
             await this.render({ force: true });
         } else if (this.activeTab === "notoriety") {
-            const entityReputation = game.settings.get(MODNAME, settings.reputations);
+            const entityReputation = game.settings.get(
+                MODNAME,
+                settings.reputations as ClientSettings.KeyFor<"emissary">,
+            );
             if (!entityReputation) return;
             const entityReputations = Object.values(entityReputation);
 
             const entity = entityReputations
-                .map((f) => {
+                .map((f: any) => {
                     return f.id;
                 })
                 .indexOf(uuid);
 
             const characterUuid = t.getAttribute("character-uuid");
             const characterIndex = entityReputations[entity].playerRep
-                .map((f) => f.characterUuid)
+                .map((f: any) => f.characterUuid)
                 .indexOf(characterUuid);
 
             const repRange = entityReputations[entity].range;
@@ -322,7 +326,11 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 repRange.maximum,
             );
 
-            await game.settings.set(MODNAME, settings.reputations, entityReputation);
+            await game.settings.set(
+                MODNAME,
+                settings.reputations as ClientSettings.KeyFor<"emissary">,
+                entityReputation,
+            );
 
             await this.render({ force: true });
         }
@@ -350,14 +358,14 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             default:
                 break;
         }
-        const entities = game.settings.get(MODNAME, setting);
+        const entities = game.settings.get(MODNAME, setting as ClientSettings.KeyFor<"emissary">);
         if (!entities || !Array.isArray(entities)) throw "Error";
         entities.map((f) => {
             if (f && f.id === uuid) {
                 f.hidden = !f.hidden;
             }
         });
-        await game.settings.set(MODNAME, setting, entities);
+        await game.settings.set(MODNAME, setting as ClientSettings.KeyFor<"emissary">, entities);
         this.render();
     }
 }

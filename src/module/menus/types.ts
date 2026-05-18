@@ -1,9 +1,8 @@
-import type { FormFooterButton } from "node_modules/fvtt-types/src/foundry/client/applications/_types.d.mts";
+import FormFooterButton = foundry.applications.types.FormFooterButton;
 import defaultSettingsJSON from "static/settingPresets/default/defaultSettingsTemplate.json" with { type: "json" };
 import pf2eSettingsJSON from "static/settingPresets/pf2e/pf2eSettingsTemplate.json" with { type: "json" };
-
 import fields = foundry.data.fields;
-import { DataField } from "node_modules/fvtt-types/src/foundry/common/data/fields.mts";
+import DataField = foundry.data.fields.DataField;
 
 export type FooterButtons = Record<string, FormFooterButton>;
 

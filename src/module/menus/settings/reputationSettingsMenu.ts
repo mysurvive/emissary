@@ -9,7 +9,7 @@ import { TemplateManagerMenu } from "../templateManager/templateManager.ts";
 const { renderTemplate } = foundry.applications.handlebars;
 
 class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare template;
+    declare template: any;
     declare previewSettings;
 
     constructor(template?: typeof reputationSettingsTemplates) {
@@ -18,7 +18,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         this.previewSettings = this.#initializePreviewSettings();
     }
 
-    #initializePreviewSettings(): Record<string, unknown> {
+    #initializePreviewSettings(): Record<string, any> {
         const initializedSettings = {
             changeSettings: {
                 faction: {
@@ -187,7 +187,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         partId: string,
         newElement: HTMLElement,
         priorElement: HTMLElement,
-        state: hbs.PartState,
+        state: HandlebarsApplicationMixin.PartState,
     ): void {
         const openRollouts = priorElement.querySelectorAll(".rollout.active");
         for (const openRollout of openRollouts) {
@@ -199,7 +199,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     #formDataToSettings(formData: Record<string, unknown>): EmissarySettings {
         const keys = Object.keys(formData);
 
-        const tmpObj = {};
+        const tmpObj: any = {};
 
         keys.forEach((k) => {
             const [settingName, index, subSetting] = k.split("-");
@@ -233,8 +233,13 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         return tmpObj as EmissarySettings;
     }
 
-    static async #onSubmit(this: ReputationSettingsMenu, _event, _form, formData: FormDataExtended): Promise<void> {
-        const obj: EmissarySettings = this.#formDataToSettings(formData.object);
+    static async #onSubmit(
+        this: ReputationSettingsMenu,
+        _event: Event,
+        _form: HTMLFormElement,
+        formData: FormDataExtended,
+    ): Promise<void> {
+        const obj: any = this.#formDataToSettings(formData.object);
 
         for (const setting in obj) {
             const s = setting as ClientSettings.KeyFor<"emissary">;
@@ -453,7 +458,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         this.previewSettings.data[divType][nextIndex].hiddenPreview = "false";
     }
 
-    static #openTemplateManager(): void {
+    static #openTemplateManager(this: ReputationSettingsMenu): void {
         new TemplateManagerMenu(this).render(true);
     }
 
