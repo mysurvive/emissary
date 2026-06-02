@@ -5,11 +5,12 @@ import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
 import { AlternateSettingsMenu } from "../alternateSettings/alternateSettings.ts";
 import { MODNAME } from "src/constants.ts";
+import { TypeReputationSetting } from "../types.ts";
 
 class AddNotorietyMenu extends AddEntityMenu {
-    declare alternateSettings: any;
-    constructor(parent: ReputationTracker) {
-        super(parent);
+    declare alternateSettings: TypeReputationSetting;
+    constructor(parentApp: ReputationTracker) {
+        super(parentApp);
         this.defaultIcon = "icons/svg/mystery-man.svg";
         this.entityType = "Notoriety";
     }
@@ -88,15 +89,13 @@ class AddNotorietyMenu extends AddEntityMenu {
         }
 
         entityInformation.hiddenElements =
-            this.alternateSettings?.notorietyHiddenElements ?? game.settings.get(MODNAME, "notorietyHiddenElements");
+            this.alternateSettings?.hiddenElements ?? game.settings.get(MODNAME, "notorietyHiddenElements");
         entityInformation.increments =
-            this.alternateSettings?.notorietyReputationIncrement ??
-            game.settings.get(MODNAME, "notorietyReputationIncrement");
+            this.alternateSettings?.reputationIncrements ?? game.settings.get(MODNAME, "notorietyReputationIncrement");
         entityInformation.controls =
-            this.alternateSettings?.notorietyReputationControls ??
-            game.settings.get(MODNAME, "notorietyReputationControls");
+            this.alternateSettings?.reputationControls ?? game.settings.get(MODNAME, "notorietyReputationControls");
         entityInformation.range =
-            this.alternateSettings?.notorietyReputationRange ?? game.settings.get(MODNAME, "notorietyReputationRange");
+            this.alternateSettings?.reputationRange ?? game.settings.get(MODNAME, "notorietyReputationRange");
 
         entityInformation.playerRep = Object.keys(characterOpts)
             .map((key) => {

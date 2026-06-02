@@ -65,8 +65,12 @@ class AddFactionMenu extends AddEntityMenu {
                     default:
                         break;
                 }
-            } catch (error: any) {
-                ui.notifications.error(error);
+            } catch (error) {
+                if (error instanceof Error) {
+                    ui.notifications.error(error.message);
+                } else {
+                    ui.notifications.error(String(error));
+                }
             }
         }
     }
