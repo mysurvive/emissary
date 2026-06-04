@@ -1,6 +1,6 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
-import { EmissarySettings, reputationSettingsTemplates, SettingsMenuObject } from "../types.ts";
+import { reputationSettingsTemplates, SettingsMenuObject } from "../types.ts";
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
@@ -18,7 +18,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         this.previewSettings = this.#initializePreviewSettings();
     }
 
-    #initializePreviewSettings(): Record<string, any> {
+    #initializePreviewSettings(): any {
         const initializedSettings = {
             changeSettings: {
                 faction: {
@@ -196,7 +196,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         super._preSyncPartState(partId, newElement, priorElement, state);
     }
 
-    #formDataToSettings(formData: Record<string, unknown>): EmissarySettings {
+    #formDataToSettings(formData: Record<string, unknown>) {
         const keys = Object.keys(formData);
 
         const tmpObj: any = {};
@@ -230,7 +230,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         });
 
-        return tmpObj as EmissarySettings;
+        return tmpObj;
     }
 
     static async #onSubmit(
@@ -239,11 +239,11 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         _form: HTMLFormElement,
         formData: FormDataExtended,
     ): Promise<void> {
-        const obj: any = this.#formDataToSettings(formData.object);
+        const obj = this.#formDataToSettings(formData.object);
 
         for (const setting in obj) {
             const s = setting as ClientSettings.KeyFor<"emissary">;
-            await game.settings.set(MODNAME, s, obj[setting]);
+            await game.settings.set(MODNAME, s, obj[s]);
         }
     }
 

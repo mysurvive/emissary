@@ -12,7 +12,13 @@ import { clamp } from "../helpers.ts";
 import { EditEntityMenu } from "../editEntity/editEntity.ts";
 
 class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare hiddenElements: any;
+    declare hiddenElements: Record<
+        string,
+        ClientSettings.SettingInitializedType<
+            "emissary",
+            "factionHiddenElements" | "interpersonalHiddenElements" | "notorietyHiddenElements"
+        >
+    >;
 
     constructor() {
         super();
@@ -135,14 +141,27 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                                         `@UUID[${e.journalUuid}]`,
                                     );
                                 }
-                                e.hiddenElements = Object.keys(this.hiddenElements[type]).reduce((acc: any, key) => {
-                                    if (game.user.isGM) {
-                                        acc[key] = false;
-                                    } else {
-                                        acc[key] = this.hiddenElements[type][key];
-                                    }
-                                    return acc;
-                                }, {});
+                                if (this.hiddenElements[type])
+                                    e.hiddenElements = Object.keys(this.hiddenElements[type]).reduce(
+                                        (
+                                            acc: Record<string, boolean>,
+                                            key:
+                                                | "incrementColor"
+                                                | "incrementName"
+                                                | "image"
+                                                | "journal"
+                                                | "currentReputation",
+                                        ) => {
+                                            if (game.user.isGM) {
+                                                acc[key] = false;
+                                            } else {
+                                                if (this.hiddenElements[type] && this.hiddenElements[type][key])
+                                                    acc[key] = this.hiddenElements[type][key];
+                                            }
+                                            return acc;
+                                        },
+                                        {},
+                                    );
                                 return e;
                             }),
                         ),
@@ -201,7 +220,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     static async deleteEntity(this: ReputationTracker, e: PointerEvent): Promise<void> {
         const target = e.target as HTMLButtonElement;
         const uuid = target.getAttribute("entity-uuid");
-        let setting: any;
+        let setting: "factionReputation" | "interpersonalReputation" | "notorietyReputation";
         switch (this.activeTab) {
             case "faction":
                 setting = "factionReputation";
@@ -213,7 +232,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 setting = "notorietyReputation";
                 break;
             default:
-                break;
+                return;
         }
         const entityReputation = game.settings.get("emissary", setting);
         if (!entityReputation) return;
@@ -244,7 +263,14 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("entity-uuid") as UUID;
 
-        let settings;
+        let settings:
+            | (Record<"reputations", "factionReputation" | "interpersonalReputation" | "notorietyReputation"> & {
+                  range?: ClientSettings.SettingInitializedType<
+                      "emissary",
+                      "factionReputationRange" | "interpersonalReputationRange"
+                  >;
+              })
+            | undefined;
         switch (this.activeTab) {
             case "faction":
                 settings = {
@@ -264,41 +290,48 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 };
                 break;
             default:
+                settings = undefined;
                 break;
         }
         if (!settings) return;
         if (this.activeTab === "faction" || this.activeTab === "interpersonal") {
-            const entityReputation: any = game.settings.get(
-                MODNAME,
-                settings.reputations as ClientSettings.KeyFor<"emissary">,
-            );
+            if (settings.reputations === "notorietyReputation") return;
+            const entityReputation = game.settings.get(MODNAME, settings.reputations);
             if (!entityReputation) return;
-            const entityReputations: any = Object.values(entityReputation);
+            const entityReputations: ClientSettings.SettingInitializedType<
+                "emissary",
+                "factionReputation" | "interpersonalReputation"
+            > = Object.values(entityReputation);
 
-            const entity: string = entityReputations
-                .map((f: any) => {
-                    return f.id;
+            const entityArray = Array.from(entityReputations);
+
+            const entity = entityArray
+                .map((f) => {
+                    if (f) return f.id;
+                    else return undefined;
                 })
                 .indexOf(uuid);
 
-            entityReputations[entity].repNumber += value;
+            if (entityArray[entity] && entityArray[entity].repNumber) {
+                entityArray[entity].repNumber += value;
 
-            if (!settings.range) return;
-            const repRange: any = settings.range;
-            if (repRange)
-                entityReputation[entity].repNumber = clamp(
-                    entityReputation[entity].repNumber,
-                    repRange.minimum,
-                    repRange.maximum,
+                if (!settings.range) return;
+                const repRange: Record<string, number> = settings.range;
+                if (repRange)
+                    entityArray[entity].repNumber = clamp(
+                        entityArray[entity].repNumber,
+                        repRange.minimum,
+                        repRange.maximum,
+                    );
+
+                await game.settings.set(
+                    MODNAME,
+                    settings.reputations as ClientSettings.KeyFor<"emissary">,
+                    entityReputation,
                 );
 
-            await game.settings.set(
-                MODNAME,
-                settings.reputations as ClientSettings.KeyFor<"emissary">,
-                entityReputation,
-            );
-
-            await this.render({ force: true });
+                await this.render({ force: true });
+            }
         } else if (this.activeTab === "notoriety") {
             const entityReputation = game.settings.get(
                 MODNAME,
@@ -308,14 +341,14 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             const entityReputations = Object.values(entityReputation);
 
             const entity = entityReputations
-                .map((f: any) => {
+                .map((f) => {
                     return f.id;
                 })
                 .indexOf(uuid);
 
             const characterUuid = t.getAttribute("character-uuid");
             const characterIndex = entityReputations[entity].playerRep
-                .map((f: any) => f.characterUuid)
+                .map((f: Record<string, string | number | Record<string, string | Color>>) => f.characterUuid)
                 .indexOf(characterUuid);
 
             const repRange = entityReputations[entity].range;

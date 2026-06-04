@@ -6,6 +6,7 @@ import { AddEntityMenu } from "./addEntity.ts";
 import { AlternateSettingsMenu } from "../alternateSettings/alternateSettings.ts";
 import { MODNAME } from "src/constants.ts";
 import { TypeReputationSetting } from "../types.ts";
+import { NotorietyReputation } from "../reputationTracker/tabs/types.ts";
 
 class AddNotorietyMenu extends AddEntityMenu {
     declare alternateSettings: TypeReputationSetting;
@@ -73,12 +74,28 @@ class AddNotorietyMenu extends AddEntityMenu {
 
         const characterOpts = Object.keys(entityInformation)
             .filter((e) => e.includes("character"))
-            .reduce((acc: any, key) => {
-                const [_a, subkey, uuid] = key.split("-");
-                acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
-                delete entityInformation[key];
-                return acc;
-            }, {});
+            .reduce(
+                (
+                    acc: Record<
+                        string,
+                        Partial<
+                            typeof NotorietyReputation & {
+                                characterName: string | undefined | null;
+                                characterId: string | undefined | null;
+                                select: boolean;
+                                repNumber: number;
+                            }
+                        >
+                    >,
+                    key,
+                ) => {
+                    const [_a, subkey, uuid] = key.split("-");
+                    acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
+                    delete entityInformation[key];
+                    return acc;
+                },
+                {},
+            );
 
         for (const characterUuid in characterOpts) {
             const character = await fromUuid(characterUuid);

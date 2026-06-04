@@ -47,7 +47,7 @@ export class ReputationTabConstructor {
         for (const entity of Object.values(this.reputation.notoriety.settings)) {
             if (!entity || !entity.playerRep || !entity.increments || !Array.isArray(entity.increments)) continue;
             for (const character of Object.values(entity.playerRep)) {
-                const repLevel = entity.increments.find((i: any) => {
+                const repLevel = entity.increments.find((i: Record<string, number>) => {
                     if (
                         i &&
                         i.maximum &&

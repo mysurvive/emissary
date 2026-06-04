@@ -73,8 +73,11 @@ class AddPersonMenu extends AddEntityMenu {
                     default:
                         break;
                 }
-            } catch (error: any) {
-                ui.notifications.error(error);
+            } catch (error: unknown) {
+                if (typeof error === "string") ui.notifications.error(error);
+                else if (error instanceof Error) {
+                    console.error(error);
+                }
             }
         }
     }

@@ -112,7 +112,7 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         const normalizedSettings: TypeReputationSetting = settingKeys.reduce((acc, key) => {
             const [settingName, index, subsetting] = key.split("-");
             if (!isNaN(parseFloat(index))) {
-                //if (!acc[settingName]) acc[settingName] = [];
+                // if (!acc[settingName]) acc[settingName] = [];
                 acc[settingName][index] = { ...acc[settingName][index], [subsetting]: formData.object[key] };
             } else if (index) {
                 acc[settingName] = { ...acc[settingName], [index]: formData.object[key] };
