@@ -5,11 +5,13 @@ import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
 import { AlternateSettingsMenu } from "../alternateSettings/alternateSettings.ts";
 import { MODNAME } from "src/constants.ts";
+import { TypeReputationSetting } from "../types.ts";
+import { NotorietyReputation } from "../reputationTracker/tabs/types.ts";
 
 class AddNotorietyMenu extends AddEntityMenu {
-    declare alternateSettings: any;
-    constructor(parent: ReputationTracker) {
-        super(parent);
+    declare alternateSettings: TypeReputationSetting;
+    constructor(parentApp: ReputationTracker) {
+        super(parentApp);
         this.defaultIcon = "icons/svg/mystery-man.svg";
         this.entityType = "Notoriety";
     }
@@ -72,12 +74,28 @@ class AddNotorietyMenu extends AddEntityMenu {
 
         const characterOpts = Object.keys(entityInformation)
             .filter((e) => e.includes("character"))
-            .reduce((acc: any, key) => {
-                const [_a, subkey, uuid] = key.split("-");
-                acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
-                delete entityInformation[key];
-                return acc;
-            }, {});
+            .reduce(
+                (
+                    acc: Record<
+                        string,
+                        Partial<
+                            typeof NotorietyReputation & {
+                                characterName: string | undefined | null;
+                                characterId: string | undefined | null;
+                                select: boolean;
+                                repNumber: number;
+                            }
+                        >
+                    >,
+                    key,
+                ) => {
+                    const [_a, subkey, uuid] = key.split("-");
+                    acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
+                    delete entityInformation[key];
+                    return acc;
+                },
+                {},
+            );
 
         for (const characterUuid in characterOpts) {
             const character = await fromUuid(characterUuid);
@@ -88,15 +106,13 @@ class AddNotorietyMenu extends AddEntityMenu {
         }
 
         entityInformation.hiddenElements =
-            this.alternateSettings?.notorietyHiddenElements ?? game.settings.get(MODNAME, "notorietyHiddenElements");
+            this.alternateSettings?.hiddenElements ?? game.settings.get(MODNAME, "notorietyHiddenElements");
         entityInformation.increments =
-            this.alternateSettings?.notorietyReputationIncrement ??
-            game.settings.get(MODNAME, "notorietyReputationIncrement");
+            this.alternateSettings?.reputationIncrements ?? game.settings.get(MODNAME, "notorietyReputationIncrement");
         entityInformation.controls =
-            this.alternateSettings?.notorietyReputationControls ??
-            game.settings.get(MODNAME, "notorietyReputationControls");
+            this.alternateSettings?.reputationControls ?? game.settings.get(MODNAME, "notorietyReputationControls");
         entityInformation.range =
-            this.alternateSettings?.notorietyReputationRange ?? game.settings.get(MODNAME, "notorietyReputationRange");
+            this.alternateSettings?.reputationRange ?? game.settings.get(MODNAME, "notorietyReputationRange");
 
         entityInformation.playerRep = Object.keys(characterOpts)
             .map((key) => {

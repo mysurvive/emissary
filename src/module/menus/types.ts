@@ -10,7 +10,7 @@ export type SettingsMenuObject = Record<string, SettingCategory>;
 
 type SettingCategory = SettingsMenuSettingData[];
 
-interface SettingsMenuSettingData {
+export interface SettingsMenuSettingData {
     settingName: string;
     hint: string;
     type: string;
@@ -29,6 +29,15 @@ export interface EmissarySettings {
     interpersonalReputationIncrement: typeof reputationIncrements;
     interpersonalReputationRange: typeof reputationRange;
     interpersonalHiddenElements: typeof hiddenElements;
+}
+
+export type EmissarySettingLabel = "reputationControls" | "reputationRange" | "reputationIncrements" | "hiddenElements";
+
+export interface TypeReputationSetting {
+    reputationControls?: typeof reputationControls;
+    reputationIncrements?: typeof reputationIncrements;
+    reputationRange?: typeof reputationRange;
+    hiddenElements?: typeof hiddenElements;
 }
 
 /**

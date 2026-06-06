@@ -3,16 +3,16 @@ export function registerHandlebarsHelpers(): void {
         console.log(handlebarsItem);
     });
 
-    Handlebars.registerHelper("when", function (this: any, op1, operator, op2, opts) {
-        const operators: any = {
+    Handlebars.registerHelper("when", function (this: unknown, op1, operator, op2, opts) {
+        const operators: Record<string, (l: unknown, r: unknown) => unknown> = {
                 eq: function (l: unknown, r: unknown) {
                     return l === r;
                 },
                 noteq: function (l: unknown, r: unknown) {
                     return l !== r;
                 },
-                gt: function (l: unknown, r: unknown) {
-                    return Number(l) > Number(r);
+                gt: function (l: number, r: number) {
+                    return l > r;
                 },
                 or: function (l: unknown, r: unknown) {
                     return l || r;
@@ -24,7 +24,7 @@ export function registerHandlebarsHelpers(): void {
                     return l % r === 0;
                 },
             },
-            result: any = operators[operator](op1, op2);
+            result: unknown = operators[operator](op1, op2);
 
         if (result) return opts.fn(this);
         else return opts.inverse(this);

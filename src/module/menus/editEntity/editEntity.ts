@@ -5,6 +5,7 @@ import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOp
 import { UUID } from "crypto";
 import { clamp } from "../helpers.ts";
 import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
+import { FactionReputation, IndividualReputation, NotorietyReputation } from "../reputationTracker/tabs/types.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
@@ -70,10 +71,13 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     const charData = {
                         characterName: character.name,
                         characterUuid: character.uuid,
-                        existing: this.entityToEdit.playerRep.some((c: any) => c.characterUuid === character.uuid),
+                        existing: this.entityToEdit.playerRep.some(
+                            (c: PlayerReputation) => c.characterUuid === character.uuid,
+                        ),
                         repNumber:
-                            this.entityToEdit.playerRep.find((c: any) => c.characterUuid === character.uuid)
-                                ?.repNumber ?? 0,
+                            this.entityToEdit.playerRep.find(
+                                (c: PlayerReputation) => c.characterUuid === character.uuid,
+                            )?.repNumber ?? 0,
                     };
                     return charData;
                 } else return undefined;
@@ -137,30 +141,42 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const entityInformation = formData.object;
 
         // Normalize the settings
-        const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        const normalizedSettings: Record<string, unknown> = settingKeys.reduce((acc: any, key) => {
-            const [settingName, index, subsetting] = key.split("-");
-            if (settingName === "character") return acc;
-            if (!isNaN(parseFloat(index))) {
-                if (!acc[settingName]) acc[settingName] = [];
-                acc[settingName][index] = { ...acc[settingName][index], [subsetting]: formData.object[key] };
-            } else if (index) {
-                acc[settingName] = { ...acc[settingName], [index]: formData.object[key] };
-            } else {
-                acc[settingName] = formData.object[key];
+        const normalizedSettings = foundry.utils.expandObject(formData.object) as Record<
+            string,
+            Record<string, unknown> | unknown[] | boolean | UUID
+        >;
+        for (const key in normalizedSettings) {
+            const subKeys = Object.keys(normalizedSettings[key]);
+            if (!isNaN(parseFloat(subKeys[0]))) {
+                normalizedSettings[key] = Object.values(normalizedSettings[key]);
             }
-            return acc;
-        }, {});
+        }
 
         // Information about the characters added to the reputation entity
         const characterOpts = Object.keys(entityInformation)
             .filter((e) => e.includes("character"))
-            .reduce((acc: any, key) => {
-                const [_a, subkey, uuid] = key.split("-");
-                acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
-                delete entityInformation[key];
-                return acc;
-            }, {});
+            .reduce(
+                (
+                    acc: Record<
+                        string,
+                        Partial<
+                            (typeof IndividualReputation | typeof NotorietyReputation | typeof FactionReputation) & {
+                                characterName: string | undefined | null;
+                                characterId: string | undefined | null;
+                                select: boolean;
+                                repNumber: number;
+                            }
+                        >
+                    >,
+                    key,
+                ) => {
+                    const [_a, subkey, uuid] = key.split("-");
+                    acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
+                    delete entityInformation[key];
+                    return acc;
+                },
+                {},
+            );
 
         for (const characterUuid in characterOpts) {
             const character = await fromUuid(characterUuid);
@@ -174,7 +190,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         normalizedSettings.playerRep = Object.keys(characterOpts)
             .map((key) => {
-                if (characterOpts[key].select) {
+                if (characterOpts[key].select && characterOpts[key].repNumber) {
                     return {
                         characterName: characterOpts[key].characterName,
                         characterUuid: key,
@@ -247,6 +263,14 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         element.remove();
     }
+}
+
+interface PlayerReputation {
+    characterName: string;
+    characterUuid: string;
+    characterId: string;
+    repNumber: string;
+    repLevel: { label: string; color: Color };
 }
 
 export { EditEntityMenu };

@@ -68,8 +68,8 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(ApplicationV
             } else {
                 throw game.i18n.localize("emissary.menu.templateManager.errors.preBuiltTemplate.generic");
             }
-        } catch (error: any) {
-            ui.notifications.error(error);
+        } catch (error: unknown) {
+            if (typeof error === "string") ui.notifications.error(error);
         }
     }
 
@@ -82,8 +82,8 @@ export class TemplateManagerMenu extends HandlebarsApplicationMixin(ApplicationV
             } else {
                 throw game.i18n.localize("emissary.menu.templateManager.errors.importTemplate.noFile");
             }
-        } catch (error: any) {
-            ui.notifications.error(error);
+        } catch (error: unknown) {
+            if (typeof error === "string") ui.notifications.error(error);
         }
     }
 }

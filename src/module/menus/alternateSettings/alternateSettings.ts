@@ -2,17 +2,29 @@ import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
 import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
+import { EntityReputation } from "../reputationTracker/tabs/types.ts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 
 class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
-    declare parent;
-    declare alternateSettings: any;
+    declare parentApp;
+    declare alternateSettings: EntityReputation & {
+        reputationRange: Record<string, number>;
+        reputationIncrements: Record<string, string | number | Color>;
+        reputationControls: Record<string, number | string>;
+        hiddenElements: Record<
+            string,
+            ClientSettings.SettingInitializedType<
+                "emissary",
+                "factionHiddenElements" | "interpersonalHiddenElements" | "notorietyHiddenElements"
+            >
+        >;
+    };
 
-    constructor(parent: AddNotorietyMenu) {
+    constructor(parentApp: AddNotorietyMenu) {
         super();
-        this.parent = parent;
+        this.parentApp = parentApp;
     }
 
     static override DEFAULT_OPTIONS = {
@@ -56,7 +68,7 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "reputationRange",
                     id: "notorietyReputationRange",
                     settingValue:
-                        this.alternateSettings?.notorietyReputationRange ??
+                        this.alternateSettings?.reputationRange ??
                         game.settings.get(MODNAME, "notorietyReputationRange"),
                 },
                 {
@@ -66,7 +78,7 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     subtype: "increment",
                     id: "notorietyReputationIncrement",
                     settingValue:
-                        this.alternateSettings?.notorietyReputationIncrement ??
+                        this.alternateSettings?.reputationIncrements ??
                         game.settings.get(MODNAME, "notorietyReputationIncrement"),
                 },
                 {
@@ -76,7 +88,7 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     subtype: "control",
                     id: "notorietyReputationControls",
                     settingValue:
-                        this.alternateSettings?.notorietyReputationControls ??
+                        this.alternateSettings?.reputationControls ??
                         game.settings.get(MODNAME, "notorietyReputationControls"),
                 },
                 {
@@ -85,8 +97,7 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
                     type: "checkboxes",
                     id: "notorietyHiddenElements",
                     settingValue:
-                        this.alternateSettings?.notorietyHiddenElements ??
-                        game.settings.get(MODNAME, "notorietyHiddenElements"),
+                        this.alternateSettings?.hiddenElements ?? game.settings.get(MODNAME, "notorietyHiddenElements"),
                 },
             ],
             footerButtons: [
@@ -102,21 +113,18 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         _form: HTMLFormElement,
         formData: FormDataExtended,
     ): Promise<void> {
-        const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        const normalizedSettings = settingKeys.reduce((acc: any, key) => {
-            const [settingName, index, subsetting] = key.split("-");
-            if (!isNaN(parseFloat(index))) {
-                if (!acc[settingName]) acc[settingName] = [];
-                acc[settingName][index] = { ...acc[settingName][index], [subsetting]: formData.object[key] };
-            } else if (index) {
-                acc[settingName] = { ...acc[settingName], [index]: formData.object[key] };
-            } else {
-                acc[settingName] = formData.object[key];
+        const expandedFormData = foundry.utils.expandObject(formData.object) as Record<
+            string,
+            Record<string, unknown> | unknown[] | boolean
+        >;
+        for (const key in expandedFormData) {
+            const subKeys = Object.keys(expandedFormData[key]);
+            if (!isNaN(parseFloat(subKeys[0]))) {
+                expandedFormData[key] = Object.values(expandedFormData[key]);
             }
-            return acc;
-        }, {});
+        }
 
-        this.parent.alternateSettings = normalizedSettings;
+        this.parentApp.alternateSettings = expandedFormData;
     }
 
     static async #addRow(this: AlternateSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
