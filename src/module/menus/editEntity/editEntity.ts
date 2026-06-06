@@ -141,20 +141,16 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const entityInformation = formData.object;
 
         // Normalize the settings
-        const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        const normalizedSettings: Record<string, unknown> = settingKeys.reduce((acc: any, key) => {
-            const [settingName, index, subsetting] = key.split("-");
-            if (settingName === "character") return acc;
-            if (!isNaN(parseFloat(index))) {
-                if (!acc[settingName]) acc[settingName] = [];
-                acc[settingName][index] = { ...acc[settingName][index], [subsetting]: formData.object[key] };
-            } else if (index) {
-                acc[settingName] = { ...acc[settingName], [index]: formData.object[key] };
-            } else {
-                acc[settingName] = formData.object[key];
+        const normalizedSettings = foundry.utils.expandObject(formData.object) as Record<
+            string,
+            Record<string, unknown> | unknown[] | boolean | UUID
+        >;
+        for (const key in normalizedSettings) {
+            const subKeys = Object.keys(normalizedSettings[key]);
+            if (!isNaN(parseFloat(subKeys[0]))) {
+                normalizedSettings[key] = Object.values(normalizedSettings[key]);
             }
-            return acc;
-        }, {});
+        }
 
         // Information about the characters added to the reputation entity
         const characterOpts = Object.keys(entityInformation)

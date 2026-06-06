@@ -34,10 +34,10 @@ export interface EmissarySettings {
 export type EmissarySettingLabel = "reputationControls" | "reputationRange" | "reputationIncrements" | "hiddenElements";
 
 export interface TypeReputationSetting {
-    reputationControls: typeof reputationControls | undefined;
-    reputationIncrements: typeof reputationIncrements | undefined;
-    reputationRange: typeof reputationRange | undefined;
-    hiddenElements: typeof hiddenElements | undefined;
+    reputationControls?: typeof reputationControls;
+    reputationIncrements?: typeof reputationIncrements;
+    reputationRange?: typeof reputationRange;
+    hiddenElements?: typeof hiddenElements;
 }
 
 /**

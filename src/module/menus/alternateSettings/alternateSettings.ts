@@ -2,14 +2,25 @@ import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
 import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
-import { EmissarySettingLabel, TypeReputationSetting, TypeReputationSettingUnit } from "../types.ts";
+import { EntityReputation } from "../reputationTracker/tabs/types.ts";
 
 const { ApplicationV2: AppV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 
 class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
     declare parentApp;
-    declare alternateSettings: TypeReputationSettingUnit;
+    declare alternateSettings: EntityReputation & {
+        reputationRange: Record<string, number>;
+        reputationIncrements: Record<string, string | number | Color>;
+        reputationControls: Record<string, number | string>;
+        hiddenElements: Record<
+            string,
+            ClientSettings.SettingInitializedType<
+                "emissary",
+                "factionHiddenElements" | "interpersonalHiddenElements" | "notorietyHiddenElements"
+            >
+        >;
+    };
 
     constructor(parentApp: AddNotorietyMenu) {
         super();
@@ -102,29 +113,18 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         _form: HTMLFormElement,
         formData: FormDataExtended,
     ): Promise<void> {
-        const result: { [K in EmissarySettingLabel]: TypeReputationSetting[K] } = {
-            reputationControls: undefined,
-            reputationIncrements: undefined,
-            reputationRange: undefined,
-            hiddenElements: undefined,
-        };
-        const settingKeys = Object.keys(formData.object as Record<string, unknown>);
-        const normalizedSettings: TypeReputationSetting = settingKeys.reduce((acc, key) => {
-            const [settingName, index, subsetting] = key.split("-");
-            if (!isNaN(parseFloat(index))) {
-                // if (!acc[settingName]) acc[settingName] = [];
-                acc[settingName][index] = { ...acc[settingName][index], [subsetting]: formData.object[key] };
-            } else if (index) {
-                acc[settingName] = { ...acc[settingName], [index]: formData.object[key] };
-            } else {
-                acc[settingName] = formData.object[key];
+        const expandedFormData = foundry.utils.expandObject(formData.object) as Record<
+            string,
+            Record<string, unknown> | unknown[] | boolean
+        >;
+        for (const key in expandedFormData) {
+            const subKeys = Object.keys(expandedFormData[key]);
+            if (!isNaN(parseFloat(subKeys[0]))) {
+                expandedFormData[key] = Object.values(expandedFormData[key]);
             }
-            return acc;
-        }, result);
+        }
 
-        console.log(normalizedSettings);
-
-        this.parentApp.alternateSettings = normalizedSettings;
+        this.parentApp.alternateSettings = expandedFormData;
     }
 
     static async #addRow(this: AlternateSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {

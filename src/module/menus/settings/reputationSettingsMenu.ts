@@ -197,40 +197,20 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     #formDataToSettings(formData: Record<string, unknown>) {
-        const keys = Object.keys(formData);
-
-        const tmpObj: any = {};
-
-        keys.forEach((k) => {
-            const [settingName, index, subSetting] = k.split("-");
-            const settingData = formData[k];
-
-            function isArray(x: string) {
-                return !isNaN(parseFloat(x));
+        const expandedFormData = foundry.utils.expandObject(formData) as Record<
+            string,
+            Record<string, unknown> | unknown[] | boolean
+        >;
+        for (const key in expandedFormData) {
+            const subKeys = Object.keys(expandedFormData[key]);
+            if (!isNaN(parseFloat(subKeys[0]))) {
+                expandedFormData[key] = Object.values(expandedFormData[key]);
             }
+        }
 
-            if (settingName.includes("Hidden")) {
-                if (!tmpObj[settingName]) {
-                    tmpObj[settingName] = { [index]: settingData };
-                } else {
-                    tmpObj[settingName][index] = settingData;
-                }
-            } else if (isArray(index)) {
-                if (!tmpObj[settingName]) {
-                    tmpObj[settingName] = [{ [subSetting]: settingData }];
-                } else if (!tmpObj[settingName][index]) {
-                    tmpObj[settingName].push({ [subSetting]: settingData });
-                } else tmpObj[settingName][index][subSetting] = settingData;
-            } else {
-                if (!tmpObj[settingName]) {
-                    tmpObj[settingName] = { [index]: settingData };
-                } else {
-                    tmpObj[settingName][index] = settingData;
-                }
-            }
-        });
+        console.log(expandedFormData);
 
-        return tmpObj;
+        return expandedFormData;
     }
 
     static async #onSubmit(
