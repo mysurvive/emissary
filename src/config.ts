@@ -15,6 +15,11 @@ class EmissaryConfig {
             EmissaryConfig.registerEmissaryTemplates();
         });
 
+        /**
+         * @remarks CONFIG.ui.sidebar.TABS gets incorrectly typed as a Record<string, TabsConfiguration> in fvtt-types instead of
+         * Record<string, TabsDescriptor>, so this is my shitty workaround. This is NOT actually a TabsConfiguration,
+         * it is a proper {@link fvtt-types/configuration#Sidebar.TabsDescriptor}.
+         */
         CONFIG.ui.sidebar.TABS.emissary = {
             documentName: "emissary",
             gmOnly: false,
