@@ -1,4 +1,5 @@
 import { EmissaryConfig } from "./config.ts";
+import { ReputationTrackerSidebar } from "./module/menus/reputationTracker/reputationTrackerSidebar.ts";
 import {
     FactionReputation,
     IndividualReputation,
@@ -50,5 +51,11 @@ declare module "fvtt-types/configuration" {
 declare global {
     interface AssumeHookRan {
         ready: true;
+    }
+
+    namespace CONFIG {
+        interface UI {
+            emissary: ReputationTrackerSidebar;
+        }
     }
 }

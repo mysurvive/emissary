@@ -1,9 +1,9 @@
 import { MODNAME } from "src/constants.ts";
-import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
+import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 
 class AddFactionMenu extends AddEntityMenu {
-    constructor(parentApp: ReputationTracker) {
+    constructor(parentApp: ReputationTrackerSidebar) {
         super(parentApp);
         this.defaultIcon = "icons/svg/shield.svg";
         this.entityType = "Factions";

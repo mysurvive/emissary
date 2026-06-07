@@ -4,8 +4,8 @@ import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import { UUID } from "crypto";
 import { clamp } from "../helpers.ts";
-import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { FactionReputation, IndividualReputation, NotorietyReputation } from "../reputationTracker/tabs/types.ts";
+import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
@@ -14,7 +14,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare entityToEdit: any;
     declare parentApp;
 
-    constructor(parentApp: ReputationTracker, entityId: string) {
+    constructor(parentApp: ReputationTrackerSidebar, entityId: string) {
         super();
 
         this.parentApp = parentApp;

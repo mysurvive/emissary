@@ -1,7 +1,7 @@
-import { ReputationTracker } from "./module/menus/reputationTracker/reputationTracker.ts";
 import { registerSettings } from "./scripts/registerSettings.ts";
 import { registerTemplates } from "./scripts/registerTemplates.ts";
 import { registerHandlebarsHelpers } from "./scripts/registerHandlebarsHelpers.ts";
+import { ReputationTrackerSidebar } from "./module/menus/reputationTracker/reputationTrackerSidebar.ts";
 
 class EmissaryConfig {
     static initialize(): void {
@@ -15,21 +15,16 @@ class EmissaryConfig {
             EmissaryConfig.registerEmissaryTemplates();
         });
 
-        Hooks.on("getSceneControlButtons", (controls: Record<string, SceneControls.Control>) => {
-            controls.tokens.tools.reputation = {
-                icon: "fa-solid fa-face-smile",
-                name: "reputation",
-                title: "emissary.tools.reputationTracker.title",
-                visible: true,
-                button: true,
-                order: Object.keys(controls.tokens.tools).length,
-                onChange: () => {
-                    new ReputationTracker().render(true);
-                },
-            };
+        CONFIG.ui.sidebar.TABS.emissary = {
+            documentName: "emissary",
+            gmOnly: false,
+            icon: "fa-solid fa-face-smile",
+            tooltip: "Emissary",
+        };
 
-            console.log("Emissary | Tools Registered");
-        });
+        CONFIG.ui.emissary = ReputationTrackerSidebar;
+
+        console.log("Emissary | Sidebar Registered");
 
         console.log("Emissary | Hooks Registered");
     }
