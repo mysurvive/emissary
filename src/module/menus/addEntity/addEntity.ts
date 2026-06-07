@@ -1,15 +1,14 @@
 import { AnyMutableObject, DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
-
-import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { EntityReputation } from "../reputationTracker/tabs/types.ts";
 
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
+import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
 class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare parentApp;
+    declare parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>;
     declare defaultIcon: string;
     declare entityType: string;
     htmlContext: Record<string, string | undefined> = {
@@ -22,7 +21,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     #dragDrop;
     #filePicker;
 
-    constructor(parentApp: ReputationTracker) {
+    constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super();
         this.parentApp = parentApp;
         this.#dragDrop = new foundry.applications.ux.DragDrop({
@@ -88,7 +87,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     protected override _onClose(options: ApplicationRenderOptions): void {
-        this.parentApp.render({ force: true });
+        this.parentApp.render(true);
         super._onClose(options);
     }
 
