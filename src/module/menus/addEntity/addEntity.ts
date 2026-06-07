@@ -8,7 +8,7 @@ import { ReputationTrackerSidebar } from "../reputationTracker/reputationTracker
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
 class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare parentApp: ReputationTrackerSidebar;
+    declare parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>;
     declare defaultIcon: string;
     declare entityType: string;
     htmlContext: Record<string, string | undefined> = {
@@ -21,7 +21,7 @@ class AddEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     #dragDrop;
     #filePicker;
 
-    constructor(parentApp: ReputationTrackerSidebar) {
+    constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super();
         this.parentApp = parentApp;
         this.#dragDrop = new foundry.applications.ux.DragDrop({

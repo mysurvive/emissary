@@ -3,7 +3,7 @@ import { AddEntityMenu } from "./addEntity.ts";
 import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 
 class AddFactionMenu extends AddEntityMenu {
-    constructor(parentApp: ReputationTrackerSidebar) {
+    constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super(parentApp);
         this.defaultIcon = "icons/svg/shield.svg";
         this.entityType = "Factions";

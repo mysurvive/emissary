@@ -20,7 +20,7 @@ class EmissaryConfig {
             gmOnly: false,
             icon: "fa-solid fa-face-smile",
             tooltip: "Emissary",
-        };
+        } as unknown as foundry.applications.api.ApplicationV2.TabsConfiguration;
 
         CONFIG.ui.emissary = ReputationTrackerSidebar;
 

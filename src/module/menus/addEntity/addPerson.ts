@@ -3,7 +3,7 @@ import { AddEntityMenu } from "./addEntity.ts";
 import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 
 class AddPersonMenu extends AddEntityMenu {
-    constructor(parent: ReputationTrackerSidebar) {
+    constructor(parent: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super(parent);
         this.defaultIcon = "icons/svg/mystery-man.svg";
         this.entityType = "People";

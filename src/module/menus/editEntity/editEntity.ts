@@ -14,7 +14,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare entityToEdit: any;
     declare parentApp;
 
-    constructor(parentApp: ReputationTrackerSidebar, entityId: string) {
+    constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>, entityId: string) {
         super();
 
         this.parentApp = parentApp;

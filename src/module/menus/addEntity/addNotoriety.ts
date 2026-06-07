@@ -10,7 +10,7 @@ import { ReputationTrackerSidebar } from "../reputationTracker/reputationTracker
 
 class AddNotorietyMenu extends AddEntityMenu {
     declare alternateSettings: TypeReputationSetting;
-    constructor(parentApp: ReputationTrackerSidebar) {
+    constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super(parentApp);
         this.defaultIcon = "icons/svg/mystery-man.svg";
         this.entityType = "Notoriety";

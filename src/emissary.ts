@@ -55,7 +55,7 @@ declare global {
 
     namespace CONFIG {
         interface UI {
-            emissary: ReputationTrackerSidebar;
+            emissary: typeof ReputationTrackerSidebar;
         }
     }
 }

@@ -2,6 +2,7 @@ import { AddFactionMenu } from "../addEntity/addFaction.ts";
 import { _DeepPartial } from "fvtt-types/utils";
 import { UUID } from "crypto";
 import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { MODNAME } from "src/constants.ts";
 import { AddPersonMenu } from "../addEntity/addPerson.ts";
 import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
@@ -11,18 +12,22 @@ import { ReputationTabConstructor } from "./tabs/reputationTabConstructor.ts";
 
 const { AbstractSidebarTab } = foundry.applications.sidebar;
 
-export declare namespace ReputationTrackerSidebar {
-    interface RenderContext extends foundry.applications.sidebar.AbstractSidebarTab.RenderContext {}
-    interface RenderOptions extends foundry.applications.sidebar.AbstractSidebarTab.RenderOptions {}
-    interface Configuration extends foundry.applications.sidebar.AbstractSidebarTab.Configuration {}
-    interface Tab extends foundry.applications.sidebar.AbstractSidebarTab {}
+declare namespace ReputationTrackerSidebar {
+    interface RenderContext extends ApplicationV2.RenderContext {
+        user: User;
+        tab?: foundry.applications.api.ApplicationV2.Tab;
+        isGM?: boolean;
+        reputationData?: ReputationData;
+    }
 }
 
 class ReputationTrackerSidebar<
     RenderContext extends ReputationTrackerSidebar.RenderContext,
-    Configuration extends ReputationTrackerSidebar.Configuration,
-    RenderOptions extends ReputationTrackerSidebar.RenderOptions,
-> extends HandlebarsApplicationMixin(AbstractSidebarTab)<RenderContext, Configuration, RenderOptions> {
+> extends HandlebarsApplicationMixin(AbstractSidebarTab)<
+    RenderContext,
+    ApplicationV2.Configuration,
+    ApplicationV2.RenderOptions
+> {
     declare hiddenElements: Record<
         string,
         ClientSettings.SettingInitializedType<
@@ -95,8 +100,8 @@ class ReputationTrackerSidebar<
 
     protected override async _preparePartContext(
         partId: ReputationTrackerPartIds,
-        context: ReputationTrackerSidebar.RenderContext & { tab?: foundry.applications.api.ApplicationV2.Tab },
-    ): Promise<any> {
+        context: RenderContext,
+    ): Promise<RenderContext> {
         context = foundry.utils.deepClone(context);
 
         const constructor = new ReputationTabConstructor();
@@ -104,26 +109,26 @@ class ReputationTrackerSidebar<
         constructor.setInterpersonalReputationLevels();
         constructor.setNotorietyReputationLevels();
         context.tab = context.tabs ? context.tabs[partId] : undefined;
+        context.user = game.user;
+        const reputationData: ReputationData = {
+            interpersonal: {
+                settings: game.settings.get(MODNAME, "interpersonalReputation"),
+                controls: game.settings.get(MODNAME, "interpersonalReputationControls"),
+            },
+            faction: {
+                settings: game.settings.get(MODNAME, "factionReputation"),
+                controls: game.settings.get(MODNAME, "factionReputationControls"),
+            },
+            notoriety: {
+                settings: game.settings.get(MODNAME, "notorietyReputation"),
+                controls: game.settings.get(MODNAME, "notorietyReputationControls"),
+            },
+        };
 
         switch (partId) {
             case "tabs":
                 return context;
             default:
-                const reputationData: ReputationData = {
-                    interpersonal: {
-                        settings: game.settings.get(MODNAME, "interpersonalReputation"),
-                        controls: game.settings.get(MODNAME, "interpersonalReputationControls"),
-                    },
-                    faction: {
-                        settings: game.settings.get(MODNAME, "factionReputation"),
-                        controls: game.settings.get(MODNAME, "factionReputationControls"),
-                    },
-                    notoriety: {
-                        settings: game.settings.get(MODNAME, "notorietyReputation"),
-                        controls: game.settings.get(MODNAME, "notorietyReputationControls"),
-                    },
-                };
-
                 if (Array.isArray(reputationData[partId].settings)) {
                     reputationData[partId].settings = Array.from(
                         await Promise.all(
@@ -171,7 +176,7 @@ class ReputationTrackerSidebar<
                         [partId]: reputationData[partId],
                     },
                     isGM: game.user.isGM,
-                });
+                }) as RenderContext;
 
                 if (!game.user.isGM) {
                     const notorietySettings = game.settings.get(MODNAME, "notorietyReputation");
@@ -207,7 +212,7 @@ class ReputationTrackerSidebar<
         super._preSyncPartState(partId, newElement, priorElement, state);
     }
 
-    static async addEntity(this: any): Promise<void> {
+    static async addEntity(this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>): Promise<void> {
         switch (this.activeTab) {
             case "faction":
                 new AddFactionMenu(this).render({ force: true });
@@ -223,7 +228,10 @@ class ReputationTrackerSidebar<
         }
     }
 
-    static async deleteEntity(this: any, e: PointerEvent): Promise<void> {
+    static async deleteEntity(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        e: PointerEvent,
+    ): Promise<void> {
         const target = e.target as HTMLButtonElement;
         const uuid = target.getAttribute("entity-uuid");
         let setting: "factionReputation" | "interpersonalReputation" | "notorietyReputation";
@@ -265,7 +273,11 @@ class ReputationTrackerSidebar<
         }
     }
 
-    static async updateReputation(this: any, _e: never, t: HTMLButtonElement): Promise<void> {
+    static async updateReputation(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        _e: never,
+        t: HTMLButtonElement,
+    ): Promise<void> {
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("entity-uuid") as UUID;
 
@@ -375,13 +387,21 @@ class ReputationTrackerSidebar<
         }
     }
 
-    static editEntity(this: any, _e: never, t: HTMLButtonElement): void {
+    static editEntity(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        _e: never,
+        t: HTMLButtonElement,
+    ): void {
         const id = t.getAttribute("entity-uuid");
         if (!id) throw "Error extracting ID";
         new EditEntityMenu(this, id).render({ force: true });
     }
 
-    static async hideEntity(this: any, _e: never, t: HTMLButtonElement): Promise<void> {
+    static async hideEntity(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        _e: never,
+        t: HTMLButtonElement,
+    ): Promise<void> {
         const uuid = t.getAttribute("entity-uuid") as UUID;
         let setting;
         switch (this.activeTab) {
