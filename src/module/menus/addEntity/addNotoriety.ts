@@ -1,16 +1,16 @@
 import { DeepPartial } from "fvtt-types/utils";
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
-import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
 import { AlternateSettingsMenu } from "../alternateSettings/alternateSettings.ts";
 import { MODNAME } from "src/constants.ts";
 import { TypeReputationSetting } from "../types.ts";
 import { NotorietyReputation } from "../reputationTracker/tabs/types.ts";
+import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 
 class AddNotorietyMenu extends AddEntityMenu {
     declare alternateSettings: TypeReputationSetting;
-    constructor(parentApp: ReputationTracker) {
+    constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super(parentApp);
         this.defaultIcon = "icons/svg/mystery-man.svg";
         this.entityType = "Notoriety";

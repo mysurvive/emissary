@@ -1,9 +1,9 @@
 import { MODNAME } from "src/constants.ts";
-import { ReputationTracker } from "../reputationTracker/reputationTracker.ts";
 import { AddEntityMenu } from "./addEntity.ts";
+import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
 
 class AddPersonMenu extends AddEntityMenu {
-    constructor(parent: ReputationTracker) {
+    constructor(parent: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>) {
         super(parent);
         this.defaultIcon = "icons/svg/mystery-man.svg";
         this.entityType = "People";

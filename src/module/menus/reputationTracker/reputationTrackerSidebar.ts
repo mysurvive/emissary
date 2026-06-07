@@ -1,17 +1,33 @@
-import { ReputationTabConstructor } from "./tabs/reputationTabConstructor.ts";
 import { AddFactionMenu } from "../addEntity/addFaction.ts";
-import { DeepPartial } from "fvtt-types/utils";
+import { _DeepPartial } from "fvtt-types/utils";
 import { UUID } from "crypto";
-import ApplicationV2 = foundry.applications.api.ApplicationV2;
-import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { MODNAME } from "src/constants.ts";
 import { AddPersonMenu } from "../addEntity/addPerson.ts";
 import { AddNotorietyMenu } from "../addEntity/addNotoriety.ts";
 import { clamp } from "../helpers.ts";
 import { EditEntityMenu } from "../editEntity/editEntity.ts";
+import { ReputationTabConstructor } from "./tabs/reputationTabConstructor.ts";
 
-class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
+const { AbstractSidebarTab } = foundry.applications.sidebar;
+
+declare namespace ReputationTrackerSidebar {
+    interface RenderContext extends ApplicationV2.RenderContext {
+        user: User;
+        tab?: foundry.applications.api.ApplicationV2.Tab;
+        isGM?: boolean;
+        reputationData?: ReputationData;
+    }
+}
+
+class ReputationTrackerSidebar<
+    RenderContext extends ReputationTrackerSidebar.RenderContext,
+> extends HandlebarsApplicationMixin(AbstractSidebarTab)<
+    RenderContext,
+    ApplicationV2.Configuration,
+    ApplicationV2.RenderOptions
+> {
     declare hiddenElements: Record<
         string,
         ClientSettings.SettingInitializedType<
@@ -19,7 +35,6 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
             "factionHiddenElements" | "interpersonalHiddenElements" | "notorietyHiddenElements"
         >
     >;
-
     constructor() {
         super();
         this.hiddenElements = {
@@ -29,25 +44,19 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         };
     }
 
+    static override tabName = "emissary";
     static override DEFAULT_OPTIONS = {
-        id: "reputation-tracker",
         classes: ["emissary", "reputation-tracker"],
-        tag: "div",
-        position: { width: 400, height: 850 },
-        window: { title: "emissary.menu.reputationTracker.title" },
+        window: { frame: false, positioned: false },
         actions: {
-            addEntity: ReputationTracker.addEntity,
-            openRollout: ReputationTracker.openRollout,
-            deleteEntity: ReputationTracker.deleteEntity,
-            updateReputation: ReputationTracker.updateReputation,
-            hideEntity: ReputationTracker.hideEntity,
-            editEntity: ReputationTracker.editEntity,
+            addEntity: ReputationTrackerSidebar.addEntity,
+            openRollout: ReputationTrackerSidebar.openRollout,
+            deleteEntity: ReputationTrackerSidebar.deleteEntity,
+            updateReputation: ReputationTrackerSidebar.updateReputation,
+            hideEntity: ReputationTrackerSidebar.hideEntity,
+            editEntity: ReputationTrackerSidebar.editEntity,
         },
     };
-
-    get activeTab(): string | null | undefined {
-        return this.element.querySelector(".tabs .active")?.getAttribute("data-tab");
-    }
 
     static override PARTS = {
         tabs: { template: "modules/emissary/templates/reputation-tracker/partials/tabs.hbs" },
@@ -57,7 +66,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         },
         faction: {
             template: "modules/emissary/templates/reputation-tracker/faction.hbs",
-            templates: ["modules/emissary/templates/reputation-tracker/partials/faction-item.hbs"],
+            templates: [
+                "modules/emissary/templates/reputation-tracker/faction.hbs",
+                "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs",
+            ],
             id: "faction",
         },
         notoriety: {
@@ -82,54 +94,45 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         },
     };
 
-    protected override async _prepareContext(
-        options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
-    ): Promise<ApplicationV2.RenderContext> {
-        {
-            const context = await super._prepareContext(options);
+    protected override _onActivate(): void {
+        this.render(true);
+    }
 
-            const constructor = new ReputationTabConstructor();
-            constructor.setFactionReputationLevels();
-            constructor.setInterpersonalReputationLevels();
-            constructor.setNotorietyReputationLevels();
+    protected override async _preparePartContext(
+        partId: ReputationTrackerPartIds,
+        context: RenderContext,
+    ): Promise<RenderContext> {
+        context = foundry.utils.deepClone(context);
 
-            const reputationData: Record<
-                string,
-                Record<
-                    string,
-                    ClientSettings.SettingInitializedType<"emissary", ClientSettings.KeyFor<"emissary">> | null
-                >
-            > = {
-                faction: {
-                    settings: game.settings.get(MODNAME, "factionReputation"),
-                    controls: game.settings.get(MODNAME, "factionReputationControls"),
-                },
-                interpersonal: {
-                    settings: game.settings.get(MODNAME, "interpersonalReputation"),
-                    controls: game.settings.get(MODNAME, "interpersonalReputationControls"),
-                },
-                notoriety: {
-                    settings: game.settings.get(MODNAME, "notorietyReputation"),
-                    controls: game.settings.get(MODNAME, "notorietyReputationControls"),
-                },
-            };
+        const constructor = new ReputationTabConstructor();
+        constructor.setFactionReputationLevels();
+        constructor.setInterpersonalReputationLevels();
+        constructor.setNotorietyReputationLevels();
+        context.tab = context.tabs ? context.tabs[partId] : undefined;
+        context.user = game.user;
+        const reputationData: ReputationData = {
+            interpersonal: {
+                settings: game.settings.get(MODNAME, "interpersonalReputation"),
+                controls: game.settings.get(MODNAME, "interpersonalReputationControls"),
+            },
+            faction: {
+                settings: game.settings.get(MODNAME, "factionReputation"),
+                controls: game.settings.get(MODNAME, "factionReputationControls"),
+            },
+            notoriety: {
+                settings: game.settings.get(MODNAME, "notorietyReputation"),
+                controls: game.settings.get(MODNAME, "notorietyReputationControls"),
+            },
+        };
 
-            if (!game.user.isGM) {
-                const notorietySettings = game.settings.get(MODNAME, "notorietyReputation");
-                if (Array.isArray(notorietySettings))
-                    for (const rep of notorietySettings) {
-                        if (rep && rep.playerRep && Array.isArray(rep.playerRep))
-                            rep.playerRep = rep.playerRep.find((r) => r!.characterUuid === game.user.character?.uuid);
-                    }
-                reputationData.notoriety.settings = notorietySettings;
-            }
-
-            for (const type in reputationData) {
-                if (!reputationData[type].settings) throw "Error";
-                if (Array.isArray(reputationData[type].settings))
-                    reputationData[type].settings = Array.from(
+        switch (partId) {
+            case "tabs":
+                return context;
+            default:
+                if (Array.isArray(reputationData[partId].settings)) {
+                    reputationData[partId].settings = Array.from(
                         await Promise.all(
-                            reputationData[type].settings.map(async (e) => {
+                            reputationData[partId].settings.map(async (e) => {
                                 if (e.hidden && !game.user.isGM) return undefined;
                                 if (e && e.journalUuid) {
                                     const factionJournal = (await fromUuid(e.journalUuid)) as JournalEntry;
@@ -141,10 +144,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                                         `@UUID[${e.journalUuid}]`,
                                     );
                                 }
-                                if (this.hiddenElements[type])
-                                    e.hiddenElements = Object.keys(this.hiddenElements[type]).reduce(
+                                if (this.hiddenElements[partId])
+                                    e.hiddenElements = Object.keys(this.hiddenElements[partId]).reduce(
                                         (
-                                            acc: Record<string, boolean>,
+                                            acc,
                                             key:
                                                 | "incrementColor"
                                                 | "incrementName"
@@ -155,36 +158,44 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                                             if (game.user.isGM) {
                                                 acc[key] = false;
                                             } else {
-                                                if (this.hiddenElements[type] && this.hiddenElements[type][key])
-                                                    acc[key] = this.hiddenElements[type][key];
+                                                if (this.hiddenElements[partId] && this.hiddenElements[partId][key])
+                                                    acc[key] = this.hiddenElements[partId][key];
                                             }
                                             return acc;
                                         },
-                                        {},
+                                        this.hiddenElements[partId],
                                     );
                                 return e;
                             }),
                         ),
                     ).filter((e) => e !== undefined);
-            }
+                }
 
-            const mergedContext = foundry.utils.mergeObject(context, {
-                tabs: this._prepareTabs("primary"),
-                reputationData: reputationData,
-                isGM: game.user.isGM,
-            });
+                context = foundry.utils.mergeObject(context, {
+                    reputationData: {
+                        [partId]: reputationData[partId],
+                    },
+                    isGM: game.user.isGM,
+                }) as RenderContext;
 
-            return mergedContext;
+                if (!game.user.isGM) {
+                    const notorietySettings = game.settings.get(MODNAME, "notorietyReputation");
+                    if (Array.isArray(notorietySettings))
+                        for (const rep of notorietySettings) {
+                            if (rep && rep.playerRep && Array.isArray(rep.playerRep))
+                                rep.playerRep = rep.playerRep.find(
+                                    (r) => r!.characterUuid === game.user.character?.uuid,
+                                );
+                        }
+                    foundry.utils.mergeObject(context, reputationData);
+                }
+
+                return context;
         }
     }
 
-    protected override async _preparePartContext(
-        partId: string,
-        context: ApplicationV2.RenderContextOf<this> & { tab?: ApplicationV2.Tab },
-    ): Promise<ApplicationV2.RenderContextOf<this>> {
-        context.tab = context.tabs![partId];
-
-        return context;
+    get activeTab(): string | null | undefined {
+        return this.element.querySelector(".tabs .active")?.getAttribute("data-tab");
     }
 
     protected override _preSyncPartState(
@@ -201,7 +212,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         super._preSyncPartState(partId, newElement, priorElement, state);
     }
 
-    static async addEntity(this: ReputationTracker): Promise<void> {
+    static async addEntity(this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>): Promise<void> {
         switch (this.activeTab) {
             case "faction":
                 new AddFactionMenu(this).render({ force: true });
@@ -217,7 +228,10 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
     }
 
-    static async deleteEntity(this: ReputationTracker, e: PointerEvent): Promise<void> {
+    static async deleteEntity(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        e: PointerEvent,
+    ): Promise<void> {
         const target = e.target as HTMLButtonElement;
         const uuid = target.getAttribute("entity-uuid");
         let setting: "factionReputation" | "interpersonalReputation" | "notorietyReputation";
@@ -244,7 +258,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
         await game.settings.set("emissary", setting, entityReputations);
 
-        await this.render({ force: true });
+        await this.render(true);
     }
 
     static openRollout(e: PointerEvent): void {
@@ -259,7 +273,11 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         }
     }
 
-    static async updateReputation(this: ReputationTracker, _e: never, t: HTMLButtonElement): Promise<void> {
+    static async updateReputation(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        _e: never,
+        t: HTMLButtonElement,
+    ): Promise<void> {
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("entity-uuid") as UUID;
 
@@ -312,7 +330,7 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 })
                 .indexOf(uuid);
 
-            if (entityArray[entity] && entityArray[entity].repNumber) {
+            if (entityArray[entity] && typeof entityArray[entity].repNumber === "number") {
                 entityArray[entity].repNumber += value;
 
                 if (!settings.range) return;
@@ -365,17 +383,25 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
                 entityReputation,
             );
 
-            await this.render({ force: true });
+            await this.render(true);
         }
     }
 
-    static editEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement): void {
+    static editEntity(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        _e: never,
+        t: HTMLButtonElement,
+    ): void {
         const id = t.getAttribute("entity-uuid");
         if (!id) throw "Error extracting ID";
         new EditEntityMenu(this, id).render({ force: true });
     }
 
-    static async hideEntity(this: ReputationTracker, _e: never, t: HTMLButtonElement): Promise<void> {
+    static async hideEntity(
+        this: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>,
+        _e: never,
+        t: HTMLButtonElement,
+    ): Promise<void> {
         const uuid = t.getAttribute("entity-uuid") as UUID;
         let setting;
         switch (this.activeTab) {
@@ -403,4 +429,14 @@ class ReputationTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 }
 
-export { ReputationTracker };
+type ReputationTrackerPartIds = keyof typeof ReputationTrackerSidebar.PARTS;
+
+type ReputationData = Record<
+    Exclude<ReputationTrackerPartIds, "tabs">,
+    Record<
+        "settings" | "controls",
+        ClientSettings.SettingInitializedType<"emissary", ClientSettings.KeyFor<"emissary">>
+    >
+>;
+
+export { ReputationTrackerSidebar };
