@@ -1,3 +1,6 @@
+# Prerelease workflow - we are much more lax in this workflow. No linting
+# and no changelog.
+
 # SPDX-FileCopyrightText: 2022 Johannes Loher
 #
 # SPDX-License-Identifier: MIT
@@ -6,43 +9,15 @@ name: Release
 
 on:
   release:
-    types: [published]
+    types: [prereleased]
 
 env:
   package_type: module
   node_version: latest
 
 jobs:
-  lint:
-    if: ${{ !github.event.release.prerelease }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Install node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
-
-      - name: Cache Node.js modules
-        uses: actions/cache@v4
-        with:
-          path: .npm
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-
-            ${{ runner.OS }}-
-      - name: Install dependencies
-        run: npm ci --cache .npm --prefer-offline
-
-      - name: Lint
-        run: npm run lint
-
   build:
-    if: ${{ !github.event.release.prerelease }}
+    if: ${{github.event.release.prerelease}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,9 +53,8 @@ jobs:
           path: dist
 
   publish:
-    if: ${{ !github.event.release.prerelease }}
+    if: ${{github.event.release.prerelease == true}}
     needs:
-      - lint
       - build
     runs-on: ubuntu-latest
     steps:
@@ -103,21 +77,14 @@ jobs:
         working-directory: ./dist
         run: zip -r ../${{ env.package_type }}.zip .
 
-      - name: Get Changelog Body
-        id: changelog
-        uses: release-flow/keep-a-changelog-action@v3
-        with:
-          command: query
-          version: ${{ steps.get_version.outputs.version-without-v }}
-
-      - name: Create release
-        id: create_version_release
+      - name: Create pre-release
+        if: ${{ github.event.release.prerelease }}
+        id: create_version_prerelease
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          omitDraftDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
+          makeLatest: false
+          prerelease: true
           name: ${{ github.event.release.name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "./dist/${{ env.package_type }}.json, ./${{ env.package_type }}.zip"
-          body: ${{ steps.changelog.outputs.release-notes }}
