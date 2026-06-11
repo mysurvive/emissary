@@ -281,11 +281,6 @@ class ReputationTrackerSidebar<
     ): Promise<void> {
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("entity-uuid") as UUID;
-        let logReason;
-        const logElement = this.element.querySelector(`#log[entity-uuid="${uuid}"]`) as HTMLInputElement;
-        if (logElement) {
-            logReason = logElement.value;
-        }
 
         let settings:
             | (Record<"reputations", "factionReputation" | "interpersonalReputation" | "notorietyReputation"> & {
@@ -348,52 +343,7 @@ class ReputationTrackerSidebar<
                         repRange.maximum,
                     );
 
-                // Handle the journal logs for the entity
-                const journal = (await fromUuid(entityArray[entity].journalUuid)) as JournalEntry;
-                if (journal) {
-                    const journalPage = journal.pages.find((j) => j.name === "Log");
-                    if (journalPage) {
-                        const date = new Date();
-                        const logElement = new DOMParser().parseFromString(
-                            journalPage.text.content as string,
-                            "text/html",
-                        );
-                        const logTemplate = logElement.querySelector(".entity-log")
-                            ? "modules/emissary/templates/entity-logs/log-item.hbs"
-                            : "modules/emissary/templates/entity-logs/log-wrapper.hbs";
-
-                        const journalContent = await foundry.applications.handlebars.renderTemplate(logTemplate, {
-                            change: {
-                                value: {
-                                    label: Math.abs(value),
-                                    value: value,
-                                },
-                                total: entityArray[entity].repNumber,
-                                reason: logReason,
-                            },
-                            dateTime: {
-                                date: date.toLocaleDateString("en-us"),
-                                time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
-                            },
-                        });
-                        if (logElement.querySelector(".entity-log")) {
-                            logElement.querySelector(".entity-log")?.insertAdjacentHTML("afterbegin", journalContent);
-                            journalPage.update({
-                                text: {
-                                    content: logElement.documentElement.innerHTML.toString(),
-                                    format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
-                                },
-                            });
-                        } else {
-                            journalPage.update({
-                                text: {
-                                    content: journalContent,
-                                    format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
-                                },
-                            });
-                        }
-                    }
-                }
+                await this.#createJournalLog(settings, value, uuid);
 
                 await game.settings.set(
                     MODNAME,
@@ -437,6 +387,76 @@ class ReputationTrackerSidebar<
             );
 
             await this.render(true);
+        }
+    }
+
+    async #createJournalLog(
+        settings: Record<"reputations", "factionReputation" | "interpersonalReputation" | "notorietyReputation"> & {
+            range?: ClientSettings.SettingInitializedType<
+                "emissary",
+                "factionReputationRange" | "interpersonalReputationRange"
+            >;
+        },
+        value: number,
+        uuid: UUID,
+    ) {
+        // Handle the journal logs for the entity
+        const entityReputation = game.settings.get(MODNAME, settings.reputations);
+        if (!entityReputation) return;
+        const entityReputations = Object.values(entityReputation);
+        const entityArray = Array.from(entityReputations);
+        const entity = entityArray
+            .map((f) => {
+                if (f) return f.id;
+                else return undefined;
+            })
+            .indexOf(uuid);
+        const logElement = this.element.querySelector(`#log[entity-uuid="${uuid}"]`) as HTMLInputElement;
+        let logReason;
+        if (logElement) {
+            logReason = logElement.value;
+        }
+        const journal = (await fromUuid(entityArray[entity].journalUuid)) as JournalEntry;
+        if (journal) {
+            const journalPage = journal.pages.find((j) => j.name === "Log");
+            if (journalPage) {
+                const date = new Date();
+                const logElement = new DOMParser().parseFromString(journalPage.text.content as string, "text/html");
+                const logTemplate = logElement.querySelector(".entity-log")
+                    ? "modules/emissary/templates/entity-logs/log-item.hbs"
+                    : "modules/emissary/templates/entity-logs/log-wrapper.hbs";
+
+                const journalContent = await foundry.applications.handlebars.renderTemplate(logTemplate, {
+                    change: {
+                        value: {
+                            label: Math.abs(value),
+                            value: value,
+                        },
+                        total: entityArray[entity].repNumber,
+                        reason: logReason,
+                    },
+                    dateTime: {
+                        date: date.toLocaleDateString("en-us"),
+                        time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
+                    },
+                });
+                if (logElement.querySelector(".entity-log")) {
+                    logElement.querySelector(".entity-log")?.insertAdjacentHTML("afterbegin", journalContent);
+                    journalPage.update({
+                        text: {
+                            content: logElement.documentElement.innerHTML.toString(),
+                            format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+                        },
+                    });
+                } else {
+                    journalPage.update({
+                        text: {
+                            content: journalContent,
+                            format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+                        },
+                    });
+                }
+            }
         }
     }
 
