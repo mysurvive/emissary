@@ -79,7 +79,13 @@ class ReputationTrackerSidebar<
         },
     };
 
-    get hiddenElements() {
+    get hiddenElements(): Record<
+        string,
+        ClientSettings.SettingInitializedType<
+            "emissary",
+            "factionHiddenElements" | "interpersonalHiddenElements" | "notorietyHiddenElements"
+        >
+    > {
         return {
             faction: game.settings.get(MODNAME, "factionHiddenElements"),
             interpersonal: game.settings.get(MODNAME, "interpersonalHiddenElements"),
