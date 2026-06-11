@@ -128,7 +128,6 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             footerButtons: [{ type: "submit", label: "emissary.menu.generic.buttons.submit" }],
             edit: true,
         });
-
         return mergedContext;
     }
 
@@ -141,42 +140,41 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const entityInformation = formData.object;
 
         // Normalize the settings
-        const normalizedSettings = foundry.utils.expandObject(formData.object) as Record<
-            string,
-            Record<string, unknown> | unknown[] | boolean | UUID
-        >;
+        const normalizedSettings = foundry.utils.expandObject(entityInformation) as any;
         for (const key in normalizedSettings) {
-            const subKeys = Object.keys(normalizedSettings[key]);
-            if (!isNaN(parseFloat(subKeys[0]))) {
-                normalizedSettings[key] = Object.values(normalizedSettings[key]);
+            if (Array.isArray(normalizedSettings[key])) {
+                const subKeys = Object.keys(normalizedSettings[key]);
+                if (!isNaN(parseFloat(subKeys[0]))) {
+                    normalizedSettings[key] = Object.values(normalizedSettings[key]);
+                }
             }
         }
 
         // Information about the characters added to the reputation entity
-        const characterOpts = Object.keys(entityInformation)
-            .filter((e) => e.includes("character"))
-            .reduce(
-                (
-                    acc: Record<
-                        string,
-                        Partial<
-                            (typeof IndividualReputation | typeof NotorietyReputation | typeof FactionReputation) & {
-                                characterName: string | undefined | null;
-                                characterId: string | undefined | null;
-                                select: boolean;
-                                repNumber: number;
-                            }
-                        >
-                    >,
-                    key,
-                ) => {
-                    const [_a, subkey, uuid] = key.split("-");
-                    acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
-                    delete entityInformation[key];
-                    return acc;
-                },
-                {},
-            );
+        const characterOpts = Object.keys(normalizedSettings.character.Actor).reduce(
+            (
+                acc: Record<
+                    string,
+                    Partial<
+                        (typeof IndividualReputation | typeof NotorietyReputation | typeof FactionReputation) & {
+                            characterName: string | undefined | null;
+                            characterId: string | undefined | null;
+                            select: boolean;
+                            repNumber: number;
+                        }
+                    >
+                >,
+                key,
+            ) => {
+                const setting = normalizedSettings.character.Actor[key];
+                acc[`Actor.${key}`] = setting;
+                delete normalizedSettings.character.Actor[key];
+                return acc;
+            },
+            {},
+        );
+
+        console.log(characterOpts);
 
         for (const characterUuid in characterOpts) {
             const character = await fromUuid(characterUuid);
@@ -190,7 +188,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         normalizedSettings.playerRep = Object.keys(characterOpts)
             .map((key) => {
-                if (characterOpts[key].select && characterOpts[key].repNumber) {
+                if (characterOpts[key].select && characterOpts[key].repNumber !== undefined) {
                     return {
                         characterName: characterOpts[key].characterName,
                         characterUuid: key,

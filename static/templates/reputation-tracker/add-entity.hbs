@@ -25,9 +25,9 @@
         </span>
         {{#each playerCharacters}}
         <span class="character-item">
-            <input type="checkbox" name="character-select-{{characterUuid}}" {{#if existing}}checked{{/if}}></input>
+            <input type="checkbox" name="character.{{characterUuid}}.select" id="" {{#if existing}}checked{{/if}}></input>
             <label>{{characterName}}</label>
-            <input type="number" name="character-repNumber-{{characterUuid}}" value="{{#if repNumber}}{{repNumber}}{{else}}0{{/if}}" required></input>
+            <input type="number" name="character.{{characterUuid}}.repNumber" value="{{#if repNumber}}{{repNumber}}{{else}}0{{/if}}" required></input>
         </span>
         {{/each}}
     </fieldset>
