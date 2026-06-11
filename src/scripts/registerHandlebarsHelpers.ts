@@ -14,6 +14,15 @@ export function registerHandlebarsHelpers(): void {
                 gt: function (l: number, r: number) {
                     return l > r;
                 },
+                gte: function (l: number, r: number) {
+                    return l >= r;
+                },
+                lt: function (l: number, r: number) {
+                    return l < r;
+                },
+                lte: function (l: number, r: number) {
+                    return l <= r;
+                },
                 or: function (l: unknown, r: unknown) {
                     return l || r;
                 },

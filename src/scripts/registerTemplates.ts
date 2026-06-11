@@ -13,6 +13,12 @@ export function registerTemplates(): void {
         "modules/emissary/templates/menu/partials/reputationRange.hbs",
         "modules/emissary/templates/menu/partials/reputationIncrement.hbs",
         "modules/emissary/templates/menu/partials/reputationControls.hbs",
+
+        /**
+         * Entity Log
+         */
+        "modules/emissary/templates/entity-logs/log-wrapper.hbs",
+        "modules/emissary/templates/entity-logs/log-item.hbs",
     ];
 
     loadTemplates(templatePaths);

@@ -273,9 +273,13 @@ class ReputationTrackerSidebar<
         _e: never,
         t: HTMLButtonElement,
     ): Promise<void> {
-        console.log(this.element.querySelector("#log"));
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("entity-uuid") as UUID;
+        let logReason;
+        const logElement = this.element.querySelector(`#log[entity-uuid="${uuid}"]`) as HTMLInputElement;
+        if (logElement) {
+            logReason = logElement.value;
+        }
 
         let settings:
             | (Record<"reputations", "factionReputation" | "interpersonalReputation" | "notorietyReputation"> & {
@@ -337,6 +341,55 @@ class ReputationTrackerSidebar<
                         repRange.minimum,
                         repRange.maximum,
                     );
+
+                // Handle the journal logs for the entity
+                const journal = (await fromUuid(entityArray[entity].journalUuid)) as JournalEntry;
+                if (journal) {
+                    const journalPage = journal.pages.find((j) => j.name === "Log");
+                    if (journalPage) {
+                        const date = new Date();
+                        const logElement = new DOMParser().parseFromString(
+                            journalPage.text.content as string,
+                            "text/html",
+                        );
+                        if (logElement.querySelector(".entity-log")) {
+                            const journalContent = await foundry.applications.handlebars.renderTemplate(
+                                "modules/emissary/templates/entity-logs/log-item.hbs",
+                                {
+                                    change: { value: Math.abs(value), reason: logReason },
+                                    dateTime: {
+                                        date: date.toLocaleDateString("en-us"),
+                                        time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
+                                    },
+                                },
+                            );
+                            logElement.querySelector(".entity-log")?.insertAdjacentHTML("afterbegin", journalContent);
+                            journalPage.update({
+                                text: {
+                                    content: logElement.documentElement.innerHTML.toString(),
+                                    format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+                                },
+                            });
+                        } else {
+                            const journalContent = await foundry.applications.handlebars.renderTemplate(
+                                "modules/emissary/templates/entity-logs/log-wrapper.hbs",
+                                {
+                                    change: { value: Math.abs(value), reason: logReason },
+                                    dateTime: {
+                                        date: date.toLocaleDateString("en-us"),
+                                        time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
+                                    },
+                                },
+                            );
+                            journalPage.update({
+                                text: {
+                                    content: journalContent,
+                                    format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+                                },
+                            });
+                        }
+                    }
+                }
 
                 await game.settings.set(
                     MODNAME,
