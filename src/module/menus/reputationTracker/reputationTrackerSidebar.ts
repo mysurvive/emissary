@@ -273,6 +273,7 @@ class ReputationTrackerSidebar<
         _e: never,
         t: HTMLButtonElement,
     ): Promise<void> {
+        console.log(this.element.querySelector("#log"));
         const value = Number(t.getAttribute("data-value"));
         const uuid = t.getAttribute("entity-uuid") as UUID;
 
