@@ -140,6 +140,11 @@
         justify-content: center;
     }
 
+    #log {
+        width: auto;
+        margin: 0.25em 0.5em;
+    }
+
     .control-buttons {
         display: flex;
         flex-direction: row;
