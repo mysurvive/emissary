@@ -4,9 +4,4 @@
             {{> "modules/emissary/templates/reputation-tracker/partials/faction-item.hbs" category=category}}
         {{/each}}
     {{/with}}
-    <button class="{{#if isGM}}visible{{/if}}" 
-    id="add-entity" 
-    data-action="addEntity">
-        {{localize "emissary.menu.addFaction.title"}}
-    </button>
 </section>
