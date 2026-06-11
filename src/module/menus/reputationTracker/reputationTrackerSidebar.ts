@@ -28,26 +28,10 @@ class ReputationTrackerSidebar<
     ApplicationV2.Configuration,
     ApplicationV2.RenderOptions
 > {
-    declare hiddenElements: Record<
-        string,
-        ClientSettings.SettingInitializedType<
-            "emissary",
-            "factionHiddenElements" | "interpersonalHiddenElements" | "notorietyHiddenElements"
-        >
-    >;
-    constructor() {
-        super();
-        this.hiddenElements = {
-            faction: game.settings.get(MODNAME, "factionHiddenElements"),
-            interpersonal: game.settings.get(MODNAME, "interpersonalHiddenElements"),
-            notoriety: game.settings.get(MODNAME, "notorietyHiddenElements"),
-        };
-    }
-
     static override tabName = "emissary";
     static override DEFAULT_OPTIONS = {
         classes: ["emissary", "reputation-tracker"],
-        window: { frame: false, positioned: false },
+        window: { title: "Emissary Reputation Tracker" },
         actions: {
             addEntity: ReputationTrackerSidebar.addEntity,
             openRollout: ReputationTrackerSidebar.openRollout,
@@ -80,6 +64,7 @@ class ReputationTrackerSidebar<
             ],
             id: "notoriety",
         },
+        footer: { template: "modules/emissary/templates/reputation-tracker/partials/footer.hbs" },
     };
 
     static override TABS = {
@@ -93,6 +78,18 @@ class ReputationTrackerSidebar<
             initial: "faction",
         },
     };
+
+    get hiddenElements() {
+        return {
+            faction: game.settings.get(MODNAME, "factionHiddenElements"),
+            interpersonal: game.settings.get(MODNAME, "interpersonalHiddenElements"),
+            notoriety: game.settings.get(MODNAME, "notorietyHiddenElements"),
+        };
+    }
+
+    get activeTab(): string | null | undefined {
+        return this.element.querySelector(".tabs .active")?.getAttribute("data-tab");
+    }
 
     protected override _onActivate(): void {
         this.render(true);
@@ -110,6 +107,7 @@ class ReputationTrackerSidebar<
         constructor.setNotorietyReputationLevels();
         context.tab = context.tabs ? context.tabs[partId] : undefined;
         context.user = game.user;
+        context.isGM = game.user.isGM;
         const reputationData: ReputationData = {
             interpersonal: {
                 settings: game.settings.get(MODNAME, "interpersonalReputation"),
@@ -127,6 +125,8 @@ class ReputationTrackerSidebar<
 
         switch (partId) {
             case "tabs":
+                return context;
+            case "footer":
                 return context;
             default:
                 if (Array.isArray(reputationData[partId].settings)) {
@@ -175,7 +175,6 @@ class ReputationTrackerSidebar<
                     reputationData: {
                         [partId]: reputationData[partId],
                     },
-                    isGM: game.user.isGM,
                 }) as RenderContext;
 
                 if (!game.user.isGM) {
@@ -192,10 +191,6 @@ class ReputationTrackerSidebar<
 
                 return context;
         }
-    }
-
-    get activeTab(): string | null | undefined {
-        return this.element.querySelector(".tabs .active")?.getAttribute("data-tab");
     }
 
     protected override _preSyncPartState(
@@ -432,7 +427,7 @@ class ReputationTrackerSidebar<
 type ReputationTrackerPartIds = keyof typeof ReputationTrackerSidebar.PARTS;
 
 type ReputationData = Record<
-    Exclude<ReputationTrackerPartIds, "tabs">,
+    Exclude<ReputationTrackerPartIds, "tabs" | "footer">,
     Record<
         "settings" | "controls",
         ClientSettings.SettingInitializedType<"emissary", ClientSettings.KeyFor<"emissary">>

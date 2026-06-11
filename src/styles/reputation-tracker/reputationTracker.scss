@@ -1,3 +1,28 @@
+.reputation-tracker {
+    .window-content {
+        .tab {
+            max-height: 700px;
+            overflow-y: auto;
+        }
+        .form-footer {
+            margin-top: 0;
+        }
+    }
+}
+.reputation-tracker.emissary-sidebar:not(.sidebar-popout) {
+    .tab {
+        max-height: 92.5vh;
+        overflow-y: auto;
+    }
+    .form-footer {
+        height: 5%;
+        margin-top: 0;
+        #add-entity.visible {
+            margin: 1em 0.5em;
+        }
+    }
+}
+
 .reputation-tracker .entity-item,
 .reputation-settings.preview .entity-item {
     border: 1px solid;
