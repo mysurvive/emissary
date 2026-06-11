@@ -352,17 +352,25 @@ class ReputationTrackerSidebar<
                             journalPage.text.content as string,
                             "text/html",
                         );
-                        if (logElement.querySelector(".entity-log")) {
-                            const journalContent = await foundry.applications.handlebars.renderTemplate(
-                                "modules/emissary/templates/entity-logs/log-item.hbs",
-                                {
-                                    change: { value: Math.abs(value), reason: logReason },
-                                    dateTime: {
-                                        date: date.toLocaleDateString("en-us"),
-                                        time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
-                                    },
+                        const logTemplate = logElement.querySelector(".entity-log")
+                            ? "modules/emissary/templates/entity-logs/log-item.hbs"
+                            : "modules/emissary/templates/entity-logs/log-wrapper.hbs";
+
+                        const journalContent = await foundry.applications.handlebars.renderTemplate(logTemplate, {
+                            change: {
+                                value: {
+                                    label: Math.abs(value),
+                                    value: value,
                                 },
-                            );
+                                total: entityArray[entity].repNumber,
+                                reason: logReason,
+                            },
+                            dateTime: {
+                                date: date.toLocaleDateString("en-us"),
+                                time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
+                            },
+                        });
+                        if (logElement.querySelector(".entity-log")) {
                             logElement.querySelector(".entity-log")?.insertAdjacentHTML("afterbegin", journalContent);
                             journalPage.update({
                                 text: {
@@ -371,16 +379,6 @@ class ReputationTrackerSidebar<
                                 },
                             });
                         } else {
-                            const journalContent = await foundry.applications.handlebars.renderTemplate(
-                                "modules/emissary/templates/entity-logs/log-wrapper.hbs",
-                                {
-                                    change: { value: Math.abs(value), reason: logReason },
-                                    dateTime: {
-                                        date: date.toLocaleDateString("en-us"),
-                                        time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
-                                    },
-                                },
-                            );
                             journalPage.update({
                                 text: {
                                     content: journalContent,
