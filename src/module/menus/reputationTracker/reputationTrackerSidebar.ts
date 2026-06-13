@@ -386,10 +386,28 @@ class ReputationTrackerSidebar<
                 entityReputation,
             );
 
+            this.#createJournalLog(
+                settings,
+                value,
+                entityReputations[entity].id,
+                entityReputations[entity].playerRep[characterIndex].characterName,
+                entityReputations[entity].playerRep[characterIndex].repNumber,
+            );
+
             await this.render(true);
         }
     }
 
+    /**
+     * @remarks
+     * Function that creates the log entries in the linked journal.
+     * @param settings - A Record of xReputation settings with an optional range.
+     * @param value - The value that the reputation is being increased by.
+     * @param uuid - The UUID for the entity for which the log is being created.
+     * @param character - The name of the character that this applies to. Only a requirement when a notorietyReputation is passed in.
+     * @param total - The total of the reputation value after being added to the current reputation. Only necessary when a notorietyReputation is passed in.
+     * @returns
+     */
     async #createJournalLog(
         settings: Record<"reputations", "factionReputation" | "interpersonalReputation" | "notorietyReputation"> & {
             range?: ClientSettings.SettingInitializedType<
@@ -399,6 +417,8 @@ class ReputationTrackerSidebar<
         },
         value: number,
         uuid: UUID,
+        character?: string,
+        total?: number,
     ) {
         // Handle the journal logs for the entity
         const entityReputation = game.settings.get(MODNAME, settings.reputations);
@@ -411,6 +431,7 @@ class ReputationTrackerSidebar<
                 else return undefined;
             })
             .indexOf(uuid);
+
         const logElement = this.element.querySelector(`#log[entity-uuid="${uuid}"]`) as HTMLInputElement;
         let logReason;
         if (logElement) {
@@ -432,14 +453,16 @@ class ReputationTrackerSidebar<
                             label: Math.abs(value),
                             value: value,
                         },
-                        total: entityArray[entity].repNumber,
+                        total: entityArray[entity].repNumber ?? total,
                         reason: logReason,
+                        character: character,
                     },
                     dateTime: {
                         date: date.toLocaleDateString("en-us"),
                         time: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()} ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
                     },
                 });
+
                 if (logElement.querySelector(".entity-log")) {
                     logElement.querySelector(".entity-log")?.insertAdjacentHTML("afterbegin", journalContent);
                     journalPage.update({

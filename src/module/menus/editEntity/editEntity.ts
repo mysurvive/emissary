@@ -174,8 +174,6 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             {},
         );
 
-        console.log(characterOpts);
-
         for (const characterUuid in characterOpts) {
             const character = await fromUuid(characterUuid);
             if (character) {
