@@ -44,8 +44,9 @@
         border-style: dashed;
 
         .entity-box .item-name {
-            &:after {
-                font-family: "Font Awesome 6 Pro";
+            &:before {
+                font-family: "Font Awesome 7 Pro";
+                margin-right: 0.25em;
                 content: "\f070";
             }
         }
