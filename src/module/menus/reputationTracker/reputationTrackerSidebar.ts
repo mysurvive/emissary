@@ -406,7 +406,6 @@ class ReputationTrackerSidebar<
      * @param uuid - The UUID for the entity for which the log is being created.
      * @param character - The name of the character that this applies to. Only a requirement when a notorietyReputation is passed in.
      * @param total - The total of the reputation value after being added to the current reputation. Only necessary when a notorietyReputation is passed in.
-     * @returns
      */
     async #createJournalLog(
         settings: Record<"reputations", "factionReputation" | "interpersonalReputation" | "notorietyReputation"> & {
