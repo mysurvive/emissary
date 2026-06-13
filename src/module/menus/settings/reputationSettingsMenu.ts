@@ -208,8 +208,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         }
 
-        console.log(expandedFormData);
-
         return expandedFormData;
     }
 

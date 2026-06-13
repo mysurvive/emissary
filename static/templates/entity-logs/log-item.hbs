@@ -3,16 +3,21 @@
     <div class="flex-item vertical">
         <div class="{{#when change.value.value "gte" 0}}positive{{else}}negative{{/when}}" id="log-change">
             {{#when change.value.value "gte" 0}}
-                Added
+                Added {{change.value.label}}
+                {{#if change.character}}
+                    to {{change.character}}
+                {{/if}}
             {{else}}
-                Subtracted
+                Subtracted {{change.value.label}}
+                {{#if change.character}}
+                    from {{change.character}}
+                {{/if}}
             {{/when}}
-            {{change.value.label}}.
         </div>
         <div id="log-reason">
             {{#if change.reason}}
                 Reason:
-                {{change.reason}}.
+                {{change.reason}}
             {{/if}}
         </div>
         <div id="rep-total">
