@@ -231,7 +231,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const settingsArray = subsettingTarget?.querySelector(".settings-array");
         const lastChild = settingsArray?.lastElementChild;
         if (!lastChild) return;
-        const template = lastChild.id.includes("ReputationIncrement")
+        const template = lastChild.id.includes("increment")
             ? await renderTemplate("modules/emissary/templates/menu/partials/reputationIncrement.hbs", {
                   key: Number(lastChild.getAttribute("key")) + 1,
                   id: lastChild.id,
