@@ -107,6 +107,34 @@ class AlternateSettingsMenu extends HandlebarsApplicationMixin(AppV2) {
         return mergedContext;
     }
 
+    protected override _onChangeForm(_formConfig: ApplicationV2.FormConfiguration, event: Event): void {
+        const target = event.target as HTMLInputElement;
+
+        // Sort the array if a change is made to the ReputationIncrement.minimum or ReputationControls.amount fields
+        if (
+            (target.name.includes("minimum") || target.name.includes("amount")) &&
+            (target.name.includes("ReputationIncrement") || target.name.includes("ReputationControls"))
+        ) {
+            const settingArray = target.closest(".settings-array");
+            const settingLabel = target.name.split(".").at(-1);
+            if (settingArray) {
+                const sortedArray = Array.from(settingArray.children).sort((a: Element, b: Element): number => {
+                    const elA = a.querySelector(`input[name$=${settingLabel}]`) as HTMLInputElement;
+                    const elB = b.querySelector(`input[name$=${settingLabel}]`) as HTMLInputElement;
+                    if (elA && elB) {
+                        return parseFloat(elA.value) - parseFloat(elB.value);
+                    } else {
+                        return 0;
+                    }
+                });
+                settingArray.replaceChildren();
+                sortedArray.forEach((e) => {
+                    settingArray.appendChild(e.cloneNode(true));
+                });
+            }
+        }
+    }
+
     static async #onSubmit(
         this: AlternateSettingsMenu,
         _event: Event,

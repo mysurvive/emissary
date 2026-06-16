@@ -75,6 +75,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         },
         form: {
             template: "modules/emissary/templates/menu/reputationSettingsMenu.hbs",
+            scrollable: [""],
             classes: ["emissary", "reputation-settings"],
         },
         preview: {
@@ -166,11 +167,39 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const target = event.target as HTMLInputElement;
         const [settingName, index, subSetting] = target.name.split("-");
 
+        // Sort the array if a change is made to the ReputationIncrement.minimum or ReputationControls.amount fields
+        if (
+            (target.name.includes("minimum") || target.name.includes("amount")) &&
+            (target.name.includes("ReputationIncrement") || target.name.includes("ReputationControls"))
+        ) {
+            const settingArray = target.closest(".settings-array");
+            const settingLabel = target.name.split(".").at(-1);
+            if (settingArray) {
+                const sortedArray = Array.from(settingArray.children).sort((a: Element, b: Element): number => {
+                    const elA = a.querySelector(`input[name$=${settingLabel}]`) as HTMLInputElement;
+                    const elB = b.querySelector(`input[name$=${settingLabel}]`) as HTMLInputElement;
+                    if (elA && elB) {
+                        return parseFloat(elA.value) - parseFloat(elB.value);
+                    } else {
+                        return 0;
+                    }
+                });
+                settingArray.replaceChildren();
+                sortedArray.forEach((e) => {
+                    settingArray.appendChild(e.cloneNode(true));
+                });
+            }
+        }
+
         function isArray(x: string) {
             return !isNaN(parseFloat(x));
         }
 
-        const type = settingName.includes("faction") ? "faction" : "interpersonal";
+        const type = settingName.includes("faction")
+            ? "faction"
+            : settingName.includes("faction")
+              ? "interpersonal"
+              : "notoriety";
 
         if (settingName.includes("Hidden")) {
             this.previewSettings.changeSettings[type].hiddenElements[index] = target.checked;
@@ -180,7 +209,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             this.previewSettings.changeSettings[type][settingName][index] = target.value;
         }
 
-        this.render({ parts: ["preview"] });
+        this.render({ force: true });
     }
 
     protected override _preSyncPartState(
@@ -205,10 +234,23 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             const subKeys = Object.keys(expandedFormData[key]);
             if (!isNaN(parseFloat(subKeys[0]))) {
                 expandedFormData[key] = Object.values(expandedFormData[key]);
+                if (key.includes("ReputationIncrement") || key.includes("ReputationControls"))
+                    expandedFormData[key] = this.#sortSetting(expandedFormData[key] as Record<string, number>[]);
             }
         }
 
         return expandedFormData;
+    }
+
+    #sortSetting(setting: Record<string, number>[]) {
+        setting.sort((a, b) => {
+            if (!isNaN(a.minimum)) {
+                return a.minimum - b.minimum;
+            } else {
+                return a.amount - b.amount;
+            }
+        });
+        return setting;
     }
 
     static async #onSubmit(
@@ -242,9 +284,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     type: "settingsArray",
                     subtype: "increment",
                     id: "factionReputationIncrement",
-                    settingValue:
+                    settingValue: this.#sortSetting(
                         this.template?.factionReputationIncrement ??
-                        game.settings.get(MODNAME, "factionReputationIncrement"),
+                            game.settings.get(MODNAME, "factionReputationIncrement"),
+                    ),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.reputationControls.name",
@@ -252,9 +295,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     type: "settingsArray",
                     subtype: "control",
                     id: "factionReputationControls",
-                    settingValue:
+                    settingValue: this.#sortSetting(
                         this.template?.factionReputationControls ??
-                        game.settings.get(MODNAME, "factionReputationControls"),
+                            game.settings.get(MODNAME, "factionReputationControls"),
+                    ),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.hiddenElements.name",
@@ -280,9 +324,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     type: "settingsArray",
                     subtype: "increment",
                     id: "interpersonalReputationIncrement",
-                    settingValue:
+                    settingValue: this.#sortSetting(
                         this.template?.interpersonalReputationIncrement ??
-                        game.settings.get(MODNAME, "interpersonalReputationIncrement"),
+                            game.settings.get(MODNAME, "interpersonalReputationIncrement"),
+                    ),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.reputationControls.name",
@@ -290,9 +335,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     type: "settingsArray",
                     subtype: "control",
                     id: "interpersonalReputationControls",
-                    settingValue:
+                    settingValue: this.#sortSetting(
                         this.template?.interpersonalReputationControls ??
-                        game.settings.get(MODNAME, "interpersonalReputationControls"),
+                            game.settings.get(MODNAME, "interpersonalReputationControls"),
+                    ),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.hiddenElements.name",
@@ -318,9 +364,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     type: "settingsArray",
                     subtype: "increment",
                     id: "notorietyReputationIncrement",
-                    settingValue:
+                    settingValue: this.#sortSetting(
                         this.template?.notorietyReputationIncrement ??
-                        game.settings.get(MODNAME, "notorietyReputationIncrement"),
+                            game.settings.get(MODNAME, "notorietyReputationIncrement"),
+                    ),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.reputationControls.name",
@@ -328,9 +375,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     type: "settingsArray",
                     subtype: "control",
                     id: "notorietyReputationControls",
-                    settingValue:
+                    settingValue: this.#sortSetting(
                         this.template?.notorietyReputationControls ??
-                        game.settings.get(MODNAME, "notorietyReputationControls"),
+                            game.settings.get(MODNAME, "notorietyReputationControls"),
+                    ),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.hiddenElements.name",
