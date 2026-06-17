@@ -6,6 +6,7 @@ import { UUID } from "crypto";
 import { clamp } from "../helpers.ts";
 import { FactionReputation, IndividualReputation, NotorietyReputation } from "../reputationTracker/tabs/types.ts";
 import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
+import { isArray } from "remeda";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
@@ -179,6 +180,27 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         // Normalize the settings
         const normalizedSettings = foundry.utils.expandObject(entityInformation) as NormalizedSettings;
+        if (!isArray(normalizedSettings["increments"]))
+            normalizedSettings["increments"] = Object.keys(normalizedSettings["increments"])
+                .map((key) => {
+                    if (!isArray(normalizedSettings["increments"])) {
+                        return normalizedSettings["increments"][key];
+                    } else return;
+                })
+                .filter((s) => s !== undefined)
+                .sort((a, b) => {
+                    return a.minimum - b.minimum;
+                });
+        normalizedSettings["controls"] = Object.keys(normalizedSettings["controls"])
+            .map((key) => {
+                if (!isArray(normalizedSettings["controls"])) {
+                    return normalizedSettings["controls"][key];
+                } else return;
+            })
+            .filter((s) => s !== undefined)
+            .sort((a, b) => {
+                return a.amount - b.amount;
+            });
 
         // Information about the characters added to the reputation entity
         const characterOpts = Object.keys(normalizedSettings.character.Actor).reduce(
@@ -237,7 +259,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             if (entityId) {
                 const index = entityReputationsArray.indexOf(entityId);
                 if (index === -1) throw "Error finding entity to edit.";
-                entityReputationsArray[index] = normalizedSettings;
+                entityReputationsArray[index] = normalizedSettings as SingleNotorietyReputation;
             }
         }
 
@@ -305,7 +327,20 @@ interface PlayerReputation {
     repLevel?: { label: string; color: Color };
 }
 
-type NormalizedSettings = SingleNotorietyReputation & {
+type NormalizedSettings = {
+    controls:
+        | Record<string, { amount: number; icon: string; label: string }>
+        | { amount: number; icon: string; label: string }[];
+    hidden: boolean;
+    id: string;
+    increments:
+        | Record<string, { color: Color; label: string; minimum: number; maximum: number }>
+        | { color: Color; label: string; minimum: number; maximum: number }[];
+    journalUuid: string;
+    name: string;
+    playerRep: PlayerReputation[];
+    range: { minimum: number; maximum: number };
+    type: string;
     character: {
         Actor: Record<string, { characterId: string; characterName: string; repNumber: number; select: boolean }>;
     };
@@ -315,15 +350,15 @@ interface SingleNotorietyReputation {
     name: string;
     type: string;
     id: string;
-    controls: [{ label: string; amount: number; icon: string }];
-    increments: [{ label: string; minimum: number; maximum: number; color: Color }];
+    controls: { label: string; amount: number; icon: string }[];
+    increments: { label: string; minimum: number; maximum: number; color: Color }[];
     range: { minimum: number; maximum: number };
     playerRep: PlayerReputation[];
     journalUuid: string;
-    hiddenElements: { hint: string; id: string; settingName: string; settingValue: Record<string, boolean> };
+    hiddenElements?: { hint: string; id: string; settingName: string; settingValue: Record<string, boolean> };
     imgsrc?: string;
     enrichedUuid?: string;
-    hidden?: boolean;
+    hidden: boolean;
 }
 
 export { EditEntityMenu };
