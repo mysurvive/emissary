@@ -60,26 +60,6 @@
                 "dropJournal": "Drag an existing journal entry here to link it or click Submit to create a new journal for this entity."
             },
             "editEntity": { "title": "Edit Entity" },
-            "templateManager": {
-                "title": "Template Manager",
-                "labels": {
-                    "or": "OR",
-                    "selectTemplate": "Select a template",
-                    "importTemplate": "Import a custom template"
-                },
-                "buttons": {
-                    "applyTemplate": "Apply Template",
-                    "importTemplate": "Import"
-                },
-                "errors": {
-                    "preBuiltTemplate": {
-                        "generic": "Error with pre-built template."
-                    },
-                    "importTemplate": {
-                        "noFile": "No file selected."
-                    }
-                }
-            },
             "generic": {
                 "buttons": {
                     "submit": "Submit",
