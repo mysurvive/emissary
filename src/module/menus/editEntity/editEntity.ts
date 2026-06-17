@@ -21,7 +21,8 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         this.parentApp = parentApp;
 
         const reputations = game.settings.get(MODNAME, "notorietyReputation");
-        if (!reputations || !Array.isArray(reputations)) throw "Error finding Notoriety reputations";
+        if (!reputations || !Array.isArray(reputations))
+            throw game.i18n.localize("emissary.menu.editEntity.errors.reputationArray");
 
         const entity = reputations.find((r) => {
             if (r && r.id === entityId) {
@@ -31,7 +32,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         });
         if (entity) this.entityToEdit = entity as SingleNotorietyReputation;
-        if (!this.entityToEdit) throw "Unable to find selected entity in Notoriety reputations";
+        if (!this.entityToEdit) throw game.i18n.localize("emissary.menu.editEntity.errors.entity");
     }
 
     static override DEFAULT_OPTIONS = {

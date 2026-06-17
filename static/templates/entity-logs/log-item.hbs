@@ -3,14 +3,16 @@
     <div class="flex-item vertical">
         <div class="{{#when change.value.value "gte" 0}}positive{{else}}negative{{/when}}" id="log-change">
             {{#when change.value.value "gte" 0}}
-                Added {{change.value.label}}
                 {{#if change.character}}
-                    to {{change.character}}
+                    {{localize "emissary.logs.addedCharacter" value=change.value.label character=change.character}}
+                    {{else}}
+                        {{localize "emissary.logs.added" value=change.value.label}}
                 {{/if}}
             {{else}}
-                Subtracted {{change.value.label}}
                 {{#if change.character}}
-                    from {{change.character}}
+                    {{localize "emissary.logs.subtractedCharacter" value=change.value.label character=change.character}}
+                    {{else}}
+                        {{localize "emissary.logs.subtracted" value=change.value.label}}
                 {{/if}}
             {{/when}}
         </div>
@@ -21,7 +23,7 @@
             {{/if}}
         </div>
         <div id="rep-total">
-            New Reputation Total: {{change.total}}
+            {{localize "emissary.logs.total" total=change.total}}
         </div>
     </div>
     <div class="flex-item vertical" id="date-time">

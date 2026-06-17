@@ -31,7 +31,7 @@ class ReputationTrackerSidebar<
     static override tabName = "emissary";
     static override DEFAULT_OPTIONS = {
         classes: ["emissary", "reputation-tracker"],
-        window: { title: "Emissary Reputation Tracker" },
+        window: { title: "emissary.menu.reputationTracker.title" },
         actions: {
             addEntity: ReputationTrackerSidebar.addEntity,
             openRollout: ReputationTrackerSidebar.openRollout,

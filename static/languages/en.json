@@ -5,10 +5,13 @@
             "interpersonal": "Interpersonal",
             "notoriety": "Notoriety"
         },
-        "tools": {
-            "reputationTracker": {
-                "title": "Emissary Reputation Tracker"
-            }
+        "logs": {
+            "added": "Added {value}.",
+            "addedCharacter": "Added {value} to {character}.",
+            "reason": "Optional reason for change",
+            "subtracted": "Subtracted {value}.",
+            "subtractedCharacter": "Subtracted {value} from {character}.",
+            "total": "New reputation total: {total}"
         },
         "menu": {
             "reputationTracker": {
@@ -27,8 +30,8 @@
             "addEntity": {
                 "errors": {
                     "folder": "Error creating or finding the Emissary journal folder.",
-                    "subfolder": "Error creating of finding the Emissary journal subolder.",
-                    "journal": "Error creating Journal Entry."
+                    "journal": "Error creating Journal Entry.",
+                    "subfolder": "Error creating of finding the Emissary journal subolder."
                 },
                 "labels": {
                     "createHidden": "Create hidden",
@@ -59,7 +62,13 @@
                 },
                 "dropJournal": "Drag an existing journal entry here to link it or click Submit to create a new journal for this entity."
             },
-            "editEntity": { "title": "Edit Entity" },
+            "editEntity": {
+                "title": "Edit Entity",
+                "errors": {
+                    "entity": "Unable to find selected entity in Notoriety reputations",
+                    "reputationArray": "Error finding Notoriety reputations"
+                }
+            },
             "generic": {
                 "buttons": {
                     "submit": "Submit",
@@ -105,6 +114,11 @@
                     "maximum": "Maximum",
                     "color": "Color"
                 }
+            }
+        },
+        "tools": {
+            "reputationTracker": {
+                "title": "Emissary Reputation Tracker"
             }
         }
     }

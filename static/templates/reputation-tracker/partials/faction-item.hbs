@@ -35,7 +35,7 @@
             {{/unless}}
         </div>
         {{#if @root.isGM}}
-        <input type="text" id="log" entity-uuid="{{id}}" placeholder="Optional reason for change"/>
+        <input type="text" id="log" entity-uuid="{{id}}" placeholder="{{localize "emissary.logs.reason"}}"/>
         <span class="control-buttons">
             <span class="reputation-controls">
             {{#each category.controls}}
