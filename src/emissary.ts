@@ -5,13 +5,7 @@ import {
     IndividualReputation,
     NotorietyReputation,
 } from "./module/menus/reputationTracker/tabs/types.ts";
-import {
-    hiddenElements,
-    reputationControls,
-    reputationIncrements,
-    reputationRange,
-    reputationSettingsTemplates,
-} from "./module/menus/types.ts";
+import { hiddenElements, reputationControls, reputationIncrements, reputationRange } from "./module/menus/types.ts";
 import "src/styles/emissary.scss";
 
 /**
@@ -44,7 +38,6 @@ declare module "fvtt-types/configuration" {
         "emissary.notorietyReputationIncrement": typeof reputationIncrements;
         "emissary.notorietyReputationControls": typeof reputationControls;
         "emissary.notorietyHiddenElements": typeof hiddenElements;
-        "emissary.reputationSettingsTemplates": typeof reputationSettingsTemplates;
     }
 }
 

@@ -21,7 +21,13 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         const reputations = game.settings.get(MODNAME, "notorietyReputation");
         if (!reputations || !Array.isArray(reputations)) throw "Error finding Notoriety reputations";
-        this.entityToEdit = reputations.find((r) => r!.id === entityId);
+        this.entityToEdit = reputations.find((r) => {
+            if (r && r.id === entityId) {
+                return r;
+            } else {
+                return undefined;
+            }
+        });
         if (!this.entityToEdit) throw "Unable to find selected entity in Notoriety reputations";
     }
 
@@ -71,7 +77,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     const charData = {
                         characterName: character.name,
                         characterUuid: character.uuid,
-                        existing: this.entityToEdit.playerRep.some(
+                        existing: this.entityToEdit?.playerRep.some(
                             (c: PlayerReputation) => c.characterUuid === character.uuid,
                         ),
                         repNumber:

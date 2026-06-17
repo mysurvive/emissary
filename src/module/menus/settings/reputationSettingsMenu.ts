@@ -1,19 +1,16 @@
 import { DeepPartial } from "fvtt-types/utils";
 import { MODNAME } from "src/constants.ts";
-import { reputationSettingsTemplates, SettingsMenuObject } from "../types.ts";
+import { SettingsMenuObject } from "../types.ts";
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import HandlebarsApplicationMixin = foundry.applications.api.HandlebarsApplicationMixin;
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
-import { TemplateManagerMenu } from "../templateManager/templateManager.ts";
+import { isArray } from "remeda";
 
 const { renderTemplate } = foundry.applications.handlebars;
 
 class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare template: any;
-
-    constructor(template?: typeof reputationSettingsTemplates) {
+    constructor() {
         super();
-        this.template = template;
     }
 
     static override DEFAULT_OPTIONS = {
@@ -36,15 +33,10 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             addRow: this.#addRow,
             removeRow: this.#removeRow,
             exportSettings: this.#exportSettings,
-            openTemplateManager: this.#openTemplateManager,
         },
     };
 
     static override PARTS = {
-        settingsTemplates: {
-            template: "modules/emissary/templates/menu/partials/settings-templates.hbs",
-            classes: ["emissary"],
-        },
         form: {
             template: "modules/emissary/templates/menu/reputationSettingsMenu.hbs",
             scrollable: [""],
@@ -120,14 +112,16 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     #formDataToSettings(formData: Record<string, unknown>) {
         const expandedFormData = foundry.utils.expandObject(formData) as Record<
             string,
-            Record<string, unknown> | unknown[] | boolean
+            Record<string, number>[] | boolean
         >;
         for (const key in expandedFormData) {
             const subKeys = Object.keys(expandedFormData[key]);
             if (!isNaN(parseFloat(subKeys[0]))) {
                 expandedFormData[key] = Object.values(expandedFormData[key]);
-                if (key.includes("ReputationIncrement") || key.includes("ReputationControls"))
-                    expandedFormData[key] = this.#sortSetting(expandedFormData[key] as Record<string, number>[]);
+                if (key.includes("ReputationIncrement") || key.includes("ReputationControls")) {
+                    const sortedSetting = this.#sortSetting(expandedFormData[key] as Record<string, number>[]);
+                    expandedFormData[key] = sortedSetting;
+                }
             }
         }
 
@@ -135,13 +129,14 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     #sortSetting(setting: Record<string, number>[]) {
-        setting.sort((a, b) => {
-            if (!isNaN(a.minimum)) {
-                return a.minimum - b.minimum;
-            } else {
-                return a.amount - b.amount;
-            }
-        });
+        if (setting && isArray(setting))
+            setting.sort((a, b) => {
+                if (a && !isNaN(a.minimum)) {
+                    return a.minimum - b.minimum;
+                } else {
+                    return a.amount - b.amount;
+                }
+            });
         return setting;
     }
 
@@ -167,8 +162,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     hint: "emissary.menu.reputationSettings.settings.reputationRange.hint",
                     type: "reputationRange",
                     id: "factionReputationRange",
-                    settingValue:
-                        this.template?.factionReputationRange ?? game.settings.get(MODNAME, "factionReputationRange"),
+                    settingValue: game.settings.get(MODNAME, "factionReputationRange"),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.reputationIncrement.name",
@@ -177,8 +171,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     subtype: "increment",
                     id: "factionReputationIncrement",
                     settingValue: this.#sortSetting(
-                        this.template?.factionReputationIncrement ??
-                            game.settings.get(MODNAME, "factionReputationIncrement"),
+                        game.settings.get(MODNAME, "factionReputationIncrement") as Record<string, number>[],
                     ),
                 },
                 {
@@ -188,8 +181,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     subtype: "control",
                     id: "factionReputationControls",
                     settingValue: this.#sortSetting(
-                        this.template?.factionReputationControls ??
-                            game.settings.get(MODNAME, "factionReputationControls"),
+                        game.settings.get(MODNAME, "factionReputationControls") as Record<string, number>[],
                     ),
                 },
                 {
@@ -206,9 +198,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     hint: "emissary.menu.reputationSettings.settings.reputationRange.hint",
                     type: "reputationRange",
                     id: "interpersonalReputationRange",
-                    settingValue:
-                        this.template?.interpersonalReputationRange ??
-                        game.settings.get(MODNAME, "interpersonalReputationRange"),
+                    settingValue: game.settings.get(MODNAME, "interpersonalReputationRange"),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.reputationIncrement.name",
@@ -217,8 +207,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     subtype: "increment",
                     id: "interpersonalReputationIncrement",
                     settingValue: this.#sortSetting(
-                        this.template?.interpersonalReputationIncrement ??
-                            game.settings.get(MODNAME, "interpersonalReputationIncrement"),
+                        game.settings.get(MODNAME, "interpersonalReputationIncrement") as Record<string, number>[],
                     ),
                 },
                 {
@@ -228,8 +217,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     subtype: "control",
                     id: "interpersonalReputationControls",
                     settingValue: this.#sortSetting(
-                        this.template?.interpersonalReputationControls ??
-                            game.settings.get(MODNAME, "interpersonalReputationControls"),
+                        game.settings.get(MODNAME, "interpersonalReputationControls") as Record<string, number>[],
                     ),
                 },
                 {
@@ -246,9 +234,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     hint: "emissary.menu.reputationSettings.settings.reputationRange.hint",
                     type: "reputationRange",
                     id: "notorietyReputationRange",
-                    settingValue:
-                        this.template?.notorietyReputationRange ??
-                        game.settings.get(MODNAME, "notorietyReputationRange"),
+                    settingValue: game.settings.get(MODNAME, "notorietyReputationRange"),
                 },
                 {
                     settingName: "emissary.menu.reputationSettings.settings.reputationIncrement.name",
@@ -257,8 +243,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     subtype: "increment",
                     id: "notorietyReputationIncrement",
                     settingValue: this.#sortSetting(
-                        this.template?.notorietyReputationIncrement ??
-                            game.settings.get(MODNAME, "notorietyReputationIncrement"),
+                        game.settings.get(MODNAME, "notorietyReputationIncrement") as Record<string, number>[],
                     ),
                 },
                 {
@@ -268,8 +253,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                     subtype: "control",
                     id: "notorietyReputationControls",
                     settingValue: this.#sortSetting(
-                        this.template?.notorietyReputationControls ??
-                            game.settings.get(MODNAME, "notorietyReputationControls"),
+                        game.settings.get(MODNAME, "notorietyReputationControls") as Record<string, number>[],
                     ),
                 },
                 {
@@ -341,10 +325,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                 }
             }
         element.remove();
-    }
-
-    static #openTemplateManager(this: ReputationSettingsMenu): void {
-        new TemplateManagerMenu(this).render(true);
     }
 
     static #exportSettings(this: ReputationSettingsMenu): void {

@@ -5,13 +5,7 @@ import {
     NotorietyReputation,
 } from "../module/menus/reputationTracker/tabs/types.ts";
 import { ReputationSettingsMenu } from "../module/menus/settings/reputationSettingsMenu.ts";
-import {
-    hiddenElements,
-    reputationControls,
-    reputationIncrements,
-    reputationRange,
-    reputationSettingsTemplates,
-} from "../module/menus/types.ts";
+import { hiddenElements, reputationControls, reputationIncrements, reputationRange } from "../module/menus/types.ts";
 
 export function registerSettings(): void {
     /**
@@ -171,13 +165,5 @@ export function registerSettings(): void {
         scope: "world",
         config: false,
         type: hiddenElements,
-    });
-
-    // Data Settings
-
-    game.settings.register(MODNAME, "reputationSettingsTemplates", {
-        scope: "world",
-        config: false,
-        type: reputationSettingsTemplates,
     });
 }
