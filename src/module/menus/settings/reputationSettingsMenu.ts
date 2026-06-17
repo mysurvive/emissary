@@ -10,37 +10,10 @@ const { renderTemplate } = foundry.applications.handlebars;
 
 class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     declare template: any;
-    declare previewSettings;
 
     constructor(template?: typeof reputationSettingsTemplates) {
         super();
         this.template = template;
-        this.previewSettings = this.#initializePreviewSettings();
-    }
-
-    #initializePreviewSettings(): any {
-        const initializedSettings = {
-            changeSettings: {
-                faction: {
-                    factionReputationRange: game.settings.get(MODNAME, "factionReputationRange"),
-                    hiddenElements: game.settings.get(MODNAME, "factionHiddenElements"),
-                    factionReputationIncrement: game.settings.get(MODNAME, "factionReputationIncrement"),
-                    factionReputationControls: game.settings.get(MODNAME, "factionReputationControls"),
-                },
-                interpersonal: {
-                    interpersonalReputationRange: game.settings.get(MODNAME, "interpersonalReputationRange"),
-                    hiddenElements: game.settings.get(MODNAME, "interpersonalHiddenElements"),
-                    interpersonalReputationIncrement: game.settings.get(MODNAME, "interpersonalReputationIncrement"),
-                    interpersonalReputationControls: game.settings.get(MODNAME, "interpersonalReputationControls"),
-                },
-            },
-            data: { faction: [], interpersonal: [] },
-        };
-        return initializedSettings;
-    }
-
-    #resetSpecificPreview(category: string, setting: ClientSettings.KeyFor<"emissary">): void {
-        this.previewSettings.changeSettings[category][setting] = game.settings.get(MODNAME, setting);
     }
 
     static override DEFAULT_OPTIONS = {
@@ -62,7 +35,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             resetSettings: this.#resetSettings,
             addRow: this.#addRow,
             removeRow: this.#removeRow,
-            nextPreview: this.#nextPreview,
             exportSettings: this.#exportSettings,
             openTemplateManager: this.#openTemplateManager,
         },
@@ -78,10 +50,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
             scrollable: [""],
             classes: ["emissary", "reputation-settings"],
         },
-        preview: {
-            template: "modules/emissary/templates/menu/partials/settings-preview.hbs",
-            classes: ["emissary", "reputation-tracker", "reputation-settings", "preview"],
-        },
         footer: {
             template: "modules/emissary/templates/menu/partials/form-footer.hbs",
         },
@@ -91,64 +59,9 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         options: DeepPartial<ApplicationRenderOptions> & { isFirstRender: boolean },
     ): Promise<ApplicationV2.RenderContext> {
         const context = await super._prepareContext(options);
-        this.previewSettings.data = { faction: [], interpersonal: [] };
-
-        const factionIncrement = this.previewSettings.changeSettings.faction.factionReputationIncrement;
-        const factionRange = this.previewSettings.changeSettings.faction.factionReputationRange;
-        if (Array.isArray(factionIncrement))
-            for (const increment of factionIncrement) {
-                if (!increment) continue;
-                const index = factionIncrement.indexOf(increment);
-                this.previewSettings.data.faction.push({
-                    color: increment.color,
-                    label: increment.label,
-                    index: index,
-                    controls: this.previewSettings.changeSettings.faction.factionReputationControls,
-                    name: `Test` + index,
-                    repNumber: Math.floor(
-                        Math.random() *
-                            (Math.min(Number(factionRange.maximum), Number(increment.maximum)) -
-                                Math.max(Number(factionRange.minimum), Number(increment.minimum))) +
-                            Math.max(Number(increment.minimum), Number(factionRange.minimum)),
-                    ),
-                    hiddenPreview: "true",
-                    imgsrc: "icons/svg/shield.svg",
-                    hiddenElements: this.previewSettings.changeSettings.faction.hiddenElements,
-                    enrichedUuid: await foundry.applications.ux.TextEditor.enrichHTML(`@UUID["placeholder"]`),
-                });
-            }
-        const interpersonalIncrement =
-            this.previewSettings.changeSettings.interpersonal.interpersonalReputationIncrement;
-        const interpersonalRange = this.previewSettings.changeSettings.interpersonal.interpersonalReputationRange;
-        if (Array.isArray(interpersonalIncrement))
-            for (const increment of interpersonalIncrement) {
-                if (!increment) continue;
-                const index = interpersonalIncrement.indexOf(increment);
-                this.previewSettings.data.interpersonal.push({
-                    color: increment.color,
-                    label: increment.label,
-                    index: index,
-                    controls: this.previewSettings.changeSettings.interpersonal.interpersonalReputationControls,
-                    name: `Test` + index,
-                    repNumber: Math.floor(
-                        Math.random() *
-                            (Math.min(Number(interpersonalRange.maximum), Number(increment.maximum)) -
-                                Math.max(Number(interpersonalRange.minimum), Number(increment.minimum))) +
-                            Math.max(Number(increment.minimum), Number(interpersonalRange.minimum)),
-                    ),
-                    hiddenPreview: "true",
-                    imgsrc: "icons/svg/mystery-man.svg",
-                    hiddenElements: this.previewSettings.changeSettings.interpersonal.hiddenElements,
-                    enrichedUuid: await foundry.applications.ux.TextEditor.enrichHTML(`@UUID["placeholder"]`),
-                });
-            }
-
-        this.previewSettings.data.faction[0].hiddenPreview = false;
-        this.previewSettings.data.interpersonal[0].hiddenPreview = false;
 
         const mergedContext = foundry.utils.mergeObject(context, {
             settings: this.getSettings(),
-            preview: this.previewSettings,
             footerButtons: [
                 {
                     type: "button",
@@ -165,7 +78,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
     protected override _onChangeForm(_formConfig: ApplicationV2.FormConfiguration, event: Event): void {
         const target = event.target as HTMLInputElement;
-        const [settingName, index, subSetting] = target.name.split("-");
 
         // Sort the array if a change is made to the ReputationIncrement.minimum or ReputationControls.amount fields
         if (
@@ -190,26 +102,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                 });
             }
         }
-
-        function isArray(x: string) {
-            return !isNaN(parseFloat(x));
-        }
-
-        const type = settingName.includes("faction")
-            ? "faction"
-            : settingName.includes("faction")
-              ? "interpersonal"
-              : "notoriety";
-
-        if (settingName.includes("Hidden")) {
-            this.previewSettings.changeSettings[type].hiddenElements[index] = target.checked;
-        } else if (isArray(index)) {
-            this.previewSettings.changeSettings[type][settingName][Number(index)][subSetting] = target.value;
-        } else {
-            this.previewSettings.changeSettings[type][settingName][index] = target.value;
-        }
-
-        this.render({ force: true });
     }
 
     protected override _preSyncPartState(
@@ -412,13 +304,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         if (game.settings.storage.get("world")!.getSetting(`${MODNAME}.${parentSetting}`))
             await defaultSetting.delete();
 
-        const category = parentSetting.includes("faction") ? "faction" : "interpersonal";
-        this.#resetSpecificPreview(category, parentSetting);
-
         await this.render({ parts: ["form"] });
-
-        // The form isn't ready during _prepareContext, so the preview part has to be rendered after the form part is rendered
-        await this.render({ parts: ["preview"] });
     }
 
     static async #addRow(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): Promise<void> {
@@ -438,13 +324,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                   id: lastChild.id,
               });
         settingsArray?.insertAdjacentHTML("beforeend", template);
-        const category = lastChild.id.includes("faction")
-            ? "faction"
-            : lastChild.id.includes("interpersonal")
-              ? "interpersonal"
-              : "notoriety";
-        if (category !== "notoriety") this.previewSettings.changeSettings[category][lastChild.id].push({});
-        this.render({ parts: ["preview"] });
     }
 
     static #removeRow(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): void {
@@ -452,12 +331,7 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         if (!element) throw "Error";
         const key = element.getAttribute("key");
         if (!key) throw "Error";
-        const category = element.id.includes("faction")
-            ? "faction"
-            : element.id.includes("interpersonal")
-              ? "interpersonal"
-              : "notoriety";
-        if (category !== "notoriety") this.previewSettings.changeSettings[category][element.id].splice([key], 1);
+
         const settingsArray = element.closest(".settings-array")?.children;
         if (settingsArray)
             for (const el of settingsArray) {
@@ -467,21 +341,6 @@ class ReputationSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                 }
             }
         element.remove();
-        this.render({ parts: ["preview"] });
-    }
-
-    static #nextPreview(this: ReputationSettingsMenu, _event: PointerEvent, target: HTMLElement): void {
-        const currentIndex = Number(target?.getAttribute("index"));
-        const divType = target?.getAttribute("preview-type");
-        if (!divType) throw "Error";
-        const nextIndex = currentIndex + 1 >= this.previewSettings.data[divType].length ? 0 : currentIndex + 1;
-        const currentDiv = document.getElementById(`${divType}-item-${currentIndex}`);
-        const nextDiv = document.getElementById(`${divType}-item-${nextIndex}`);
-        if (!currentDiv || !nextDiv) return;
-        currentDiv.classList.toggle("hidden");
-        nextDiv.classList.toggle("hidden");
-        this.previewSettings.data[divType][currentIndex].hiddenPreview = "true";
-        this.previewSettings.data[divType][nextIndex].hiddenPreview = "false";
     }
 
     static #openTemplateManager(this: ReputationSettingsMenu): void {
