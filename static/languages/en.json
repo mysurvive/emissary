@@ -112,10 +112,6 @@
                         "currentReputation": "Current Reputation"
                     }
                 },
-                "preview": {
-                    "label": "Preview",
-                    "hint": "Click the elements to cycle through previews. These previews show what players see."
-                },
                 "buttons": {
                     "export": "Export Settings",
                     "removeRow": "Remove Row",

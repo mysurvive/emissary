@@ -15,27 +15,6 @@
         align-items: center;
     }
 
-    &.preview {
-        h1 {
-            justify-self: center;
-            margin: 0 0 0.5rem 0;
-        }
-        h2 {
-            margin: 0 0 5px 0;
-        }
-        p {
-            margin: 0 0 1rem 0;
-            font-style: italic;
-            justify-self: center;
-        }
-        .faction-item {
-            width: 100%;
-        }
-        .entity-item {
-            margin-bottom: 15px;
-        }
-    }
-
     .setting {
         display: flex;
         justify-content: space-between;
