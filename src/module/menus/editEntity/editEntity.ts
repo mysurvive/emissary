@@ -11,7 +11,7 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { renderTemplate } = foundry.applications.handlebars;
 
 class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
-    declare entityToEdit: any;
+    declare entityToEdit: SingleNotorietyReputation;
     declare parentApp;
 
     constructor(parentApp: ReputationTrackerSidebar<ReputationTrackerSidebar.RenderContext>, entityId: string) {
@@ -21,13 +21,15 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
         const reputations = game.settings.get(MODNAME, "notorietyReputation");
         if (!reputations || !Array.isArray(reputations)) throw "Error finding Notoriety reputations";
-        this.entityToEdit = reputations.find((r) => {
+
+        const entity = reputations.find((r) => {
             if (r && r.id === entityId) {
                 return r;
             } else {
                 return undefined;
             }
         });
+        if (entity) this.entityToEdit = entity as SingleNotorietyReputation;
         if (!this.entityToEdit) throw "Unable to find selected entity in Notoriety reputations";
     }
 
@@ -73,13 +75,15 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const playerCharacters = game.users
             .map((u) => {
                 const character = u.character;
-                if (character) {
+                if (character && this.entityToEdit) {
                     const charData = {
                         characterName: character.name,
                         characterUuid: character.uuid,
-                        existing: this.entityToEdit?.playerRep.some(
-                            (c: PlayerReputation) => c.characterUuid === character.uuid,
-                        ),
+                        existing: this.entityToEdit.playerRep
+                            ? this.entityToEdit.playerRep.some(
+                                  (c: PlayerReputation) => c.characterUuid === character.uuid,
+                              )
+                            : undefined,
                         repNumber:
                             this.entityToEdit.playerRep.find(
                                 (c: PlayerReputation) => c.characterUuid === character.uuid,
@@ -174,15 +178,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         const entityInformation = formData.object;
 
         // Normalize the settings
-        const normalizedSettings = foundry.utils.expandObject(entityInformation) as any;
-        for (const key in normalizedSettings) {
-            if (Array.isArray(normalizedSettings[key])) {
-                const subKeys = Object.keys(normalizedSettings[key]);
-                if (!isNaN(parseFloat(subKeys[0]))) {
-                    normalizedSettings[key] = Object.values(normalizedSettings[key]);
-                }
-            }
-        }
+        const normalizedSettings = foundry.utils.expandObject(entityInformation) as NormalizedSettings;
 
         // Information about the characters added to the reputation entity
         const characterOpts = Object.keys(normalizedSettings.character.Actor).reduce(
@@ -198,8 +194,9 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
                         }
                     >
                 >,
-                key,
+                settingKey,
             ) => {
+                const key = settingKey as string;
                 const setting = normalizedSettings.character.Actor[key];
                 acc[`Actor.${key}`] = setting;
                 delete normalizedSettings.character.Actor[key];
@@ -234,16 +231,21 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
         normalizedSettings.id = this.entityToEdit.id as UUID;
         normalizedSettings.hidden = this.entityToEdit.hidden;
 
-        const entityReputationsArray = game.settings.get(MODNAME, "notorietyReputation");
+        const entityReputationsArray = game.settings.get(MODNAME, "notorietyReputation") as SingleNotorietyReputation[];
         if (entityReputationsArray && Array.isArray(entityReputationsArray)) {
-            const index = entityReputationsArray.indexOf(
-                entityReputationsArray.find((r) => r!.id === this.entityToEdit.id),
-            );
-            if (index === -1) throw "Error finding entity to edit.";
-            entityReputationsArray[index] = normalizedSettings;
+            const entityId = entityReputationsArray.find((r) => r.id === this.entityToEdit.id);
+            if (entityId) {
+                const index = entityReputationsArray.indexOf(entityId);
+                if (index === -1) throw "Error finding entity to edit.";
+                entityReputationsArray[index] = normalizedSettings;
+            }
         }
 
-        await game.settings.set(MODNAME, "notorietyReputation", entityReputationsArray);
+        await game.settings.set(
+            MODNAME,
+            "notorietyReputation",
+            entityReputationsArray as ClientSettings.SettingInitializedType<"emissary", "notorietyReputation">,
+        );
 
         this.parentApp.render();
     }
@@ -296,11 +298,32 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 }
 
 interface PlayerReputation {
-    characterName: string;
+    characterName: string | null | undefined;
     characterUuid: string;
-    characterId: string;
-    repNumber: string;
-    repLevel: { label: string; color: Color };
+    characterId?: string | null | undefined;
+    repNumber: number;
+    repLevel?: { label: string; color: Color };
+}
+
+type NormalizedSettings = SingleNotorietyReputation & {
+    character: {
+        Actor: Record<string, { characterId: string; characterName: string; repNumber: number; select: boolean }>;
+    };
+};
+
+interface SingleNotorietyReputation {
+    name: string;
+    type: string;
+    id: string;
+    controls: [{ label: string; amount: number; icon: string }];
+    increments: [{ label: string; minimum: number; maximum: number; color: Color }];
+    range: { minimum: number; maximum: number };
+    playerRep: PlayerReputation[];
+    journalUuid: string;
+    hiddenElements: { hint: string; id: string; settingName: string; settingValue: Record<string, boolean> };
+    imgsrc?: string;
+    enrichedUuid?: string;
+    hidden?: boolean;
 }
 
 export { EditEntityMenu };
