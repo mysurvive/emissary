@@ -32,10 +32,10 @@ export interface EmissarySettings {
 export type EmissarySettingLabel = "reputationControls" | "reputationRange" | "reputationIncrements" | "hiddenElements";
 
 export interface TypeReputationSetting {
-    reputationControls?: typeof reputationControls;
-    reputationIncrements?: typeof reputationIncrements;
-    reputationRange?: typeof reputationRange;
-    hiddenElements?: typeof hiddenElements;
+    notorietyReputationControls?: typeof reputationControls;
+    notorietyReputationIncrement?: typeof reputationIncrements;
+    notorietyReputationRange?: typeof reputationRange;
+    notorietyHiddenElements?: typeof hiddenElements;
 }
 
 /**

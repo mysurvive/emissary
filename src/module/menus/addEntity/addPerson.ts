@@ -67,9 +67,6 @@ class AddPersonMenu extends AddEntityMenu {
                     case "People":
                         await game.settings.set(MODNAME, "interpersonalReputation", entityReputationsArray);
                         break;
-                    case "Notoriety":
-                        await game.settings.set(MODNAME, "notorietyReputation", entityReputationsArray);
-                        break;
                     default:
                         break;
                 }

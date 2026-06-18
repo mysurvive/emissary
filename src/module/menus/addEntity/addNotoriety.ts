@@ -1,12 +1,19 @@
-import { DeepPartial } from "fvtt-types/utils";
+import { AnyMutableObject, DeepPartial } from "fvtt-types/utils";
 import ApplicationRenderOptions = foundry.applications.types.ApplicationRenderOptions;
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { AddEntityMenu } from "./addEntity.ts";
 import { AlternateSettingsMenu } from "../alternateSettings/alternateSettings.ts";
 import { MODNAME } from "src/constants.ts";
-import { TypeReputationSetting } from "../types.ts";
-import { NotorietyReputation } from "../reputationTracker/tabs/types.ts";
+import {
+    hiddenElements,
+    reputationControls,
+    reputationIncrements,
+    reputationRange,
+    TypeReputationSetting,
+} from "../types.ts";
+import { NotorietyPlayerReputation, NotorietyReputationElement } from "../reputationTracker/tabs/types.ts";
 import { ReputationTrackerSidebar } from "../reputationTracker/reputationTrackerSidebar.ts";
+import { isArray } from "remeda";
 
 class AddNotorietyMenu extends AddEntityMenu {
     declare alternateSettings: TypeReputationSetting;
@@ -70,77 +77,127 @@ class AddNotorietyMenu extends AddEntityMenu {
         _form: HTMLFormElement,
         formData: FormDataExtended,
     ): Promise<void> {
-        const entityInformation = formData.object;
+        const entityInformation = foundry.utils.expandObject(formData.object) as EntityInformation & {
+            character: { Actor: CharacterOptions };
+        };
 
-        const characterOpts = Object.keys(entityInformation)
-            .filter((e) => e.includes("character"))
-            .reduce(
-                (
-                    acc: Record<
-                        string,
-                        Partial<
-                            typeof NotorietyReputation & {
-                                characterName: string | undefined | null;
-                                characterId: string | undefined | null;
-                                select: boolean;
-                                repNumber: number;
-                            }
-                        >
-                    >,
-                    key,
-                ) => {
-                    const [_a, subkey, uuid] = key.split("-");
-                    acc[uuid] = { ...acc[uuid], [subkey]: entityInformation[key] };
-                    delete entityInformation[key];
-                    return acc;
-                },
-                {},
-            );
+        const characterOpts = (
+            await Promise.all(
+                Object.keys(entityInformation.character.Actor).map(async (c) => {
+                    const character = await fromUuid(`Actor.${c}`);
+                    if (entityInformation.character.Actor[c].select && character) {
+                        return {
+                            characterName: character.name,
+                            characterId: character.id,
+                            characterUuid: `Actor.${c}`,
+                            repNumber: entityInformation.character.Actor[c].repNumber,
+                            repLevel: undefined,
+                        };
+                    } else {
+                        return undefined;
+                    }
+                }),
+            )
+        ).filter((c) => c !== undefined) as unknown as typeof NotorietyPlayerReputation;
 
-        for (const characterUuid in characterOpts) {
-            const character = await fromUuid(characterUuid);
-            if (character) {
-                characterOpts[characterUuid].characterName = character.name;
-                characterOpts[characterUuid].characterId = character.id;
-            }
+        let increments: typeof reputationIncrements;
+        if (this.alternateSettings && isArray(this.alternateSettings.notorietyReputationIncrement)) {
+            increments = this.#sortSetting(
+                this.alternateSettings?.notorietyReputationIncrement as unknown as Record<string, number>[],
+            ) as unknown as typeof reputationIncrements;
+        } else {
+            increments = this.#sortSetting(
+                game.settings.get(MODNAME, "notorietyReputationIncrement") as Record<string, number>[],
+            ) as unknown as typeof reputationIncrements;
         }
 
-        entityInformation.hiddenElements =
-            this.alternateSettings?.hiddenElements ?? game.settings.get(MODNAME, "notorietyHiddenElements");
-        entityInformation.increments =
-            this.alternateSettings?.reputationIncrements ?? game.settings.get(MODNAME, "notorietyReputationIncrement");
-        entityInformation.controls =
-            this.alternateSettings?.reputationControls ?? game.settings.get(MODNAME, "notorietyReputationControls");
-        entityInformation.range =
-            this.alternateSettings?.reputationRange ?? game.settings.get(MODNAME, "notorietyReputationRange");
+        let controls: typeof reputationControls;
+        if (this.alternateSettings && isArray(this.alternateSettings.notorietyReputationControls)) {
+            controls = this.#sortSetting(
+                this.alternateSettings?.notorietyReputationControls as unknown as Record<string, number>[],
+            ) as unknown as typeof reputationControls;
+        } else {
+            controls = this.#sortSetting(
+                game.settings.get(MODNAME, "notorietyReputationControls") as Record<string, number>[],
+            ) as unknown as typeof reputationControls;
+        }
 
-        entityInformation.playerRep = Object.keys(characterOpts)
-            .map((key) => {
-                if (characterOpts[key].select) {
-                    return {
-                        characterName: characterOpts[key].characterName,
-                        characterUuid: key,
-                        characterId: characterOpts[key].characterId,
-                        repNumber: characterOpts[key].repNumber,
-                    };
-                } else return undefined;
-            })
-            .filter((i) => i !== undefined);
+        let entityHiddenElements:
+            | typeof hiddenElements
+            | ClientSettings.SettingInitializedType<"emissary", "notorietyHiddenElements">
+            | undefined;
+        if (this.alternateSettings?.notorietyHiddenElements) {
+            entityHiddenElements = this.alternateSettings.notorietyHiddenElements;
+        } else {
+            entityHiddenElements = game.settings.get(MODNAME, "notorietyHiddenElements");
+        }
+
+        entityInformation.hiddenElements = (entityHiddenElements as typeof hiddenElements) ?? {
+            incrementColor: false,
+            incrementName: false,
+            image: false,
+            journal: false,
+            currentReputation: false,
+        };
+        entityInformation.increments = increments;
+        entityInformation.controls = controls;
+        entityInformation.range =
+            (this.alternateSettings?.notorietyReputationRange as typeof reputationRange) ??
+            game.settings.get(MODNAME, "notorietyReputationRange");
+
+        entityInformation.playerRep = characterOpts;
 
         if (entityInformation.journalUuid === "") {
-            entityInformation.journalUuid = await this.createEntityJournal(entityInformation);
+            entityInformation.journalUuid = await this.createEntityJournal(
+                entityInformation as unknown as AnyMutableObject,
+            );
         }
 
-        entityInformation.id = crypto.randomUUID();
+        entityInformation.id = foundry.utils.randomID();
 
         if (!this.entityReputations) throw "error";
 
         const entityReputationsArray = game.settings.get(MODNAME, "notorietyReputation");
-        if (entityReputationsArray && Array.isArray(entityReputationsArray))
-            entityReputationsArray.push(entityInformation);
+        if (entityReputationsArray && Array.isArray(entityReputationsArray)) {
+            entityReputationsArray.push(entityInformation as unknown as typeof NotorietyReputationElement);
+        }
 
+        game.settings.get(MODNAME, "notorietyReputation");
         await game.settings.set(MODNAME, "notorietyReputation", entityReputationsArray);
     }
+
+    #sortSetting(setting: Record<string, number>[]) {
+        if (setting && isArray(setting))
+            setting.sort((a, b) => {
+                if (a && !isNaN(a.minimum)) {
+                    return a.minimum - b.minimum;
+                } else {
+                    return a.amount - b.amount;
+                }
+            });
+        return setting;
+    }
 }
+
+interface EntityInformation {
+    hiddenElements?: typeof hiddenElements;
+    increments: typeof reputationIncrements;
+    controls: typeof reputationControls;
+    range: typeof reputationRange;
+    playerRep: typeof NotorietyPlayerReputation;
+    journalUuid: string;
+    id: string;
+}
+
+type CharacterOptions = Record<
+    string,
+    {
+        characterName?: string;
+        characterUuid?: string;
+        characterId?: string;
+        repNumber: number;
+        select: boolean;
+    }
+>;
 
 export { AddNotorietyMenu };

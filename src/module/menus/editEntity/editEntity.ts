@@ -58,7 +58,7 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static override PARTS = {
         form: {
-            template: "modules/emissary//templates/menu/edit-entity.hbs",
+            template: "modules/emissary/templates/menu/edit-entity.hbs",
             templates: [
                 "modules/emissary/templates/menu/partials/setting.hbs",
                 "modules/emissary/templates/reputation-tracker/add-entity.hbs",
@@ -320,12 +320,12 @@ class EditEntityMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 }
 
-interface PlayerReputation {
+export interface PlayerReputation {
     characterName: string | null | undefined;
     characterUuid: string;
     characterId?: string | null | undefined;
     repNumber: number;
-    repLevel?: { label: string; color: Color };
+    repLevel?: { label: string; color: string };
 }
 
 type NormalizedSettings = {
@@ -335,8 +335,8 @@ type NormalizedSettings = {
     hidden: boolean;
     id: string;
     increments:
-        | Record<string, { color: Color; label: string; minimum: number; maximum: number }>
-        | { color: Color; label: string; minimum: number; maximum: number }[];
+        | Record<string, { color: string; label: string; minimum: number; maximum: number }>
+        | { color: string; label: string; minimum: number; maximum: number }[];
     journalUuid: string;
     name: string;
     playerRep: PlayerReputation[];
@@ -347,12 +347,12 @@ type NormalizedSettings = {
     };
 };
 
-interface SingleNotorietyReputation {
+export interface SingleNotorietyReputation {
     name: string;
     type: string;
     id: string;
     controls: { label: string; amount: number; icon: string }[];
-    increments: { label: string; minimum: number; maximum: number; color: Color }[];
+    increments: { label: string; minimum: number; maximum: number; color: string }[];
     range: { minimum: number; maximum: number };
     playerRep: PlayerReputation[];
     journalUuid: string;
