@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.0.1-Alpha2] - 2026-06-17
+
+### Testing
+
+- Testing
+
 ## [0.0.1-Alpha1] - 2026-06-17
 
 ### Added
